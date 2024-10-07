@@ -58,6 +58,7 @@ public class ClienteController {
         return ResponseEntity.status(HttpStatus.OK).body("Cliente removido com sucesso.");
     }
 
+    //Um comentário só pra testar o git
     @GetMapping("/clientes/{id}")
     public ResponseEntity<Object> getOneClient(@PathVariable (value = "id") UUID id ){
         Optional<ClienteModel> clienteO = clienteRepository.findById(id);
