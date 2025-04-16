@@ -2,9 +2,9 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Loading } from "../../components/Loading";
+import AditionalInfo from "../../../components/AditionalInfo";
 
-export default function Home() {
+export default function Main() {
   const router = useRouter();
 
   useEffect(() => {
@@ -25,5 +25,5 @@ export default function Home() {
     }
   }, []);
 
-  return <Loading label={"Carregando"} width={50} height={50} color="gray" />;
+  return <AditionalInfo />;
 }

@@ -3,6 +3,7 @@ package com.example.barberIO.models;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -16,6 +17,7 @@ public class FuncionarioModel implements Serializable {
 
     private String nome;
 
+    @Column(unique = true)
     private String email;
 
     private String senha;
@@ -91,4 +93,5 @@ public class FuncionarioModel implements Serializable {
     public void setAtendimentos(int atendimentos) {
         this.atendimentos = atendimentos;
     }
+    
 }

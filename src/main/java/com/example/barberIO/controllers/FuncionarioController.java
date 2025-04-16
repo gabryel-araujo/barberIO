@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,7 +30,14 @@ public class FuncionarioController {
     }
 
     @PostMapping("/funcionarios")
-    ResponseEntity<FuncionarioModel> addFuncionario(@RequestBody @Valid FuncionarioModel funcionarioRecordDto){
+    ResponseEntity<Object> addFuncionario(@RequestBody @Valid FuncionarioModel funcionarioRecordDto){
+
+        Optional<FuncionarioModel> funcionario = funcionarioRepository.findByEmail(funcionarioRecordDto.getEmail());
+
+        if(funcionario.isPresent()){
+//            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email já cadastrado!");
+            return ResponseEntity.ok().body("Email já cadastrado");
+        }
 
         FuncionarioModel funcionarioModel = new FuncionarioModel();
         BeanUtils.copyProperties(funcionarioRecordDto, funcionarioModel);
@@ -59,6 +68,12 @@ public class FuncionarioController {
         FuncionarioModel funcionarioModel = funcionarioO.get();
         BeanUtils.copyProperties(funcionarioRecordDto, funcionarioModel);
         return ResponseEntity.status(HttpStatus.OK).body("Funcionário atualizado com sucesso!");
+    }
+
+    @GetMapping("/teste")
+    Object teste(){
+        LocalDate teste = LocalDate.now();
+        return teste;
     }
 
 }
