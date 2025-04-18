@@ -21,8 +21,8 @@ import java.util.UUID;
 public class FuncionarioController {
     @Autowired
     FuncionarioRepository funcionarioRepository;
-    @Autowired
-    private ClienteRepository clienteRepository;
+//    @Autowired
+//    private ClienteRepository clienteRepository;
 
     @GetMapping("/funcionarios")
     ResponseEntity<List<FuncionarioModel>> getAll(){
@@ -68,12 +68,6 @@ public class FuncionarioController {
         FuncionarioModel funcionarioModel = funcionarioO.get();
         BeanUtils.copyProperties(funcionarioRecordDto, funcionarioModel);
         return ResponseEntity.status(HttpStatus.OK).body("Funcionário atualizado com sucesso!");
-    }
-
-    @GetMapping("/teste")
-    Object teste(){
-        LocalDate teste = LocalDate.now();
-        return teste;
     }
 
 }
