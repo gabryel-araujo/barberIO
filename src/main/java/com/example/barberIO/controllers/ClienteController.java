@@ -34,7 +34,7 @@ public class ClienteController {
     }
 
     @PutMapping("/clientes/{id}")
-    public ResponseEntity<Object> editCliente(@PathVariable (value = "id") UUID id, @RequestBody @Valid ClienteModel clienteRecordDto){
+    public ResponseEntity<Object> editCliente(@PathVariable (value = "id") Long id, @RequestBody @Valid ClienteModel clienteRecordDto){
         Optional<ClienteModel> clienteO = clienteRepository.findById(id);
 
         if(clienteO.isEmpty()){
@@ -47,7 +47,7 @@ public class ClienteController {
     }
 
     @DeleteMapping("/clientes/{id}")
-    public ResponseEntity<Object> deleteCliente(@PathVariable (value = "id") UUID id){
+    public ResponseEntity<Object> deleteCliente(@PathVariable (value = "id") Long id){
         Optional<ClienteModel> clienteO = clienteRepository.findById(id);
 
         if(clienteO.isEmpty()){
@@ -60,7 +60,7 @@ public class ClienteController {
 
     //Um comentário só pra testar o git
     @GetMapping("/clientes/{id}")
-    public ResponseEntity<Object> getOneClient(@PathVariable (value = "id") UUID id ){
+    public ResponseEntity<Object> getOneClient(@PathVariable (value = "id") Long id ){
         Optional<ClienteModel> clienteO = clienteRepository.findById(id);
         if(clienteO.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado");
