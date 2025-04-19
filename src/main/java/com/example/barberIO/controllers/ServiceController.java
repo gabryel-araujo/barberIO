@@ -21,12 +21,12 @@ public class ServiceController {
     ServiceRepository serviceRepository;
 
     @GetMapping("/servico")
-    ResponseEntity<List<ServiceModel>> getAll(){
+    public ResponseEntity<List<ServiceModel>> getAll(){
         return ResponseEntity.status(HttpStatus.OK).body(serviceRepository.findAll());
     }
 
     @PostMapping("/servico")
-    ResponseEntity<Object> addServico(@RequestBody @Valid ServiceRecordDto serviceRecordDto){
+    public ResponseEntity<Object> addServico(@RequestBody @Valid ServiceRecordDto serviceRecordDto){
         ServiceModel serviceModel = new ServiceModel();
         BeanUtils.copyProperties(serviceRecordDto,serviceModel);
 
@@ -34,7 +34,7 @@ public class ServiceController {
     }
 
     @PutMapping("/servico/{id}")
-    ResponseEntity<Object> editarServico(@PathVariable(value = "id") UUID id, @RequestBody @Valid ServiceRecordDto serviceRecordDto){
+    public ResponseEntity<Object> editarServico(@PathVariable(value = "id") Long id, @RequestBody @Valid ServiceRecordDto serviceRecordDto){
         Optional<ServiceModel> serviceO = serviceRepository.findById(id);
 
         if(serviceO.isEmpty()){
@@ -47,7 +47,7 @@ public class ServiceController {
     }
 
     @DeleteMapping("/servico/{id}")
-    ResponseEntity<Object> apagarServico(@PathVariable(value = "id")UUID id){
+    public ResponseEntity<Object> apagarServico(@PathVariable(value = "id")Long id){
         Optional<ServiceModel> serviceO = serviceRepository.findById(id);
 
         if(serviceO.isEmpty()){

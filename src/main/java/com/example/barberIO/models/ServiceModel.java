@@ -5,16 +5,16 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Table(name = "servico")
 public class ServiceModel implements Serializable {
-    private static final long serialVersionUID =1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    private Long id;
 
     private String nome;
 
@@ -24,11 +24,14 @@ public class ServiceModel implements Serializable {
 
     private Integer duracao;
 
-    public UUID getId() {
+    @ManyToMany(mappedBy = "servicos")
+    private List<FuncionarioModel> barbeiros;
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
