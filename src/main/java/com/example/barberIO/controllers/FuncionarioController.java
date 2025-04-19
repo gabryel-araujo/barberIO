@@ -73,8 +73,8 @@ public class FuncionarioController {
         return ResponseEntity.status(HttpStatus.OK).body("Funcionário deletado com sucesso!");
     }
 
-    @PatchMapping("/funcionarios/{id}/servico/{servicoId}")
-    public ResponseEntity<?> adicionarServico(@PathVariable(value = "id")Long id,@PathVariable(value = "servicoId")Long servicoId){
+    @PatchMapping("/funcionarios/{id}/adicionarServico/{servicoId}")
+    public ResponseEntity<Object> adicionarServico(@PathVariable(value = "id")Long id,@PathVariable(value = "servicoId")Long servicoId){
         Optional<FuncionarioModel> funcionarioO = funcionarioRepository.findById(id);
         Optional<ServiceModel> serviceO = serviceRepository.findById(servicoId);
 
@@ -95,6 +95,25 @@ public class FuncionarioController {
         funcionarioRepository.save(funcionarioModel);
 
         return ResponseEntity.status(HttpStatus.OK).body(funcionarioModel);
+
+    }
+
+    @PatchMapping("/funcionarios/{id}/removerServico/{servicoId}")
+    public ResponseEntity<Object> removerServico(@PathVariable(value = "id")Long id, @PathVariable(value = "servicoId")Long servicoId){
+        Optional<FuncionarioModel> funcionarioO = funcionarioRepository.findById(id);
+        Optional<ServiceModel> servicoO = serviceRepository.findById(servicoId);
+
+        if(funcionarioO.isEmpty()||servicoO.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário ou serviço não encontrados!");
+        }
+
+        FuncionarioModel funcionario = funcionarioO.get();
+        ServiceModel servico = servicoO.get();
+
+        funcionario.getServicos().removeIf(s->s.getId().equals(servico.getId()));
+        funcionarioRepository.save(funcionario);
+
+        return ResponseEntity.status(HttpStatus.OK).body(funcionario);
 
     }
 }
