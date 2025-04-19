@@ -2,8 +2,10 @@ package com.example.barberIO.controllers;
 
 import com.example.barberIO.dtos.FuncionarioRecordDto;
 import com.example.barberIO.models.FuncionarioModel;
+import com.example.barberIO.models.ServiceModel;
 import com.example.barberIO.repositories.ClienteRepository;
 import com.example.barberIO.repositories.FuncionarioRepository;
+import com.example.barberIO.repositories.ServiceRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,8 @@ import java.util.UUID;
 public class FuncionarioController {
     @Autowired
     FuncionarioRepository funcionarioRepository;
+    @Autowired
+    private ServiceRepository serviceRepository;
 
     @GetMapping("/funcionarios")
     public ResponseEntity<List<FuncionarioModel>> getAll(){
@@ -67,5 +71,30 @@ public class FuncionarioController {
 
         funcionarioRepository.delete(funcionarioO.get());
         return ResponseEntity.status(HttpStatus.OK).body("Funcionário deletado com sucesso!");
+    }
+
+    @PatchMapping("/funcionarios/{id}/servico/{servicoId}")
+    public ResponseEntity<?> adicionarServico(@PathVariable(value = "id")Long id,@PathVariable(value = "servicoId")Long servicoId){
+        Optional<FuncionarioModel> funcionarioO = funcionarioRepository.findById(id);
+        Optional<ServiceModel> serviceO = serviceRepository.findById(servicoId);
+
+        if(funcionarioO.isEmpty() || serviceO.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário ou serviço não encontrados!");
+        }
+
+        FuncionarioModel funcionarioModel = funcionarioO.get();
+        ServiceModel serviceModel = serviceO.get();
+
+        boolean servicoAdicionado = funcionarioModel.getServicos().stream().anyMatch(s -> s.getId().equals(serviceModel.getId()));
+
+        if(servicoAdicionado){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Serviço já adicionado!");
+        }
+
+        funcionarioModel.getServicos().add(serviceModel);
+        funcionarioRepository.save(funcionarioModel);
+
+        return ResponseEntity.status(HttpStatus.OK).body(funcionarioModel);
+
     }
 }
