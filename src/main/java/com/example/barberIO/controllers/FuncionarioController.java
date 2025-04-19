@@ -1,5 +1,6 @@
 package com.example.barberIO.controllers;
 
+import com.example.barberIO.dtos.FuncionarioRecordDto;
 import com.example.barberIO.models.FuncionarioModel;
 import com.example.barberIO.repositories.ClienteRepository;
 import com.example.barberIO.repositories.FuncionarioRepository;
@@ -21,16 +22,14 @@ import java.util.UUID;
 public class FuncionarioController {
     @Autowired
     FuncionarioRepository funcionarioRepository;
-//    @Autowired
-//    private ClienteRepository clienteRepository;
 
     @GetMapping("/funcionarios")
-    ResponseEntity<List<FuncionarioModel>> getAll(){
+    public ResponseEntity<List<FuncionarioModel>> getAll(){
         return ResponseEntity.status(HttpStatus.OK).body(funcionarioRepository.findAll());
     }
 
     @PostMapping("/funcionarios")
-    ResponseEntity<Object> addFuncionario(@RequestBody @Valid FuncionarioModel funcionarioRecordDto){
+    public ResponseEntity<Object> addFuncionario(@RequestBody @Valid FuncionarioModel funcionarioRecordDto){
 
         Optional<FuncionarioModel> funcionario = funcionarioRepository.findByEmail(funcionarioRecordDto.getEmail());
 
@@ -45,8 +44,21 @@ public class FuncionarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(funcionarioRepository.save(funcionarioModel));
     }
 
+    @PutMapping("/funcionarios/{id}")
+    public ResponseEntity<Object> updateFuncionario(@PathVariable (value = "id")Long id, @RequestBody @Valid FuncionarioRecordDto funcionarioRecordDto){
+        Optional<FuncionarioModel> funcionarioO = funcionarioRepository.findById(id);
+
+        if(funcionarioO.isEmpty()){
+            return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário não encontrado!");
+        }
+
+        FuncionarioModel funcionarioModel = funcionarioO.get();
+        BeanUtils.copyProperties(funcionarioRecordDto, funcionarioModel);
+        return ResponseEntity.status(HttpStatus.OK).body(funcionarioRepository.save(funcionarioModel));
+    }
+
     @DeleteMapping("/funcionarios/{id}")
-    ResponseEntity<Object> deleteFuncionario(@PathVariable (value = "id") UUID id){
+    public ResponseEntity<Object> deleteFuncionario(@PathVariable (value = "id") Long id){
         Optional<FuncionarioModel> funcionarioO = funcionarioRepository.findById(id);
 
         if(funcionarioO.isEmpty()){
@@ -56,18 +68,4 @@ public class FuncionarioController {
         funcionarioRepository.delete(funcionarioO.get());
         return ResponseEntity.status(HttpStatus.OK).body("Funcionário deletado com sucesso!");
     }
-
-    @PutMapping("/funcionarios/{id}")
-    ResponseEntity<Object> updateFuncionario(@PathVariable (value = "id")UUID id, @RequestBody @Valid FuncionarioModel funcionarioRecordDto){
-        Optional<FuncionarioModel> funcionarioO = funcionarioRepository.findById(id);
-
-        if(funcionarioO.isEmpty()){
-            return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário não encontrado!");
-        }
-
-        FuncionarioModel funcionarioModel = funcionarioO.get();
-        BeanUtils.copyProperties(funcionarioRecordDto, funcionarioModel);
-        return ResponseEntity.status(HttpStatus.OK).body("Funcionário atualizado com sucesso!");
-    }
-
 }
