@@ -1,29 +1,25 @@
-"use client";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "lucide-react";
+import Link from "next/link";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { Loading } from "../../components/Loading";
-
-export default function Home() {
-  const router = useRouter();
-
-  useEffect(() => {
-    const token = localStorage.getItem("auth-token");
-
-    if (token) {
-      let tokenJson = JSON.parse(token);
-      if (tokenJson.expiresIn < new Date().getTime()) {
-        localStorage.removeItem("auth-token");
-        setTimeout(() => {
-          router.replace("/login");
-        });
-      } else {
-        router.replace("/home");
-      }
-    } else {
-      router.replace("/login");
-    }
-  }, []);
-
-  return <Loading label={"Carregando"} width={50} height={50} color="gray" />;
-}
+const home = () => {
+  return (
+    <div className="w-full flex flex-col items-center justify-center space-y-5 ">
+      <p className="text-5xl font-bold">
+        Bem-Vindo à <span className="text-[#3f88c5]">Navalha</span> Barber
+      </p>
+      <p className="text-slate-400 text-xl">
+        Agende seu horário de forma rápida e fácil com os melhores barbeiros da
+        cidade.
+      </p>
+      <div className="flex">
+        <Button asChild className="rounded-sm bg-[#3f88c5] h-12 w-60">
+          <Link href="/agendamentos">
+            <Calendar /> <p className="font-bold text-md">Agendar Horário</p>
+          </Link>
+        </Button>
+      </div>
+    </div>
+  );
+};
+export default home;

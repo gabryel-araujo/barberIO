@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { Sidebar } from "@/components/layout/Sidebar";
+import { MobileSidebar } from "@/components/layout/MobileNavbar";
 
 export const metadata: Metadata = {
   title: "BaberIO",
@@ -13,10 +15,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <GoogleOAuthProvider clientId="390689734986-hqeuloo6ah4eboq90j4sq0kasem6hvos.apps.googleusercontent.com">
-      <html lang="pt-BR">
-        <body className={`antialiased`}>{children}</body>
-      </html>
-    </GoogleOAuthProvider>
+    <html lang="pt-BR">
+      <body className={`antialiased`}>
+        <div className="flex">
+          <Sidebar />
+          <div className="flex flex-1 bg-[#f3f4f6]">{children}</div>
+        </div>
+      </body>
+    </html>
   );
 }
