@@ -119,4 +119,13 @@
   body {
     @apply bg-background text-foreground;
   }
+  .texto-azul {
+    color: #3f88c5;
+  }
+  .bg-azul {
+    background-color: #3f89c5;
+  }
+  .bg-azul-50 {
+    background-color: #3f88c599;
+  }
 }
