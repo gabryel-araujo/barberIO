@@ -2,12 +2,11 @@
 import Link from "next/link";
 import MenuItems from "./ItemMenu";
 import { usePathname } from "next/navigation";
-import { Button } from "../ui/button";
 
 export const Sidebar = () => {
   const pathname = usePathname();
   return (
-    <div className="h-screen flex-1 bg-[#1a1f2c] text-white max-w-[250px]">
+    <div className="h-screen flex flex-col bg-[#1a1f2c] text-white w-full md:w-[300px]">
       <p className="py-8 text-center font-bold text-2xl">
         <span className="text-[#3f88c5]">Navalha</span> Barber
       </p>

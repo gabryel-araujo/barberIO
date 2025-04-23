@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import "../globals.css";
-import { GoogleOAuthProvider } from "@react-oauth/google";
-import { Sidebar } from "@/components/layout/Sidebar";
-import { MobileSidebar } from "@/components/layout/MobileNavbar";
+import { LayoutResponsivo } from "@/components/layout/layoutResponsivo";
 
 export const metadata: Metadata = {
   title: "BaberIO",
@@ -17,10 +15,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className={`antialiased`}>
-        <div className="flex">
-          <Sidebar />
-          <div className="flex flex-1 bg-[#f3f4f6]">{children}</div>
-        </div>
+        <LayoutResponsivo>{children}</LayoutResponsivo>
       </body>
     </html>
   );

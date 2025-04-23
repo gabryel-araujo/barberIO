@@ -1,12 +1,8 @@
-import { Button } from "@/components/ui/button";
-import { Calendar } from "lucide-react";
-import Link from "next/link";
-
-const home = () => {
+const clientes = () => {
   return (
-    <div className="w-full h-full flex items-center justify-center">
+    <div className="w-screen h-screen flex items-center justify-center">
       <p>Clientes</p>
     </div>
   );
 };
-export default home;
+export default clientes;
