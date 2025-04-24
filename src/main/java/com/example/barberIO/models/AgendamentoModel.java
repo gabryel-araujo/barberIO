@@ -7,13 +7,15 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "agendamentos")
+@Table(name = "agendamento")
 public class AgendamentoModel implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private LocalDateTime horario;
+
+    private LocalDateTime fim;
 
     @ManyToOne
     @JoinColumn(name = "barbeiro_id")
@@ -26,6 +28,14 @@ public class AgendamentoModel implements Serializable {
     @ManyToOne
     @JoinColumn(name = "cliente_id")
     private ClienteModel cliente;
+
+    public LocalDateTime getFim() {
+        return fim;
+    }
+
+    public void setFim(LocalDateTime fim) {
+        this.fim = fim;
+    }
 
     public ClienteModel getCliente() {
         return cliente;
