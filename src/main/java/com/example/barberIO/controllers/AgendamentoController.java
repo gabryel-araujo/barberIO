@@ -8,10 +8,7 @@ import com.example.barberIO.services.AgendamentoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.swing.text.html.Option;
 import java.util.Optional;
@@ -35,5 +32,21 @@ public class AgendamentoController{
     @PostMapping("/agendamentos")
     public ResponseEntity<Object> adicionarAgendamento(@RequestBody AgendamentoRecordDto agendamentoRecordDto){
         return agendamentoService.agendarHorario(agendamentoRecordDto);
+    }
+
+    @PutMapping("/agendamentos/{id}")
+    public ResponseEntity<Object> editarAgendamento(@PathVariable(name = "id")Long id, @RequestBody AgendamentoRecordDto agendamentoRecordDto){
+        Optional<AgendamentoModel> agendamentoO = agendamentoRepository.findById(id);
+
+        if(agendamentoO.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Agendamento não encontrado! Verifique os dados");
+        }
+
+        return agendamentoService.editarAgendamento(agendamentoRecordDto, id);
+    }
+
+    @DeleteMapping("/agendamentos/{id}")
+    public ResponseEntity<Object> removerAgendamento(@PathVariable(name = "id")Long id){
+        return agendamentoService.cancelarHorario(id);
     }
 }
