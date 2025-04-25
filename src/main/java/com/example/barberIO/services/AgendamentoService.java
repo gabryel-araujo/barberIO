@@ -74,5 +74,22 @@ public class AgendamentoService {
 
     }
 
+    public ResponseEntity<Object> cancelarHorario(Long id) {
+        Optional<AgendamentoModel> agendamentoO = agendamentoRepository.findById(id);
+
+        if(agendamentoO.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Agendamento não localizado! Verifique os dados");
+        }
+
+        agendamentoRepository.deleteById(id);
+        return ResponseEntity.status(HttpStatus.OK).body("Agendamento removido com sucesso!");
+    }
+
+    public ResponseEntity<Object> editarAgendamento(AgendamentoRecordDto agendamentoRecordDto, Long id){
+       this.cancelarHorario(id);
+
+       return this.agendarHorario(agendamentoRecordDto);
+    }
+
 
 }
