@@ -6,7 +6,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -19,9 +22,7 @@ public interface AgendamentoRepository extends JpaRepository<AgendamentoModel, L
                                        @Param("inicio") LocalDateTime inicio,
                                        @Param("fim")LocalDateTime fim);
 
-}
+    @Query("SELECT a.horario FROM AgendamentoModel a WHERE a.barbeiro.id = :barbeiroId AND a.horario = :data")
+    List<LocalTime> findHorariosByDataAndBarbeiro(@Param("data") LocalDateTime data, @Param("barbeiroId") Long barbeiroId);
 
-//@Query("SELECT CASE WHEN COUNT(a) > 0 THEN true ELSE false END " +
-//        "FROM AgendamentoModel a " +
-//        "WHERE a.barbeiro.id = :funcionarioId " +
-//        "AND (:inicio < a.fim AND :fim > a.horario)")
+}
