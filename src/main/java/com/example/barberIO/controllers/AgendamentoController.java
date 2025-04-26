@@ -6,11 +6,16 @@ import com.example.barberIO.repositories.AgendamentoRepository;
 import com.example.barberIO.repositories.FuncionarioRepository;
 import com.example.barberIO.services.AgendamentoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.swing.text.html.Option;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -49,4 +54,15 @@ public class AgendamentoController{
     public ResponseEntity<Object> removerAgendamento(@PathVariable(name = "id")Long id){
         return agendamentoService.cancelarHorario(id);
     }
+
+    @GetMapping("/agendamentos/horarios-disponiveis")
+    public ResponseEntity<List<LocalTime>> getHorariosDisponiveis(
+            @RequestParam Long barbeiroId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime data,
+            @RequestParam(defaultValue = "30") int intervalo) {
+
+        List<LocalTime> disponiveis = agendamentoService.horariosDisponiveis(data, barbeiroId, intervalo);
+        return ResponseEntity.ok(disponiveis);
+    }
+
 }
