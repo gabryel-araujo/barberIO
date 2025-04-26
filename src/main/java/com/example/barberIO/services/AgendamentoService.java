@@ -18,7 +18,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -89,6 +93,29 @@ public class AgendamentoService {
        this.cancelarHorario(id);
 
        return this.agendarHorario(agendamentoRecordDto);
+    }
+
+    public List<LocalTime> horariosDisponiveis(LocalDateTime data, Long barbeiroId, int intervalo){
+        //TODO: Verificar uma forma de tornar isso editável pela barbearia
+        LocalTime inicioExpediente = LocalTime.of(8,0);
+        LocalTime fimExpediente = LocalTime.of(18,0);
+
+        List<LocalTime> horariosPossiveis = new ArrayList<>();
+        LocalTime horarioAtual = inicioExpediente;
+
+        while (!horarioAtual.isAfter(fimExpediente.minusMinutes(intervalo))) {
+            horariosPossiveis.add(horarioAtual);
+            horarioAtual = horarioAtual.plusMinutes(intervalo);
+        }
+
+        // Buscar horários já agendados para o barbeiro nesse dia
+        List<LocalTime> horariosOcupados = agendamentoRepository
+                .findHorariosByDataAndBarbeiro(data, barbeiroId);
+
+        // Remover horários ocupados da lista de disponíveis
+        horariosPossiveis.removeAll(horariosOcupados);
+
+        return horariosPossiveis;
     }
 
 
