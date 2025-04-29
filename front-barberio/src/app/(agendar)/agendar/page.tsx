@@ -6,10 +6,18 @@ const agendar = () => {
   const [passo, setPasso] = useState(1);
 
   function proximoPasso() {
-    setPasso(passo + 1);
+    if (passo === 4) {
+      return;
+    } else {
+      setPasso(passo + 1);
+    }
   }
   function anteriorPasso() {
-    setPasso(passo - 1);
+    if (passo === 1) {
+      return;
+    } else {
+      setPasso(passo - 1);
+    }
   }
 
   return (
@@ -55,14 +63,23 @@ const agendar = () => {
           4
         </div>
       </div>
+      <div>
+        {passo == 1 && "passo 1"}
+        {passo == 2 && "passo 2"}
+        {passo == 3 && "passo 3"}
+        {passo == 4 && "passo 4"}
+      </div>
       <div className="flex gap-3">
-        <Button
-          variant="ghost"
-          className="cursor-pointer hover:bg-slate-200"
-          onClick={anteriorPasso}
-        >
-          Antes
-        </Button>
+        {passo != 1 && (
+          <Button
+            variant="ghost"
+            className="cursor-pointer hover:bg-slate-200"
+            onClick={anteriorPasso}
+          >
+            Antes
+          </Button>
+        )}
+
         <Button className="cursor-pointer" onClick={proximoPasso}>
           Proximo
         </Button>
