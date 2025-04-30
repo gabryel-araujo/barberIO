@@ -25,7 +25,7 @@ type AgendamentoProviderProps = {
 };
 //Dados iniciais
 const inicialData: State = {
-  currentStep: 0,
+  currentStep: 1,
   data: new Date(),
   horario: "",
   barbeiro: "",
@@ -60,13 +60,13 @@ const AgendamentoReducer = (state: State, action: Action) => {
     case AgendamentoAction.setBarbeiro:
       return { ...state, barbeiro: action.payload };
     case AgendamentoAction.setServico:
-      return { ...state, barbeiro: action.payload };
+      return { ...state, servico: action.payload };
     case AgendamentoAction.setNome:
       return { ...state, nome: action.payload };
     case AgendamentoAction.setTelefone:
-      return { ...state, nome: action.payload };
+      return { ...state, telefone: action.payload };
     case AgendamentoAction.setEmail:
-      return { ...state, nome: action.payload };
+      return { ...state, email: action.payload };
   }
 };
 

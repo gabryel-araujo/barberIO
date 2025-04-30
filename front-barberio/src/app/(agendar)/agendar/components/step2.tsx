@@ -4,7 +4,7 @@ import { ptBR } from "date-fns/locale";
 import { AgendamentoAction, useForm } from "@/contexts/AgendamentoContext";
 import { Button } from "@/components/ui/button";
 
-export const Step1 = () => {
+export const Step2 = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const { state, dispatch } = useForm();
 
@@ -16,7 +16,6 @@ export const Step1 = () => {
         payload: state.currentStep + 1,
       });
       console.log(state.currentStep);
-      console.log(date);
     }
   }
   function anteriorPasso() {
@@ -39,13 +38,7 @@ export const Step1 = () => {
         </span>
       </div>
       <div className="flex flex-col gap-5 items-center justify-center">
-        <Calendar
-          locale={ptBR}
-          mode="single"
-          selected={date}
-          onSelect={setDate}
-          className="w-[250px] rounded-md border shadow"
-        />
+        Step 2
         <div className="flex gap-3">
           {state.currentStep != 1 && (
             <Button
