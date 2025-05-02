@@ -1,16 +1,12 @@
 "use client";
-import { Button } from "@/components/ui/button";
 import { Step1 } from "./components/step1";
-import {
-  AgendamentoAction,
-  useForm,
-} from "../../../contexts/AgendamentoContext";
+import { useForm } from "../../../contexts/AgendamentoContext";
 import { Steps } from "./components/steps";
 import { Step2 } from "./components/step2";
 import { Step3 } from "./components/step3";
 import { Step4 } from "./components/step4";
 const agendar = () => {
-  const { state, dispatch } = useForm();
+  const { state } = useForm();
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center space-y-6">

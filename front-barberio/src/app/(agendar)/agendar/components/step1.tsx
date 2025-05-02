@@ -6,13 +6,12 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 
 export const Step1 = () => {
-  const [date, setDate] = useState<Date | undefined>();
+  const [date, setDate] = useState<Date | undefined>(new Date());
   const { state, dispatch } = useForm();
 
   const proximoPasso = useCallback(() => {
     if (state.currentStep >= 4) return;
     else {
-      console.log(state.data);
       dispatch({
         type: AgendamentoAction.setcurrentStep,
         payload: state.currentStep + 1,
@@ -43,7 +42,13 @@ export const Step1 = () => {
           locale={ptBR}
           mode="single"
           selected={date}
-          onSelect={setDate}
+          onSelect={(dataSelecionada) => {
+            setDate(dataSelecionada);
+            dispatch({
+              type: AgendamentoAction.setData,
+              payload: dataSelecionada,
+            });
+          }}
           className="w-[250px] rounded-md border shadow"
         />
         <div className="flex gap-3">

@@ -1,5 +1,5 @@
 import { Calendar } from "@/components/ui/calendar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ptBR } from "date-fns/locale";
 import { AgendamentoAction, useForm } from "@/contexts/AgendamentoContext";
 import { Button } from "@/components/ui/button";
@@ -20,8 +20,6 @@ export const Step2 = () => {
         type: AgendamentoAction.setcurrentStep,
         payload: state.currentStep + 1,
       });
-      console.log(state.horario);
-      console.log(state.horario);
     }
   }
   function anteriorPasso() {
@@ -31,7 +29,6 @@ export const Step2 = () => {
         type: AgendamentoAction.setcurrentStep,
         payload: state.currentStep - 1,
       });
-      console.log(state.currentStep);
     }
   }
   const horariosDisponiveis = [
