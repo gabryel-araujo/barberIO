@@ -5,6 +5,7 @@ import { Steps } from "./components/steps";
 import { Step2 } from "./components/step2";
 import { Step3 } from "./components/step3";
 import { Step4 } from "./components/step4";
+import { ResumoAgendamento } from "./components/resumo";
 const agendar = () => {
   const { state } = useForm();
 
@@ -32,6 +33,9 @@ const agendar = () => {
             <Step4 />
           </div>
         )}
+      </div>
+      <div className="w-full">
+        <ResumoAgendamento />
       </div>
     </div>
   );

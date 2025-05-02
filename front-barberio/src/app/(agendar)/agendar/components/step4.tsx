@@ -32,9 +32,9 @@ export const Step4 = () => {
   return (
     <div className="border rounded-lg mx-50 p-5 shadow">
       <div>
-        <p className="text-2xl font-bold">Selecione uma data</p>
+        <p className="text-2xl font-bold">Escolha um serviço</p>
         <span className="text-xs text-slate-500">
-          selecione uma data disponível no calendário
+          Escolha o serviço desejado
         </span>
       </div>
       <div className="flex flex-col gap-5 items-center justify-center">

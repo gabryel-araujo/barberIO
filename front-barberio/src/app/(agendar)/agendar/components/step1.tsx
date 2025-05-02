@@ -4,6 +4,7 @@ import { ptBR } from "date-fns/locale";
 import { AgendamentoAction, useForm } from "@/contexts/AgendamentoContext";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
+import { ResumoAgendamento } from "./resumo";
 
 export const Step1 = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
