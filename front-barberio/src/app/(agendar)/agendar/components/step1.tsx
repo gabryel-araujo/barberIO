@@ -1,34 +1,34 @@
 import { Calendar } from "@/components/ui/calendar";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ptBR } from "date-fns/locale";
 import { AgendamentoAction, useForm } from "@/contexts/AgendamentoContext";
 import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
 
 export const Step1 = () => {
-  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [date, setDate] = useState<Date | undefined>();
   const { state, dispatch } = useForm();
 
-  function proximoPasso() {
+  const proximoPasso = useCallback(() => {
     if (state.currentStep >= 4) return;
     else {
+      console.log(state.data);
       dispatch({
         type: AgendamentoAction.setcurrentStep,
         payload: state.currentStep + 1,
       });
-      console.log(state.currentStep);
-      console.log(date);
     }
-  }
-  function anteriorPasso() {
+  }, []);
+
+  const anteriorPasso = useCallback(() => {
     if (state.currentStep <= 1) return;
     else {
       dispatch({
         type: AgendamentoAction.setcurrentStep,
         payload: state.currentStep - 1,
       });
-      console.log(state.currentStep);
     }
-  }
+  }, []);
 
   return (
     <div className="border rounded-lg mx-50 p-5 shadow">

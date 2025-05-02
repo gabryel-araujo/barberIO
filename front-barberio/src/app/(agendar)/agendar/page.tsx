@@ -22,17 +22,17 @@ const agendar = () => {
           </div>
         )}
         {state.currentStep == 2 && (
-          <div>
+          <div className="w-full">
             <Step2 />
           </div>
         )}
         {state.currentStep == 3 && (
-          <div>
+          <div className="w-full">
             <Step3 />
           </div>
         )}
         {state.currentStep == 4 && (
-          <div>
+          <div className="w-full">
             <Step4 />
           </div>
         )}
