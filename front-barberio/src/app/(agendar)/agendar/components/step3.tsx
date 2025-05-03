@@ -1,16 +1,19 @@
-import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
-import { ptBR } from "date-fns/locale";
 import { AgendamentoAction, useForm } from "@/contexts/AgendamentoContext";
 import { Button } from "@/components/ui/button";
+import { User } from "lucide-react";
 
 export const Step3 = () => {
-  const [date, setDate] = useState<Date | undefined>(new Date());
   const { state, dispatch } = useForm();
+  const [barbeiro, setbarbeiro] = useState(state.barbeiro);
 
   function proximoPasso() {
     if (state.currentStep >= 4) return;
     else {
+      dispatch({
+        type: AgendamentoAction.setBarbeiro,
+        payload: barbeiro,
+      });
       dispatch({
         type: AgendamentoAction.setcurrentStep,
         payload: state.currentStep + 1,
@@ -29,6 +32,8 @@ export const Step3 = () => {
     }
   }
 
+  const barbeiroDisponivel = ["Renato Willon", "Gabryel Araújo", "Hugo Rocha"];
+
   return (
     <div className="border rounded-lg mx-50 p-5 shadow">
       <div>
@@ -38,7 +43,23 @@ export const Step3 = () => {
         </span>
       </div>
       <div className="flex flex-col gap-5 items-center justify-center">
-        Step 3
+        <div className="grid grid-cols-2 gap-5">
+          {barbeiroDisponivel.map((barber) => (
+            <Button
+              key={barber}
+              onClick={() => setbarbeiro(barber)}
+              variant={"outline"}
+              className={`border-2 w-[350px] py-10 ${
+                barber === barbeiro ? "border-2 border-[#3f89c5]" : ""
+              }`}
+            >
+              <p className="text-sm flex gap-3">
+                <User className="texto-azul" />
+                {barber}
+              </p>
+            </Button>
+          ))}
+        </div>
         <div className="flex gap-3">
           {state.currentStep != 1 && (
             <Button

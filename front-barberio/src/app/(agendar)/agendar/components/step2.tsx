@@ -1,13 +1,11 @@
-import { Calendar } from "@/components/ui/calendar";
-import { useEffect, useState } from "react";
-import { ptBR } from "date-fns/locale";
+import { useState } from "react";
 import { AgendamentoAction, useForm } from "@/contexts/AgendamentoContext";
 import { Button } from "@/components/ui/button";
 import { Clock } from "lucide-react";
 
 export const Step2 = () => {
-  const [hora, setHora] = useState<string | undefined>();
   const { state, dispatch } = useForm();
+  const [hora, setHora] = useState<string | undefined>(state.horario);
 
   function proximoPasso() {
     if (state.currentStep >= 4) return;

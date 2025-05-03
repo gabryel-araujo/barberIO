@@ -1,10 +1,8 @@
 import { Calendar } from "@/components/ui/calendar";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { ptBR } from "date-fns/locale";
 import { AgendamentoAction, useForm } from "@/contexts/AgendamentoContext";
 import { Button } from "@/components/ui/button";
-import { format } from "date-fns";
-import { ResumoAgendamento } from "./resumo";
 
 export const Step1 = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -43,6 +41,9 @@ export const Step1 = () => {
           locale={ptBR}
           mode="single"
           selected={date}
+          disabled={(data) => {
+            return data < new Date() || date?.getDay() === 0;
+          }}
           onSelect={(dataSelecionada) => {
             setDate(dataSelecionada);
             dispatch({
