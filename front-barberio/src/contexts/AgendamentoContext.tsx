@@ -1,4 +1,5 @@
 "use client";
+import { Servico } from "@/types/servico";
 import { createContext, useContext, useReducer, ReactNode } from "react";
 
 //Types
@@ -7,7 +8,7 @@ type State = {
   data: Date;
   horario: string;
   barbeiro: string;
-  servico: string;
+  servico: Servico;
   nome: string;
   telefone: string;
   email: string;
@@ -29,7 +30,13 @@ const inicialData: State = {
   data: new Date(),
   horario: "",
   barbeiro: "",
-  servico: "",
+  servico: {
+    duracao: 0,
+    id: "",
+    nome: "",
+    valor: 0,
+    descricao: "",
+  },
   nome: "",
   telefone: "",
   email: "",

@@ -1,21 +1,27 @@
-import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
-import { ptBR } from "date-fns/locale";
+
 import { AgendamentoAction, useForm } from "@/contexts/AgendamentoContext";
 import { Button } from "@/components/ui/button";
+import { servicos } from "@/model/servico";
+import { Servico } from "@/types/servico";
+import { Divide, Scissors } from "lucide-react";
 
 export const Step4 = () => {
-  const [date, setDate] = useState<Date | undefined>(new Date());
   const { state, dispatch } = useForm();
+  //const [servico, setServico] = useState<Servico | any>(state.servico);
+  const [servicoSelecionado, setServicoSelecionado] = useState<Servico>(
+    state.servico
+  );
+  const [openModal, setOpenModal] = useState(false);
 
   function proximoPasso() {
-    if (state.currentStep >= 4) return;
+    if (state.currentStep >= 5) return;
     else {
       dispatch({
-        type: AgendamentoAction.setcurrentStep,
-        payload: state.currentStep + 1,
+        type: AgendamentoAction.setServico,
+        payload: servicoSelecionado,
       });
-      console.log(state.currentStep);
+      setOpenModal(!openModal);
     }
   }
   function anteriorPasso() {
@@ -38,7 +44,33 @@ export const Step4 = () => {
         </span>
       </div>
       <div className="flex flex-col gap-5 items-center justify-center">
-        Step 4
+        <div className="grid grid-cols-1 gap-3 pt-5">
+          {servicos.map((servico) => (
+            <Button
+              key={servico.id}
+              variant="ghost"
+              onClick={() => setServicoSelecionado(servico)}
+              className={`h-auto w-[650px] flex flex-col border-2 items-start p-4 justify-start text-left ${
+                servicoSelecionado?.nome == servico.nome
+                  ? "border-2 border-[#3f89c5]"
+                  : ""
+              }`}
+            >
+              <div className="flex items-center w-full justify-between">
+                <div className="flex gap-3 items-center justify-center">
+                  <Scissors />
+                  {servico.nome}
+                </div>
+                <div>R$ {servico.valor.toFixed(2)}</div>
+              </div>
+              <div className="flex justify-between w-full mt-1">
+                <div className="text-slate-500">{servico.descricao}</div>
+                <div className="text-slate-500">{servico.duracao}min</div>
+              </div>
+            </Button>
+          ))}
+        </div>
+        {openModal && <div>Modal Aberto</div>}
         <div className="flex gap-3">
           {state.currentStep != 1 && (
             <Button

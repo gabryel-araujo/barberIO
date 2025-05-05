@@ -43,10 +43,10 @@ export const ResumoAgendamento = () => {
           )}
         </div>
         <div>
-          {state.servico !== "" ? (
+          {state.servico.nome !== "" ? (
             <div className="flex gap-3">
               <Scissors className="texto-azul" />
-              {state.servico}
+              {state.servico.nome} - R${state.servico.valor.toFixed(2)}
             </div>
           ) : (
             ""

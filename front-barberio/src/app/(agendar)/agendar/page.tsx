@@ -12,7 +12,7 @@ const agendar = () => {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center space-y-6">
       <Steps />
-      <div className="w-full flex flex-col items-center justify-center">
+      <div className="w-full h-full flex flex-col items-center justify-center">
         {state.currentStep == 1 && (
           <div className="w-full">
             <Step1 />

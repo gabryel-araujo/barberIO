@@ -13,8 +13,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={`antialiased`}>
-        <div className="flex-1 h-screen bg-[#f3f4f6]">
+      <body className={`antialiased bg-[#f3f4f6]`}>
+        <div className="p-5">
           <AgendamentoProvider>{children}</AgendamentoProvider>
         </div>
       </body>
