@@ -1,26 +1,37 @@
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
 import { AgendamentoAction, useForm } from "@/contexts/AgendamentoContext";
 import { Button } from "@/components/ui/button";
 import { servicos } from "@/model/servico";
 import { Servico } from "@/types/servico";
-import { Divide, Scissors } from "lucide-react";
+import { Scissors } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
 
 export const Step4 = () => {
   const { state, dispatch } = useForm();
-  //const [servico, setServico] = useState<Servico | any>(state.servico);
   const [servicoSelecionado, setServicoSelecionado] = useState<Servico>(
     state.servico
   );
-  const [openModal, setOpenModal] = useState(false);
+  const [nome, setNome] = useState(state.nome);
+  const [email, setEmail] = useState(state.email);
+  const [telefone, setTelefone] = useState(state.telefone);
+  const [openModal, setOpenModal] = useState(true);
+  const { push } = useRouter();
 
   function proximoPasso() {
-    if (state.currentStep >= 5) return;
-    else {
-      dispatch({
-        type: AgendamentoAction.setServico,
-        payload: servicoSelecionado,
-      });
+    dispatch({
+      type: AgendamentoAction.setServico,
+      payload: servicoSelecionado,
+    });
+    if (state.currentStep == 5) {
       setOpenModal(!openModal);
     }
   }
@@ -31,9 +42,31 @@ export const Step4 = () => {
         type: AgendamentoAction.setcurrentStep,
         payload: state.currentStep - 1,
       });
-      console.log(state.currentStep);
     }
   }
+  const finalizarAgendamento = () => {
+    dispatch({
+      type: AgendamentoAction.setNome,
+      payload: nome,
+    });
+    dispatch({
+      type: AgendamentoAction.setEmail,
+      payload: email,
+    });
+    dispatch({
+      type: AgendamentoAction.setTelefone,
+      payload: telefone,
+    });
+    //push("/");
+  };
+
+  useEffect(() => {
+    console.log("Estado Atualizado:", state);
+    setOpenModal(!openModal);
+    setNome("");
+    setEmail("");
+    setTelefone("");
+  }, [state]);
 
   return (
     <div className="border rounded-lg mx-50 p-5 shadow">
@@ -70,7 +103,7 @@ export const Step4 = () => {
             </Button>
           ))}
         </div>
-        {openModal && <div>Modal Aberto</div>}
+
         <div className="flex gap-3">
           {state.currentStep != 1 && (
             <Button
@@ -86,6 +119,62 @@ export const Step4 = () => {
             Próximo
           </Button>
         </div>
+
+        <Dialog open={openModal} onOpenChange={setOpenModal}>
+          <DialogContent>
+            <DialogTrigger></DialogTrigger>
+            <DialogHeader>
+              <DialogTitle>Digite seus dados</DialogTitle>
+              <DialogDescription>
+                digite todos os dados solicitados
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="flex flex-col gap-3">
+              <div>
+                <p className="text-sm">Nome</p>
+                <Input
+                  type="text"
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
+                />
+              </div>
+              <div>
+                <p className="text-sm">Email</p>
+                <Input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <div>
+                <p className="text-sm">Telefone</p>
+                <Input
+                  type="text"
+                  value={telefone}
+                  onChange={(e) =>
+                    setTelefone(e.target.value.replace(/\D/g, ""))
+                  }
+                />
+              </div>
+            </div>
+            <div className="flex items-center justify-between px-5">
+              <Button
+                className="w-[150px] cursor-pointer"
+                variant="destructive"
+                onClick={() => setOpenModal(!openModal)}
+              >
+                Cancelar
+              </Button>
+              <Button
+                className="w-[150px] cursor-pointer"
+                onClick={finalizarAgendamento}
+              >
+                Finalizar
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

@@ -18,7 +18,6 @@ export const Step3 = () => {
         type: AgendamentoAction.setcurrentStep,
         payload: state.currentStep + 1,
       });
-      console.log(state.currentStep);
     }
   }
   function anteriorPasso() {
@@ -28,7 +27,6 @@ export const Step3 = () => {
         type: AgendamentoAction.setcurrentStep,
         payload: state.currentStep - 1,
       });
-      console.log(state.currentStep);
     }
   }
 
