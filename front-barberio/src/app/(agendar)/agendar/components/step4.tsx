@@ -3,17 +3,19 @@ import { AgendamentoAction, useForm } from "@/contexts/AgendamentoContext";
 import { Button } from "@/components/ui/button";
 import { servicos } from "@/model/servico";
 import { Servico } from "@/types/servico";
-import { Scissors } from "lucide-react";
+import { Calendar, Clock, Scissors, User } from "lucide-react";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
+import { Card, CardContent } from "@/components/ui/card";
 
 export const Step4 = () => {
   const { state, dispatch } = useForm();
@@ -23,7 +25,9 @@ export const Step4 = () => {
   const [nome, setNome] = useState(state.nome);
   const [email, setEmail] = useState(state.email);
   const [telefone, setTelefone] = useState(state.telefone);
-  const [openModal, setOpenModal] = useState(true);
+  const [openModal, setOpenModal] = useState(false);
+  const [openModalRevisao, setOpenModalRevisao] = useState(false);
+
   const { push } = useRouter();
 
   function proximoPasso() {
@@ -31,7 +35,7 @@ export const Step4 = () => {
       type: AgendamentoAction.setServico,
       payload: servicoSelecionado,
     });
-    if (state.currentStep == 5) {
+    if (state.currentStep == 4) {
       setOpenModal(!openModal);
     }
   }
@@ -57,16 +61,28 @@ export const Step4 = () => {
       type: AgendamentoAction.setTelefone,
       payload: telefone,
     });
+
+    setOpenModal(!openModal);
+    setOpenModalRevisao(!openModalRevisao);
+
     //push("/");
   };
 
-  useEffect(() => {
+  const confirmarAgendamento = () => {
     console.log("Estado Atualizado:", state);
-    setOpenModal(!openModal);
+    dispatch({
+      type: AgendamentoAction.setcurrentStep,
+      payload: 1,
+    });
+
     setNome("");
     setEmail("");
     setTelefone("");
-  }, [state]);
+    setOpenModalRevisao(!openModalRevisao);
+  };
+  const cancelarAgendamento = () => {
+    setOpenModalRevisao(!openModalRevisao);
+  };
 
   return (
     <div className="border rounded-lg mx-50 p-5 shadow">
@@ -120,13 +136,12 @@ export const Step4 = () => {
           </Button>
         </div>
 
-        <Dialog open={openModal} onOpenChange={setOpenModal}>
+        <Dialog open={openModal}>
           <DialogContent>
-            <DialogTrigger></DialogTrigger>
             <DialogHeader>
-              <DialogTitle>Digite seus dados</DialogTitle>
+              <DialogTitle>Finalize seu agendamento</DialogTitle>
               <DialogDescription>
-                digite todos os dados solicitados
+                Preencha seus dados para confirmar o agendamento
               </DialogDescription>
             </DialogHeader>
 
@@ -173,6 +188,84 @@ export const Step4 = () => {
                 Finalizar
               </Button>
             </div>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={openModalRevisao}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Revisão de Agendamento</DialogTitle>
+              <DialogDescription>
+                Revise todos os dados abaixo e confirme
+              </DialogDescription>
+
+              <Card className="my-5">
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-3 pt-3">
+                    {state.data instanceof Date &&
+                    !isNaN(state.data.getTime()) ? (
+                      <div className="flex gap-3">
+                        <Calendar className="texto-azul" />
+                        {state.data.toLocaleDateString("pt-BR", {
+                          day: "2-digit",
+                          month: "long",
+                        })}
+                      </div>
+                    ) : (
+                      ""
+                    )}
+                    <div>
+                      {state.barbeiro !== "" ? (
+                        <div className="flex gap-3">
+                          <User className="texto-azul" />
+                          {state.barbeiro}
+                        </div>
+                      ) : (
+                        ""
+                      )}
+                    </div>
+                    <div>
+                      {state.horario !== "" ? (
+                        <div className="flex gap-3">
+                          <Clock className="texto-azul" />
+                          {state.horario}
+                        </div>
+                      ) : (
+                        ""
+                      )}
+                    </div>
+                    <div>
+                      {state.servico.nome !== "" ? (
+                        <div className="flex gap-3">
+                          <Scissors className="texto-azul" />
+                          {state.servico.nome} - R$
+                          {state.servico.valor.toFixed(2)}
+                        </div>
+                      ) : (
+                        ""
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <DialogFooter>
+                <Button
+                  className="cursor-pointer"
+                  onClick={cancelarAgendamento}
+                  variant="destructive"
+                >
+                  Cancelar
+                </Button>
+
+                <Button
+                  className="cursor-pointer"
+                  onClick={confirmarAgendamento}
+                >
+                  Agendar
+                </Button>
+              </DialogFooter>
+            </DialogHeader>
           </DialogContent>
         </Dialog>
       </div>

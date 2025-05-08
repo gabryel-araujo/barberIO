@@ -3,10 +3,17 @@ import { useCallback, useState } from "react";
 import { ptBR } from "date-fns/locale";
 import { AgendamentoAction, useForm } from "@/contexts/AgendamentoContext";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 export const Step1 = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const { state, dispatch } = useForm();
+
+  const { push } = useRouter();
+
+  const irHome = () => {
+    push("/");
+  };
 
   const proximoPasso = useCallback(() => {
     if (state.currentStep >= 4) return;
@@ -63,6 +70,12 @@ export const Step1 = () => {
               Antes
             </Button>
           )}
+          <Button
+            className="cursor-pointer bg-green-600 hover:bg-green-500"
+            onClick={irHome}
+          >
+            Página Inicial
+          </Button>
 
           <Button className="cursor-pointer" onClick={proximoPasso}>
             Próximo

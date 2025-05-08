@@ -1,8 +1,4 @@
-import {
-  AgendamentoAction,
-  AgendamentoProvider,
-  useForm,
-} from "../../../../contexts/AgendamentoContext";
+import { useForm } from "../../../../contexts/AgendamentoContext";
 
 export const Steps = () => {
   const { state } = useForm();
