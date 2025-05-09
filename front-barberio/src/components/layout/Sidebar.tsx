@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 export const Sidebar = () => {
   const pathname = usePathname();
   return (
-    <div className="h-screen flex flex-col bg-[#1a1f2c] text-white w-full md:w-[300px]">
+    <div className="flex flex-col bg-[#1a1f2c] text-white md:w-[300px] min-h-screen">
       <p className="py-8 text-center font-bold text-2xl">
         <span className="text-[#3f88c5]">Navalha</span> Barber
       </p>

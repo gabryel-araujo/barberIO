@@ -20,7 +20,7 @@ export function LayoutResponsivo({ children }: Props) {
   }
 
   return (
-    <div className={`${isMobile ? "flex flex-col" : "flex"}`}>
+    <div className={`${isMobile ? "flex flex-col" : "flex"} min-h-screen`}>
       {isMobile ? <MobileSidebar /> : <Sidebar />}
       {children}
     </div>

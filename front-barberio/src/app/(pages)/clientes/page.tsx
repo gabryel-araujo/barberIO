@@ -15,7 +15,6 @@ import { Cliente } from "@/types/cliente";
 import { useState } from "react";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -101,6 +100,8 @@ const clientes = () => {
     console.log(values);
     //fecha modal
     setOpenModal(!openModal);
+    //limpaModal
+    form.reset();
   };
 
   const abrirModal = () => {
