@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Search, UserPlus } from "lucide-react";
+import { Edit, Edit2, Search, UserPlus } from "lucide-react";
 import { Clientes } from "@/model/clientes";
 import { Cliente } from "@/types/cliente";
 import { useState } from "react";
@@ -29,13 +29,34 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { TypeOf, z } from "zod";
+import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatarTelefone } from "@/utils/functions";
 const clientes = () => {
   const [openModal, setOpenModal] = useState(false);
   const [clienteListado, setClienteListado] = useState<Cliente[]>(Clientes);
+  const [pesquisaInput, setPesquisaInput] = useState("");
+  const [clienteSelecionado, setClienteSelecionado] = useState<Cliente>();
+
+  //função para pegar o que ta escrito no input pesquisa
+  const handlePesquisa = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPesquisaInput(e.target.value);
+  };
+
+  //filtrando os clientes com base no que ta escrito no input pesquisa
+  const filtroCliente = clienteListado.filter(
+    (cliente) =>
+      cliente.nome.toLowerCase().includes(pesquisaInput.toLowerCase()) ||
+      cliente.telefone.includes(pesquisaInput) ||
+      cliente.email.toLowerCase().includes(pesquisaInput.toLowerCase())
+  );
+
+  //mostrar os dados do cliente selecionado
+  const handleClienteDados = (cliente: Cliente) => {
+    setClienteSelecionado(cliente);
+    console.log("Cliente Selecionado:", cliente);
+  };
 
   const formShema = z.object({
     id: z.string(),
@@ -101,6 +122,8 @@ const clientes = () => {
       <div className="relative flex-1 max-w-sm px-10">
         <Search className="absolute left-12 top-2.5 h-4 w-4 text-slate-500 " />
         <Input
+          value={pesquisaInput}
+          onChange={handlePesquisa}
           placeholder="Buscar clientes..."
           className="pl-8 text-slate-500"
         />
@@ -117,7 +140,7 @@ const clientes = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {clienteListado.map((cliente) => (
+            {filtroCliente.map((cliente) => (
               <TableRow key={cliente.id}>
                 <TableCell>{cliente.nome}</TableCell>
                 <TableCell>{formatarTelefone(cliente.telefone)}</TableCell>
@@ -129,7 +152,11 @@ const clientes = () => {
                     year: "numeric",
                   })}
                 </TableCell>
-                <TableCell>Detalhe</TableCell>
+                <TableCell>
+                  <Button onClick={() => handleClienteDados(cliente)}>
+                    <Edit />
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
