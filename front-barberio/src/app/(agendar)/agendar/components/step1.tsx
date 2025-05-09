@@ -36,7 +36,7 @@ export const Step1 = () => {
   }, []);
 
   return (
-    <div className="border rounded-lg mx-50 p-5 shadow">
+    <div className="border rounded-lg md:mx-50 p-5 shadow">
       <div>
         <p className="text-2xl font-bold">Selecione uma data</p>
         <span className="text-xs text-slate-500">

@@ -85,7 +85,7 @@ export const Step4 = () => {
   };
 
   return (
-    <div className="border rounded-lg mx-50 p-5 shadow">
+    <div className="border rounded-lg md:mx-50 p-5 shadow">
       <div>
         <p className="text-2xl font-bold">Escolha um serviço</p>
         <span className="text-xs text-slate-500">
@@ -99,7 +99,7 @@ export const Step4 = () => {
               key={servico.id}
               variant="ghost"
               onClick={() => setServicoSelecionado(servico)}
-              className={`h-auto w-[650px] flex flex-col border-2 items-start p-4 justify-start text-left ${
+              className={`h-auto md:w-[650px] w-[300px] flex flex-col border-2 items-start p-4 justify-start text-left ${
                 servicoSelecionado?.nome == servico.nome
                   ? "border-2 border-[#3f89c5]"
                   : ""
@@ -112,8 +112,10 @@ export const Step4 = () => {
                 </div>
                 <div>R$ {servico.valor.toFixed(2)}</div>
               </div>
-              <div className="flex justify-between w-full mt-1">
-                <div className="text-slate-500">{servico.descricao}</div>
+              <div className="flex justify-between w-full mt-1 gap-2">
+                <div className="text-slate-500 overflow-auto">
+                  {servico.descricao}
+                </div>
                 <div className="text-slate-500">{servico.duracao}min</div>
               </div>
             </Button>

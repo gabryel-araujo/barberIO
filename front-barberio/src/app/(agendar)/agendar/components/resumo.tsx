@@ -5,9 +5,9 @@ export const ResumoAgendamento = () => {
   const { state } = useForm();
 
   return (
-    <div className="border rounded-lg mx-50 p-5 shadow ">
+    <div className="border rounded-lg md:mx-50 p-5 shadow ">
       <p className="text-sm font-bold">Resumo Agendamento</p>
-      <div className="grid grid-cols-2 gap-3 pt-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-3">
         {state.data instanceof Date && !isNaN(state.data.getTime()) ? (
           <div className="flex gap-3">
             <Calendar className="texto-azul" />
