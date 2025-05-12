@@ -1,14 +1,58 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { UserPlus } from "lucide-react";
 import { barbeiro } from "../../../model/barbeiro";
 import { Card } from "@/components/ui/card";
-import Image from "next/image";
 import { servicos } from "@/model/servico";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Dialog } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
 const barbeiros = () => {
+  const [openModal, setOpenModal] = useState(false);
+
+  const formSchema = z.object({
+    id: z.string(),
+    nome: z.string(),
+    servico: z.string().array(),
+    isDisponivel: z.boolean(),
+    avatar: z.string(),
+  });
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      id: "",
+      nome: "",
+      avatar:
+        "https://faculdadeeleven.com.br/wp-content/uploads/2023/10/fotos2-2022-05-12-01-54-02-p.jpg",
+      isDisponivel: true,
+      servico: ["1"],
+    },
+  });
+
+  const onSubmit = () => {
+    alert("BORA CACHORRADAAAAA");
+  };
   return (
     <div className="w-full">
       <div className="w-full flex justify-between px-10 py-5">
@@ -18,7 +62,7 @@ const barbeiros = () => {
             Gerencie os profissionais da barbearia.
           </p>
         </div>
-        <Button>
+        <Button onClick={() => setOpenModal(!openModal)}>
           <UserPlus />
           Novo Barbeiro
         </Button>
@@ -38,7 +82,7 @@ const barbeiros = () => {
                 <p
                   className={`font-semibold
                     ${
-                      barbeiro.isDisponivel ? "text-green-600" : "text-red-500"
+                      barbeiro.isDisponivel ? "text-green-300" : "text-red-400"
                     }`}
                 >
                   {barbeiro.isDisponivel ? "Disponível" : "Indisponível"}
@@ -75,6 +119,33 @@ const barbeiros = () => {
           </Card>
         ))}
       </div>
+      <Dialog open={openModal} onOpenChange={setOpenModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Cadastro de Barbeiro</DialogTitle>
+            <DialogDescription>
+              preencha todos os dados necessários
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <FormField
+                control={form.control}
+                name="nome"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nome:</FormLabel>
+                    <FormControl>
+                      <Input placeholder="digite seu nome" {...field}></Input>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
