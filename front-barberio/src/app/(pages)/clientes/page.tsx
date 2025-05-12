@@ -84,24 +84,36 @@ const clientes = () => {
   });
 
   const onSubmit = (values: z.infer<typeof formShema>) => {
+    const clienteExistente = clienteSelecionado;
     //primeiro pega os dados do novoCliente
-    const novoCliente: Cliente = {
+    const clienteAtualizado: Cliente = {
       id: values.id,
       nome: values.nome,
       email: values.email,
       telefone: values.telefone,
       dataCadastro: new Date(values.dataCadastro),
     };
-    //agora seta o novo cliente nos clientes
-    setClienteListado((prev) => [...prev, novoCliente]);
+    if (clienteExistente) {
+      // se for cliente atualiza o cliente na lista
+      setClienteListado((prev) =>
+        prev.map((cli) =>
+          cli.id === clienteAtualizado.id ? clienteAtualizado : cli
+        )
+      );
+    } else {
+      //agora seta o novo cliente nos clientes
+      setClienteListado((prev) => [...prev, clienteAtualizado]);
+    }
+    console.log("Cliente salvo:", clienteAtualizado);
 
     //logs
-    console.log("Novo Cliente:", novoCliente);
+    console.log("Novo Cliente:", clienteAtualizado);
     console.log(values);
     //fecha modal
-    setOpenModal(!openModal);
+    setOpenModal(false);
     //limpaModal
     form.reset();
+    setClienteSelecionado(undefined);
   };
 
   const abrirModal = () => {
@@ -154,7 +166,19 @@ const clientes = () => {
                   })}
                 </TableCell>
                 <TableCell>
-                  <Button onClick={() => handleClienteDados(cliente)}>
+                  <Button
+                    onClick={() => {
+                      handleClienteDados(cliente);
+                      form.reset({
+                        id: cliente.id,
+                        nome: cliente.nome,
+                        email: cliente.email,
+                        telefone: cliente.telefone,
+                        dataCadastro: cliente.dataCadastro,
+                      });
+                      setOpenModal(true);
+                    }}
+                  >
                     <Edit />
                   </Button>
                 </TableCell>
@@ -166,7 +190,11 @@ const clientes = () => {
       <Dialog open={openModal} onOpenChange={setOpenModal}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Cadastro de Cliente</DialogTitle>
+            <DialogTitle>
+              {clienteSelecionado
+                ? "Alteração de cliente"
+                : "Cadastro de Cliente"}
+            </DialogTitle>
             <DialogDescription>
               preencha todos os dados necessários
             </DialogDescription>
@@ -222,12 +250,15 @@ const clientes = () => {
 
               <div className="pt-5 flex gap-5">
                 <Button
+                  type="button"
                   onClick={() => setOpenModal(!openModal)}
                   variant="destructive"
                 >
                   Cancelar
                 </Button>
-                <Button type="submit">Cadastrar</Button>
+                <Button type="submit">
+                  {clienteSelecionado ? "Salvar" : "Cadastrar"}
+                </Button>
               </div>
             </form>
           </Form>
