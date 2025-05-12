@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Edit, Edit2, Search, UserPlus } from "lucide-react";
+import { Edit, Edit2, Search, Underline, UserPlus } from "lucide-react";
 import { Clientes } from "@/model/clientes";
 import { Cliente } from "@/types/cliente";
 import { useState } from "react";
@@ -104,19 +104,26 @@ const clientes = () => {
       //agora seta o novo cliente nos clientes
       setClienteListado((prev) => [...prev, clienteAtualizado]);
     }
-    console.log("Cliente salvo:", clienteAtualizado);
 
     //logs
-    console.log("Novo Cliente:", clienteAtualizado);
+    console.log("Cliente salvo:", clienteAtualizado);
     console.log(values);
     //fecha modal
     setOpenModal(false);
     //limpaModal
-    form.reset();
     setClienteSelecionado(undefined);
+    form.reset();
   };
 
   const abrirModal = () => {
+    form.reset({
+      id: String(clienteListado.length + 1),
+      nome: "",
+      telefone: "",
+      email: "",
+      dataCadastro: new Date(),
+    });
+    setClienteSelecionado(undefined);
     setOpenModal(!openModal);
   };
 
