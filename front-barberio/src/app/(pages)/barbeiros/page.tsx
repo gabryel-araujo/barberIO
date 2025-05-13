@@ -26,14 +26,19 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Barbeiro } from "@/types/barbeiro";
 
 const barbeiros = () => {
   const [openModal, setOpenModal] = useState(false);
-
+  const [barbeiroLista, setBabeiroLista] = useState<Barbeiro[]>(barbeiro);
+  const [barbeiroSelecionado, setBarbeiroSelecionado] = useState<Barbeiro>();
   const formSchema = z.object({
     id: z.string(),
-    nome: z.string(),
-    servico: z.string().array(),
+    nome: z
+      .string()
+      .min(2, { message: "Nome deve conter no mínimo 2 Caracteres" }),
+    servico: z.array(z.string()).min(1, "Selecione pelo menos um serviço"),
     isDisponivel: z.boolean(),
     avatar: z.string(),
   });
@@ -41,17 +46,47 @@ const barbeiros = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      id: "",
+      id: String(barbeiro.length + 1),
       nome: "",
-      avatar:
-        "https://faculdadeeleven.com.br/wp-content/uploads/2023/10/fotos2-2022-05-12-01-54-02-p.jpg",
+      avatar: "",
       isDisponivel: true,
-      servico: ["1"],
+      servico: [],
     },
   });
 
-  const onSubmit = () => {
-    alert("BORA CACHORRADAAAAA");
+  const onSubmit = (value: z.infer<typeof formSchema>) => {
+    const barbeiroExistente = barbeiroSelecionado;
+
+    const barbeiroAtualizado: Barbeiro = {
+      id: value.id,
+      nome: value.nome,
+      servicos: value.servico,
+      isDisponivel: value.isDisponivel,
+      avatar: value.avatar,
+    };
+    if (barbeiroExistente) {
+      setBabeiroLista((prev) =>
+        prev.map((barber) =>
+          barber.id === barbeiroAtualizado.id ? barbeiroAtualizado : barber
+        )
+      );
+    } else {
+      setBabeiroLista((prev) => [...prev, barbeiroAtualizado]);
+    }
+    setBarbeiroSelecionado(undefined);
+    console.log(barbeiroAtualizado);
+    setOpenModal(false);
+    form.reset();
+  };
+  const abrirModal = () => {
+    setOpenModal(true);
+    form.reset({
+      id: String(barbeiro.length + 1),
+      nome: "",
+      avatar: "",
+      isDisponivel: true,
+      servico: [],
+    });
   };
   return (
     <div className="w-full">
@@ -62,18 +97,18 @@ const barbeiros = () => {
             Gerencie os profissionais da barbearia.
           </p>
         </div>
-        <Button onClick={() => setOpenModal(!openModal)}>
+        <Button onClick={abrirModal}>
           <UserPlus />
           Novo Barbeiro
         </Button>
       </div>
-      <div className="grid grid-cols-3 gap-5 px-5">
-        {barbeiro.map((barbeiro) => (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 px-5">
+        {barbeiroLista.map((barbeiro) => (
           <Card className="" key={barbeiro.id}>
             <div className="rounded-t-md p-3 bg-slate-800 flex justify-start items-center gap-3">
               <div className="border rounded-full h-14 w-14 bg-slate-700 items-center justify-center flex text-white">
                 <img
-                  className="rounded-full border-2 border-slate-100"
+                  className="object-cover rounded-full border-2 border-slate-100 h-14 w-14"
                   src={barbeiro.avatar}
                 />
               </div>
@@ -106,7 +141,20 @@ const barbeiros = () => {
               </span>
             </div>
             <div className="w-full px-3 py-3 flex justify-between items-center">
-              <Button className="bg-slate-700 hover:bg-slate-600">
+              <Button
+                onClick={() => {
+                  setBarbeiroSelecionado(barbeiro);
+                  form.reset({
+                    id: barbeiro.id,
+                    nome: barbeiro.nome,
+                    avatar: barbeiro.avatar,
+                    isDisponivel: barbeiro.isDisponivel,
+                    servico: barbeiro.servicos,
+                  });
+                  setOpenModal(true);
+                }}
+                className="bg-slate-700 hover:bg-slate-600"
+              >
                 Gerenciar
               </Button>
               <div className="flex gap-3">
@@ -128,7 +176,7 @@ const barbeiros = () => {
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
               <FormField
                 control={form.control}
                 name="nome"
@@ -136,12 +184,95 @@ const barbeiros = () => {
                   <FormItem>
                     <FormLabel>Nome:</FormLabel>
                     <FormControl>
-                      <Input placeholder="digite seu nome" {...field}></Input>
+                      <Input placeholder="Nome do barbeiro" {...field}></Input>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="avatar"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Avatar (Url da imagem):</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="https://exemplo.com/imagem.jpg"
+                        {...field}
+                      ></Input>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="servico"
+                render={({ field }) => {
+                  const handleCheckBox = (id: string) => {
+                    const novoValor = field.value.includes(id)
+                      ? field.value.filter((item: string) => item != id)
+                      : [...field.value, id];
+                    field.onChange(novoValor);
+                  };
+                  return (
+                    <FormItem>
+                      <FormLabel>Serviços que realiza:</FormLabel>
+                      <FormControl>
+                        <div className="grid grid-cols-2">
+                          {servicos.map((servico) => (
+                            <div
+                              key={servico.id}
+                              className="flex gap-3 items-center"
+                            >
+                              <Checkbox
+                                id={servico.id}
+                                checked={field.value?.includes(servico.id)}
+                                onCheckedChange={() =>
+                                  handleCheckBox(servico.id)
+                                }
+                              />
+                              <label htmlFor={servico.id}>{servico.nome}</label>
+                            </div>
+                          ))}
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <FormField
+                control={form.control}
+                name="isDisponivel"
+                render={({ field }) => (
+                  <FormItem className="flex">
+                    <FormControl>
+                      <div className="flex gap-3">
+                        <Switch
+                          className=""
+                          id="disponivel"
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormLabel>Disponível para agendamentos</FormLabel>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex items-center justify-end gap-3">
+                <Button
+                  onClick={() => setOpenModal(false)}
+                  variant={"ghost"}
+                  type="button"
+                >
+                  Cancelar
+                </Button>
+                <Button type="submit">Cadastrar</Button>
+              </div>
             </form>
           </Form>
         </DialogContent>
