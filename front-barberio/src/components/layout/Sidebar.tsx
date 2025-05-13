@@ -8,7 +8,7 @@ export const Sidebar = () => {
   return (
     <div className="flex flex-col bg-[#1a1f2c] text-white md:w-[300px] min-h-screen">
       <p className="py-8 text-center font-bold text-2xl">
-        <span className="text-[#3f88c5]">Navalha</span> Barber
+        <span className="text-[#3f88c5]">Barber</span>iO
       </p>
       {MenuItems.map((menu) => (
         <Link
