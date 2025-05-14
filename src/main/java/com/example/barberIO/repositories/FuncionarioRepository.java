@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface FuncionarioRepository extends JpaRepository<FuncionarioModel, UUID> {
+public interface FuncionarioRepository extends JpaRepository<FuncionarioModel, Long> {
 
 
     Optional<FuncionarioModel> findByEmail(String email);

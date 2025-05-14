@@ -11,7 +11,7 @@ public class ClienteModel implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    private Long id;
 
     private String nome;
 
@@ -21,11 +21,11 @@ public class ClienteModel implements Serializable {
 
     private String data_nascimento;
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
