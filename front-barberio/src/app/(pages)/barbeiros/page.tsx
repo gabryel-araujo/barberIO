@@ -79,6 +79,7 @@ const barbeiros = () => {
     form.reset();
   };
   const abrirModal = () => {
+    setBarbeiroSelecionado(undefined);
     setOpenModal(true);
     form.reset({
       id: String(barbeiro.length + 1),
@@ -94,7 +95,7 @@ const barbeiros = () => {
         <div className="flex flex-col">
           <p className="text-3xl font-bold">Barbeiros</p>
           <p className="text-slate-500">
-            Gerencie os profissionais da barbearia.
+            Gerencie os profissionais da barbearia
           </p>
         </div>
         <Button onClick={abrirModal}>
@@ -170,7 +171,11 @@ const barbeiros = () => {
       <Dialog open={openModal} onOpenChange={setOpenModal}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Cadastro de Barbeiro</DialogTitle>
+            <DialogTitle>
+              {barbeiroSelecionado
+                ? "Alteração de Barbeiro"
+                : "Cadastro de Barbeiro"}
+            </DialogTitle>
             <DialogDescription>
               preencha todos os dados necessários
             </DialogDescription>
@@ -271,7 +276,9 @@ const barbeiros = () => {
                 >
                   Cancelar
                 </Button>
-                <Button type="submit">Cadastrar</Button>
+                <Button type="submit">
+                  {barbeiroSelecionado ? "Salvar" : "Cadastrar"}
+                </Button>
               </div>
             </form>
           </Form>

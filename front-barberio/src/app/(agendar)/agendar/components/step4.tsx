@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { AgendamentoAction, useForm } from "@/contexts/AgendamentoContext";
 import { Button } from "@/components/ui/button";
-import { servicos } from "@/model/servico";
+//import { servicos } from "@/model/servico";
 import { Servico } from "@/types/servico";
 import { Calendar, Clock, Scissors, User } from "lucide-react";
 import {
@@ -16,9 +16,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
+import axios from "axios";
+import { baseUrl } from "@/lib/baseUrl";
 
 export const Step4 = () => {
   const { state, dispatch } = useForm();
+  const [servicos, setServicos] = useState<Servico[]>([]);
   const [servicoSelecionado, setServicoSelecionado] = useState<Servico>(
     state.servico
   );
@@ -29,6 +32,12 @@ export const Step4 = () => {
   const [openModalRevisao, setOpenModalRevisao] = useState(false);
 
   const { push } = useRouter();
+  useEffect(() => {
+    axios
+      .get(`${baseUrl}/servico`)
+      .then((response) => setServicos(response.data))
+      .catch((error) => console.error("Erro ao buscar serviços", error));
+  }, []);
 
   function proximoPasso() {
     dispatch({
@@ -110,7 +119,12 @@ export const Step4 = () => {
                   <Scissors />
                   {servico.nome}
                 </div>
-                <div>R$ {servico.valor.toFixed(2)}</div>
+                <div>
+                  {servico.preco.toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
+                </div>
               </div>
               <div className="flex justify-between w-full mt-1 gap-2">
                 <div className="text-slate-500 overflow-auto">
@@ -240,8 +254,11 @@ export const Step4 = () => {
                       {state.servico.nome !== "" ? (
                         <div className="flex gap-3">
                           <Scissors className="texto-azul" />
-                          {state.servico.nome} - R$
-                          {state.servico.valor.toFixed(2)}
+                          {state.servico.nome} -
+                          {state.servico.preco.toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
+                          })}
                         </div>
                       ) : (
                         ""

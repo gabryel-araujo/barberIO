@@ -132,7 +132,7 @@ const clientes = () => {
       <div className="w-full flex items-center justify-between px-10 py-5">
         <div className="flex flex-col">
           <p className="text-3xl font-bold">Clientes</p>
-          <p className="text-slate-500">Gerencie os clientes da barbearia.</p>
+          <p className="text-slate-500">Gerencie os clientes da barbearia</p>
         </div>
         <Button onClick={abrirModal}>
           <UserPlus />

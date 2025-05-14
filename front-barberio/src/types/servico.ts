@@ -3,5 +3,5 @@ export interface Servico {
   nome: string;
   descricao?: string;
   duracao: number;
-  valor: number;
+  preco: number;
 }

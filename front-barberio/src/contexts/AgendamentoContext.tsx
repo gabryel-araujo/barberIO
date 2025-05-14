@@ -34,7 +34,7 @@ const inicialData: State = {
     duracao: 0,
     id: "",
     nome: "",
-    valor: 0,
+    preco: 0,
     descricao: "",
   },
   nome: "",
