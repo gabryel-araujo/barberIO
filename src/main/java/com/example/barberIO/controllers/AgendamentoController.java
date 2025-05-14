@@ -55,14 +55,13 @@ public class AgendamentoController{
         return agendamentoService.cancelarHorario(id);
     }
 
-    @GetMapping("/agendamentos/horarios-disponiveis")
-    public ResponseEntity<List<LocalTime>> getHorariosDisponiveis(
+    @GetMapping("/agendamentos/horarioDisponivel")
+    public ResponseEntity<Object> getHorariosDisponiveis(
             @RequestParam Long barbeiroId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime data,
-            @RequestParam(defaultValue = "30") int intervalo) {
+            @RequestParam(defaultValue = "15") int intervalo) {
 
-        List<LocalTime> disponiveis = agendamentoService.horariosDisponiveis(data, barbeiroId, intervalo);
-        return ResponseEntity.ok(disponiveis);
+        return agendamentoService.horarioDisponivel(data, barbeiroId, intervalo);
     }
 
 }

@@ -18,11 +18,11 @@ public interface AgendamentoRepository extends JpaRepository<AgendamentoModel, L
             "WHERE a.barbeiro.id = :funcionarioId " +
             "AND a.horario < :fim " +
             "AND a.fim > :inicio")
-    boolean barbeiroOcupado(@Param("funcionarioId") Long funcionarioId,
-                                       @Param("inicio") LocalDateTime inicio,
-                                       @Param("fim")LocalDateTime fim);
+    boolean barbeiroOcupado(
+                @Param("funcionarioId") Long funcionarioId,
+                @Param("inicio") LocalDateTime inicio,
+                @Param("fim")LocalDateTime fim
+            );
 
-    @Query("SELECT a.horario FROM AgendamentoModel a WHERE a.barbeiro.id = :barbeiroId AND a.horario = :data")
-    List<LocalTime> findHorariosByDataAndBarbeiro(@Param("data") LocalDateTime data, @Param("barbeiroId") Long barbeiroId);
 
 }

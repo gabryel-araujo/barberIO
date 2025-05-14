@@ -95,27 +95,13 @@ public class AgendamentoService {
        return this.agendarHorario(agendamentoRecordDto);
     }
 
-    public List<LocalTime> horariosDisponiveis(LocalDateTime data, Long barbeiroId, int intervalo){
-        //TODO: Verificar uma forma de tornar isso editável pela barbearia
-        LocalTime inicioExpediente = LocalTime.of(8,0);
-        LocalTime fimExpediente = LocalTime.of(18,0);
+    public ResponseEntity<Object> horarioDisponivel(LocalDateTime data, Long barbeiroId, int intervalo){
+    boolean barbeiroOcupado = agendamentoRepository.barbeiroOcupado(barbeiroId,data,data.plusMinutes(intervalo));
 
-        List<LocalTime> horariosPossiveis = new ArrayList<>();
-        LocalTime horarioAtual = inicioExpediente;
-
-        while (!horarioAtual.isAfter(fimExpediente.minusMinutes(intervalo))) {
-            horariosPossiveis.add(horarioAtual);
-            horarioAtual = horarioAtual.plusMinutes(intervalo);
-        }
-
-        // Buscar horários já agendados para o barbeiro nesse dia
-        List<LocalTime> horariosOcupados = agendamentoRepository
-                .findHorariosByDataAndBarbeiro(data, barbeiroId);
-
-        // Remover horários ocupados da lista de disponíveis
-        horariosPossiveis.removeAll(horariosOcupados);
-
-        return horariosPossiveis;
+    if(barbeiroOcupado){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body("O barbeiro está ocupado nesse horário");
+    }
+        return ResponseEntity.status(HttpStatus.OK).body("barbeiro disponível");
     }
 
 
