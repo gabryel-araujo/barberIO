@@ -11,10 +11,7 @@ export const Step2 = () => {
   function proximoPasso() {
     if (state.currentStep >= 4) return;
     else {
-      dispatch({
-        type: AgendamentoAction.setHorario,
-        payload: hora,
-      });
+      //gabryel: retirei o dispatch daqui para modificar o estado do componente assim que clicar na hora
       dispatch({
         type: AgendamentoAction.setcurrentStep,
         payload: state.currentStep + 1,
@@ -28,9 +25,15 @@ export const Step2 = () => {
         type: AgendamentoAction.setcurrentStep,
         payload: state.currentStep - 1,
       });
+      //gabryel: adicionei esse dispatch para caso o usuário volte, o sistema retirar o horario selecionado
+      dispatch({
+        type: AgendamentoAction.setHorario,
+        payload: "",
+      });
     }
   }
   const horariosDisponiveis = [
+    //todo: trazer isso da API, pois se a barbearia precisar mudar de horário ela vai poder
     "09:00",
     "09:30",
     "10:00",
@@ -52,7 +55,7 @@ export const Step2 = () => {
   ];
 
   return (
-    <div className="border rounded-lg md:mx-50 p-5 shadow ">
+    <div className="border rounded-lg md:mx-50 p-5 shadow bg-white">
       <div>
         <p className="text-2xl font-bold">Escolha um horário</p>
         <span className="text-xs text-slate-500">
@@ -68,9 +71,15 @@ export const Step2 = () => {
               className={
                 hora === horario
                   ? "bg-primary hover:bg-barber-accent/90 w-[150px]"
-                  : "w-[150px]"
+                  : "w-[150px] cursor-pointer"
               }
-              onClick={() => setHora(horario)}
+              onClick={() => {
+                setHora(horario);
+                dispatch({
+                  type: AgendamentoAction.setHorario,
+                  payload: horario,
+                });
+              }}
             >
               <Clock className="mr-2 h-4 w-4" />
               {horario}
@@ -85,7 +94,7 @@ export const Step2 = () => {
               className="cursor-pointer hover:bg-slate-200"
               onClick={anteriorPasso}
             >
-              Antes
+              Anterior
             </Button>
           )}
 

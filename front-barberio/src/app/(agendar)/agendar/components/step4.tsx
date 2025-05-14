@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
 import { servicos } from "@/model/servico";
@@ -6,7 +6,6 @@ import { Servico } from "@/types/servico";
 import { Calendar, Clock, Scissors, User } from "lucide-react";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -32,10 +31,7 @@ export const Step4 = () => {
   const { push } = useRouter();
 
   function proximoPasso() {
-    dispatch({
-      type: AgendamentoAction.setServico,
-      payload: servicoSelecionado,
-    });
+    //gabryel: removi o dispatch daqui para assim que clicar já atualizar o estado no componente
     if (state.currentStep == 4) {
       setOpenModal(!openModal);
     }
@@ -46,6 +42,16 @@ export const Step4 = () => {
       dispatch({
         type: AgendamentoAction.setcurrentStep,
         payload: state.currentStep - 1,
+      });
+      dispatch({
+        type: AgendamentoAction.setServico,
+        payload: {
+          duracao: 0,
+          id: "",
+          nome: "",
+          valor: 0,
+          descricao: "",
+        } as Servico,
       });
     }
   }
@@ -86,7 +92,7 @@ export const Step4 = () => {
   };
 
   return (
-    <div className="border rounded-lg md:mx-50 p-5 shadow">
+    <div className="border rounded-lg md:mx-50 p-5 shadow bg-white">
       <div>
         <p className="text-2xl font-bold">Escolha um serviço</p>
         <span className="text-xs text-slate-500">
@@ -99,8 +105,14 @@ export const Step4 = () => {
             <Button
               key={servico.id}
               variant="ghost"
-              onClick={() => setServicoSelecionado(servico)}
-              className={`h-auto md:w-[650px] w-[300px] flex flex-col border-2 items-start p-4 justify-start text-left ${
+              onClick={() => {
+                setServicoSelecionado(servico);
+                dispatch({
+                  type: AgendamentoAction.setServico,
+                  payload: servico,
+                });
+              }}
+              className={`h-auto md:w-[650px] w-[300px] flex flex-col border-2 items-start p-4 justify-start text-left cursor-pointer${
                 servicoSelecionado?.nome == servico.nome
                   ? "border-2 border-[#3f89c5]"
                   : ""
@@ -130,7 +142,7 @@ export const Step4 = () => {
               className="cursor-pointer hover:bg-slate-200"
               onClick={anteriorPasso}
             >
-              Antes
+              Anterior
             </Button>
           )}
 
@@ -178,8 +190,8 @@ export const Step4 = () => {
             </div>
             <div className="flex items-center justify-between px-5">
               <Button
-                className="w-[150px] cursor-pointer"
-                variant="destructive"
+                className="w-[150px] cursor-pointer hover:shadow-md"
+                variant="secondary"
                 onClick={() => setOpenModal(!openModal)}
               >
                 Cancelar
