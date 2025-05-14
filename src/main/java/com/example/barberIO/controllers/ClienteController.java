@@ -30,11 +30,15 @@ public class ClienteController {
         ClienteModel clienteModel = new ClienteModel();
         BeanUtils.copyProperties(clienteRecordDto, clienteModel);
 
+        //todo: lançar uma validação de email já existente antes de criar
+
         return ResponseEntity.status(HttpStatus.CREATED).body(clienteRepository.save(clienteModel));
     }
 
     @PutMapping("/clientes/{id}")
     public ResponseEntity<Object> editCliente(@PathVariable (value = "id") Long id, @RequestBody @Valid ClienteModel clienteRecordDto){
+        //todo: trocar o cliente model para o dto para não precisar passar o id do usuário na requisição
+
         Optional<ClienteModel> clienteO = clienteRepository.findById(id);
 
         if(clienteO.isEmpty()){
