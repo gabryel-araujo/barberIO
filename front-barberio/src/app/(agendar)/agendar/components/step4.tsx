@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { AgendamentoAction, useForm } from "@/contexts/AgendamentoContext";
+import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
 import { servicos } from "@/model/servico";
 import { Servico } from "@/types/servico";
@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
+import { useForm } from "@/contexts/AgendamentoContextProvider";
 
 export const Step4 = () => {
   const { state, dispatch } = useForm();

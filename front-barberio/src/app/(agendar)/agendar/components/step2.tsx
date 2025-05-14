@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { AgendamentoAction, useForm } from "@/contexts/AgendamentoContext";
+import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
 import { Clock } from "lucide-react";
+import { useForm } from "@/contexts/AgendamentoContextProvider";
 
 export const Step2 = () => {
   const { state, dispatch } = useForm();

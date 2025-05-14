@@ -1,4 +1,4 @@
-import { useForm } from "@/contexts/AgendamentoContext";
+import { useForm } from "@/contexts/AgendamentoContextProvider";
 import { Calendar, Clock, Scissors, User } from "lucide-react";
 
 export const ResumoAgendamento = () => {

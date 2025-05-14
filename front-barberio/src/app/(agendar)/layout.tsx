@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "../globals.css";
-import { AgendamentoProvider } from "@/contexts/AgendamentoContext";
+import { AgendamentoProvider } from "@/contexts/AgendamentoContextProvider";
 export const metadata: Metadata = {
   title: "BaberIO",
   description: "BarberIO seu agendamento da melhor forma",

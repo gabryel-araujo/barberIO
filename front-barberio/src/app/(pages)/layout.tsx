@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "../globals.css";
 import { LayoutResponsivo } from "@/components/layout/layoutResponsivo";
-import { AgendamentoProvider } from "@/contexts/AgendamentoContext";
+import { AgendamentoProvider } from "@/contexts/AgendamentoContextProvider";
 
 export const metadata: Metadata = {
   title: "BaberIO",

@@ -1,9 +1,10 @@
 import { Calendar } from "@/components/ui/calendar";
 import { useCallback, useState } from "react";
 import { ptBR } from "date-fns/locale";
-import { AgendamentoAction, useForm } from "@/contexts/AgendamentoContext";
+import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { useForm } from "@/contexts/AgendamentoContextProvider";
 
 export const Step1 = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
