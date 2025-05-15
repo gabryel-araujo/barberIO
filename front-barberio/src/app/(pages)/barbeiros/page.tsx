@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { UserPlus } from "lucide-react";
+import { Star, UserPlus } from "lucide-react";
 import { barbeiro } from "../../../model/barbeiro";
 import { Card } from "@/components/ui/card";
 import { servicos } from "@/model/servico";
@@ -16,7 +16,7 @@ import {
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Form,
   FormControl,
@@ -27,17 +27,24 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Barbeiro } from "@/types/barbeiro";
+import { Barbeiro, BarbeiroApi } from "@/types/barbeiro";
+import { getFuncionarios, setFuncionario } from "@/lib/api/funcionarios";
 
 const barbeiros = () => {
   const [openModal, setOpenModal] = useState(false);
-  const [barbeiroLista, setBabeiroLista] = useState<Barbeiro[]>(barbeiro);
+  // const [barbeiroLista, setBabeiroLista] = useState<Barbeiro[]>(barbeiro);
+  const [barbeiroLista, setBabeiroLista] = useState<Barbeiro[]>([]);
   const [barbeiroSelecionado, setBarbeiroSelecionado] = useState<Barbeiro>();
   const formSchema = z.object({
     id: z.string(),
     nome: z
       .string()
-      .min(2, { message: "Nome deve conter no mínimo 2 Caracteres" }),
+      .min(2, { message: "Nome deve conter no mínimo 2 caracteres" }),
+    email: z.string().email("Email inválido"),
+    senha: z.string().min(7, "A senha precisa conter no mínimo 7 caracteres"),
+    data_nascimento: z
+      .string()
+      .min(10, "A data precisa estar no formato: dd/MM/aaaa"),
     servico: z.array(z.string()).min(1, "Selecione pelo menos um serviço"),
     isDisponivel: z.boolean(),
     avatar: z.string(),
@@ -48,18 +55,48 @@ const barbeiros = () => {
     defaultValues: {
       id: String(barbeiro.length + 1),
       nome: "",
+      email: "",
+      senha: "",
+      data_nascimento: "",
       avatar: "",
       isDisponivel: true,
       servico: [],
     },
   });
 
-  const onSubmit = (value: z.infer<typeof formSchema>) => {
+  function mapBarbeiroApiToBarbeiro(api: BarbeiroApi): Barbeiro {
+    return {
+      id: String(api.id),
+      nome: api.nome,
+      email: api.email,
+      senha: api.senha,
+      data_nascimento: api.data_nascimento,
+      servicos: api.servicos ?? [],
+      isDisponivel: true,
+    };
+  }
+
+  useEffect(() => {
+    async function fetchData() {
+      const apiData = await getFuncionarios();
+      const mappedData = apiData.map(mapBarbeiroApiToBarbeiro);
+      setBabeiroLista(mappedData);
+
+      console.log(mappedData);
+    }
+
+    fetchData();
+  }, []);
+
+  const onSubmit = async (value: z.infer<typeof formSchema>) => {
     const barbeiroExistente = barbeiroSelecionado;
 
     const barbeiroAtualizado: Barbeiro = {
       id: value.id,
       nome: value.nome,
+      email: value.email,
+      senha: value.senha,
+      data_nascimento: value.data_nascimento,
       servicos: value.servico,
       isDisponivel: value.isDisponivel,
       avatar: value.avatar,
@@ -75,6 +112,16 @@ const barbeiros = () => {
     }
     setBarbeiroSelecionado(undefined);
     console.log(barbeiroAtualizado);
+
+    const response = await setFuncionario(
+      barbeiroAtualizado.nome,
+      barbeiroAtualizado.email,
+      barbeiroAtualizado.senha,
+      barbeiroAtualizado.data_nascimento
+    );
+
+    console.log(response.status);
+
     setOpenModal(false);
     form.reset();
   };
@@ -83,6 +130,9 @@ const barbeiros = () => {
     form.reset({
       id: String(barbeiro.length + 1),
       nome: "",
+      email: "",
+      senha: "",
+      data_nascimento: "",
       avatar: "",
       isDisponivel: true,
       servico: [],
@@ -106,24 +156,37 @@ const barbeiros = () => {
         {barbeiroLista.map((barbeiro) => (
           <Card className="" key={barbeiro.id}>
             <div className="rounded-t-md p-3 bg-slate-800 flex justify-start items-center gap-3">
-              <div className="border rounded-full h-14 w-14 bg-slate-700 items-center justify-center flex text-white">
-                <img
-                  className="object-cover rounded-full border-2 border-slate-100 h-14 w-14"
-                  src={barbeiro.avatar}
-                />
+              <div className="border rounded-full h-14 min-w-14 bg-slate-700 items-center justify-center flex text-white">
+                {barbeiro.avatar ? (
+                  <img
+                    className="object-cover rounded-full border-2 border-slate-100 h-14 w-14"
+                    src={barbeiro.avatar}
+                  />
+                ) : (
+                  <p className="font-bold text-3xl">
+                    {barbeiro.nome.split("")[0]}
+                  </p>
+                )}
               </div>
-              <div>
-                <p className="font-bold text-slate-100">{barbeiro.nome}</p>
-                <p
-                  className={`font-semibold
+              <div className="flex items-center justify-between w-full">
+                <div>
+                  <p className="font-bold text-slate-100">{barbeiro.nome}</p>
+                  <p
+                    className={`font-semibold
                     ${
                       barbeiro.isDisponivel ? "text-green-300" : "text-red-400"
                     }`}
-                >
-                  {barbeiro.isDisponivel ? "Disponível" : "Indisponível"}
-                </p>
+                  >
+                    {barbeiro.isDisponivel ? "Disponível" : "Indisponível"}
+                  </p>
+                </div>
+                <div className="flex flex-row gap-1 items-center">
+                  <p className="text-amber-300 font-bold">{}</p>
+                  <Star fill="yellow" color="#ffd230" />
+                </div>
               </div>
             </div>
+
             <div className="px-3">
               <p className="text-sm font-semibold">Serviços:</p>
               <span className="">
@@ -172,7 +235,7 @@ const barbeiros = () => {
           <DialogHeader>
             <DialogTitle>Cadastro de Barbeiro</DialogTitle>
             <DialogDescription>
-              preencha todos os dados necessários
+              Preencha todos os dados necessários
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
@@ -190,6 +253,59 @@ const barbeiros = () => {
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email:</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Digite aqui..." {...field}></Input>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex flex-row gap-2">
+                <div className="w-1/2">
+                  <FormField
+                    control={form.control}
+                    name="senha"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Senha:</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="*********"
+                            type="password"
+                            {...field}
+                          ></Input>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="w-1/2">
+                  <FormField
+                    control={form.control}
+                    name="data_nascimento"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Data de Nascimento:</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="dd/MM/aaaa"
+                            {...field}
+                            maxLength={10}
+                          ></Input>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
               <FormField
                 control={form.control}
                 name="avatar"
@@ -266,7 +382,7 @@ const barbeiros = () => {
               <div className="flex items-center justify-end gap-3">
                 <Button
                   onClick={() => setOpenModal(false)}
-                  variant={"ghost"}
+                  variant={"secondary"}
                   type="button"
                 >
                   Cancelar
