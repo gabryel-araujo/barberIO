@@ -1,6 +1,8 @@
+import { cache } from "react";
 import axiosInstance from "../axios";
+import { BarbeiroApi } from "@/types/barbeiro";
 
-export const getFuncionarios = async (email: String, password: String) => {
+export const login = async (email: String, password: String) => {
   try {
     const response = await axiosInstance.post("/auth/login", {
       email: email,
@@ -14,16 +16,28 @@ export const getFuncionarios = async (email: String, password: String) => {
   }
 };
 
+export const getFuncionarios = cache(async (): Promise<BarbeiroApi[]> => {
+  try {
+    const respose = await axiosInstance.get<BarbeiroApi[]>("/funcionarios");
+    return respose.data;
+  } catch (error) {
+    console.error("Erro ao cadastrar funcionario", error);
+    throw error;
+  }
+});
+
 export const setFuncionario = async (
-  nome: String,
-  email: String,
-  senha: String
+  nome: string,
+  email: string,
+  senha: string,
+  data_nascimento: string
 ) => {
   try {
     const response = await axiosInstance.post("/funcionarios", {
-      nome: nome,
-      email: email,
-      senha: senha,
+      nome,
+      email,
+      senha,
+      data_nascimento,
     });
     return response;
   } catch (errorReg) {
