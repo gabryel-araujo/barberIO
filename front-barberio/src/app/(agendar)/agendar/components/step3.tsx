@@ -3,12 +3,18 @@ import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
 import { User } from "lucide-react";
 import { useForm } from "@/contexts/AgendamentoContextProvider";
+import { toast } from "sonner";
 
 export const Step3 = () => {
   const { state, dispatch } = useForm();
   const [barbeiro, setbarbeiro] = useState(state.barbeiro);
 
   function proximoPasso() {
+    if (state.barbeiro === "") {
+      toast.warning("Selecione um profissional");
+      return;
+    }
+
     if (state.currentStep >= 4) return;
     else {
       //gabryel: retirei o dispatch daqui para sempre que clicar no barbeiro atualizar o resumo

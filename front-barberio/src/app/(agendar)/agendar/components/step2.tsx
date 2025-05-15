@@ -3,12 +3,17 @@ import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
 import { Clock } from "lucide-react";
 import { useForm } from "@/contexts/AgendamentoContextProvider";
+import { toast } from "sonner";
 
 export const Step2 = () => {
   const { state, dispatch } = useForm();
   const [hora, setHora] = useState<string | undefined>(state.horario);
 
   function proximoPasso() {
+    if (state.horario === "") {
+      toast.warning("Selecione um horário");
+      return;
+    }
     if (state.currentStep >= 4) return;
     else {
       //gabryel: retirei o dispatch daqui para modificar o estado do componente assim que clicar na hora
