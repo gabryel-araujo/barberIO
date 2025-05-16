@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "../globals.css";
 import { LayoutResponsivo } from "@/components/layout/layoutResponsivo";
 import { AgendamentoProvider } from "@/contexts/AgendamentoContext";
+import { Providers } from "@/utils/providers";
 
 export const metadata: Metadata = {
   title: "BaberIO",
@@ -16,9 +17,11 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className={`antialiased`}>
-        <AgendamentoProvider>
-          <LayoutResponsivo>{children}</LayoutResponsivo>
-        </AgendamentoProvider>
+        <Providers>
+          <AgendamentoProvider>
+            <LayoutResponsivo>{children}</LayoutResponsivo>
+          </AgendamentoProvider>
+        </Providers>
       </body>
     </html>
   );

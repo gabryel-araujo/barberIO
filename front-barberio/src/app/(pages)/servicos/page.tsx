@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input";
 import { baseUrl } from "@/lib/baseUrl";
 import { Servico } from "@/types/servico";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { Scissors } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -32,12 +33,17 @@ const servicos = () => {
   const [render, setRender] = useState(false);
   const [servicoSelecionado, setServicoSelecionado] = useState<Servico>();
 
-  useEffect(() => {
-    axios
-      .get(`${baseUrl}/servico`)
-      .then((response) => setServicos(response.data))
-      .catch((error) => console.error("Erro ao buscar serviços", error));
-  }, [render]);
+  const query = useQuery({
+    queryKey: ["servicos"],
+    queryFn: async () => {
+      const response = await axios.get(`${baseUrl}/servico`);
+      setServicos(response.data);
+      return response.data;
+    },
+  });
+
+  const queryClient = useQueryClient();
+
   const abrirModal = () => {
     setServicoSelecionado(undefined);
     form.reset({
@@ -94,19 +100,20 @@ const servicos = () => {
 
         console.log(response);
       }
+      queryClient.invalidateQueries({ queryKey: ["servicos"] });
     } catch (error) {
       console.error("Erro ao enviar os dados:", error);
     }
 
     console.log(value);
-    setRender(!render);
+    //setRender(!render);
     setServicoSelecionado(undefined);
     form.reset();
     setOpenModal(false);
   };
   return (
     <div className="w-full">
-      <div className="w-full flex justify-between px-10 py-5">
+      <div className="w-full flex items-center justify-between px-10 py-5">
         <div className="flex flex-col">
           <p className="text-3xl font-bold">Serviços</p>
           <p className="text-slate-500">
@@ -253,6 +260,13 @@ const servicos = () => {
                 </div>
 
                 <div className="flex gap-3 justify-end pt-5">
+                  <Button
+                    type="button"
+                    onClick={() => alert("VAI DELETAR VIU?")}
+                    variant="destructive"
+                  >
+                    Excluir
+                  </Button>
                   <Button onClick={fechaModal} variant={"ghost"} type="button">
                     Cancelar
                   </Button>
