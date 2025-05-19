@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
-import { setFuncionario } from "@/lib/api/funcionarios";
+import { SETFuncionario } from "@/lib/api/funcionarios";
 import { Toaster, toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { resolve } from "path";
@@ -24,7 +24,7 @@ export function RegisterForm({
   async function handleSendApi(e: React.FormEvent) {
     e.preventDefault();
     try {
-      const response = await setFuncionario(nome, email, password);
+      const response = await SETFuncionario(nome, email, password);
       if (response) {
         toast.success("Usuário registrado!");
         console.log(response);

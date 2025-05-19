@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
-import { getFuncionarios, setGoogleFuncionario } from "@/lib/api/funcionarios";
+import { GETFuncionarios, setGoogleFuncionario } from "@/lib/api/funcionarios";
 import { Toaster, toast } from "sonner";
 import { useRouter } from "next/navigation";
 import {
@@ -36,7 +36,7 @@ export function LoginForm({
     const oneHour = 60 * 60 * 1000;
     e.preventDefault();
     try {
-      const response = await getFuncionarios(email, password);
+      const response = await GETFuncionarios(email, password);
       if (response) {
         toast.success("Redirecionando...");
         localStorage.setItem(
