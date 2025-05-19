@@ -155,11 +155,11 @@ const barbeiros = () => {
 
   return (
     <div className="w-full">
-      <div className="w-full flex justify-between px-10 py-5">
+      <div className="w-full flex items-center justify-between px-10 py-5">
         <div className="flex flex-col">
           <p className="text-3xl font-bold">Barbeiros</p>
           <p className="text-slate-500">
-            Gerencie os profissionais da barbearia.
+            Gerencie os profissionais da barbearia
           </p>
         </div>
         <Button onClick={abrirModal}>
