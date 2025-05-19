@@ -1,9 +1,11 @@
 package com.example.barberIO.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,12 +19,15 @@ public class FuncionarioModel implements Serializable {
 
     private String nome;
 
+    @Email
     @Column(unique = true)
     private String email;
 
     private String senha;
 
     private String data_nascimento;
+
+    private boolean disponivel = false;
 
     private float avaliacao = 0;
 
@@ -37,6 +42,14 @@ public class FuncionarioModel implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "servico_id")
     )
     private List<ServiceModel> servicos;
+
+    public boolean isDisponivel() {
+        return disponivel;
+    }
+
+    public void setDisponivel(boolean disponivel) {
+        this.disponivel = disponivel;
+    }
 
     public Long getId() {
         return id;
