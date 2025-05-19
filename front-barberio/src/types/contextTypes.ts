@@ -1,5 +1,6 @@
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Servico } from "./servico";
+import { Barbeiro } from "./barbeiro";
 
 export type AgendamentoProviderProps = {
   children: React.ReactNode;
@@ -9,7 +10,7 @@ export type State = {
   currentStep: number;
   data: Date;
   horario: string;
-  barbeiro: string;
+  barbeiro: Barbeiro[];
   servico: Servico;
   nome: string;
   telefone: string;
