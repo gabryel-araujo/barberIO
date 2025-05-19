@@ -111,6 +111,17 @@ const servicos = () => {
     form.reset();
     setOpenModal(false);
   };
+  const deleteServico = async (id: number) => {
+    try {
+      const response = await axios.delete(`${baseUrl}/servico/${id}`);
+
+      console.log(`Serviço ${servicoSelecionado} foi excluido com sucesso`);
+
+      queryClient.invalidateQueries({ queryKey: ["servicos"] });
+    } catch (error) {
+      console.error("Erro ao deletar serviço:", error);
+    }
+  };
   return (
     <div className="w-full">
       <div className="w-full flex items-center justify-between px-10 py-5">
@@ -260,13 +271,15 @@ const servicos = () => {
                 </div>
 
                 <div className="flex gap-3 justify-end pt-5">
-                  <Button
-                    type="button"
-                    onClick={() => alert("VAI DELETAR VIU?")}
-                    variant="destructive"
-                  >
-                    Excluir
-                  </Button>
+                  {servicoSelecionado && (
+                    <Button
+                      type="button"
+                      onClick={() => deleteServico(servicoSelecionado.id)}
+                      variant="destructive"
+                    >
+                      Excluir
+                    </Button>
+                  )}
                   <Button onClick={fechaModal} variant={"ghost"} type="button">
                     Cancelar
                   </Button>
