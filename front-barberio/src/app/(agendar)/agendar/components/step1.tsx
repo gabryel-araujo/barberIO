@@ -1,9 +1,11 @@
 import { Calendar } from "@/components/ui/calendar";
 import { useCallback, useState } from "react";
 import { ptBR } from "date-fns/locale";
-import { AgendamentoAction, useForm } from "@/contexts/AgendamentoContext";
+import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { useForm } from "@/contexts/AgendamentoContextProvider";
+import { HomeIcon } from "lucide-react";
 
 export const Step1 = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -36,7 +38,7 @@ export const Step1 = () => {
   }, []);
 
   return (
-    <div className="border rounded-lg md:mx-50 p-5 shadow">
+    <div className="border rounded-lg md:mx-50 p-5 shadow bg-white">
       <div>
         <p className="text-2xl font-bold">Selecione uma data</p>
         <span className="text-xs text-slate-500">
@@ -67,13 +69,14 @@ export const Step1 = () => {
               className="cursor-pointer hover:bg-slate-200"
               onClick={anteriorPasso}
             >
-              Antes
+              Anterior
             </Button>
           )}
           <Button
             className="cursor-pointer bg-green-600 hover:bg-green-500"
             onClick={irHome}
           >
+            <HomeIcon />
             Página Inicial
           </Button>
 

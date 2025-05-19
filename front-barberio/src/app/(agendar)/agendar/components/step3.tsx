@@ -1,19 +1,23 @@
 import { useState } from "react";
-import { AgendamentoAction, useForm } from "@/contexts/AgendamentoContext";
+import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
 import { User } from "lucide-react";
+import { useForm } from "@/contexts/AgendamentoContextProvider";
+import { toast } from "sonner";
 
 export const Step3 = () => {
   const { state, dispatch } = useForm();
   const [barbeiro, setbarbeiro] = useState(state.barbeiro);
 
   function proximoPasso() {
+    if (state.barbeiro === "") {
+      toast.warning("Selecione um profissional");
+      return;
+    }
+
     if (state.currentStep >= 4) return;
     else {
-      dispatch({
-        type: AgendamentoAction.setBarbeiro,
-        payload: barbeiro,
-      });
+      //gabryel: retirei o dispatch daqui para sempre que clicar no barbeiro atualizar o resumo
       dispatch({
         type: AgendamentoAction.setcurrentStep,
         payload: state.currentStep + 1,
@@ -27,13 +31,18 @@ export const Step3 = () => {
         type: AgendamentoAction.setcurrentStep,
         payload: state.currentStep - 1,
       });
+      //gabryel: adicionei esse dispatch para caso o usuário volte, o sistema retirar o barbeiro selecionado
+      dispatch({
+        type: AgendamentoAction.setBarbeiro,
+        payload: "",
+      });
     }
   }
 
   const barbeiroDisponivel = ["Renato Willon", "Gabryel Araújo", "Hugo Rocha"];
 
   return (
-    <div className="border rounded-lg md:mx-50 p-5 shadow">
+    <div className="border rounded-lg md:mx-50 p-5 shadow bg-white">
       <div>
         <p className="text-2xl font-bold">Escolha um barbeiro</p>
         <span className="text-xs text-slate-500">
@@ -45,9 +54,15 @@ export const Step3 = () => {
           {barbeiroDisponivel.map((barber) => (
             <Button
               key={barber}
-              onClick={() => setbarbeiro(barber)}
+              onClick={() => {
+                setbarbeiro(barber);
+                dispatch({
+                  type: AgendamentoAction.setBarbeiro,
+                  payload: barber,
+                });
+              }}
               variant={"outline"}
-              className={`border-2 md:w-[350px] w-[250px]  py-10 ${
+              className={`border-2 md:w-[350px] w-[250px]  py-10 cursor-pointer${
                 barber === barbeiro ? "border-2 border-[#3f89c5]" : ""
               }`}
             >
@@ -65,7 +80,7 @@ export const Step3 = () => {
               className="cursor-pointer hover:bg-slate-200"
               onClick={anteriorPasso}
             >
-              Antes
+              Anterior
             </Button>
           )}
 

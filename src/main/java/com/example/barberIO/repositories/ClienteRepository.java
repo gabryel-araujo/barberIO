@@ -9,6 +9,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface ClienteRepository extends JpaRepository<ClienteModel, UUID> {
+public interface ClienteRepository extends JpaRepository<ClienteModel, Long> {
 
 }

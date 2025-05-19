@@ -4,16 +4,16 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Table(name="funcionario")
 public class FuncionarioModel implements Serializable {
-    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    private Long id;
 
     private String nome;
 
@@ -30,11 +30,31 @@ public class FuncionarioModel implements Serializable {
 
     private int atendimentos = 0;
 
-    public UUID getId() {
+    @ManyToMany
+    @JoinTable(
+            name = "barbeiro_servico",
+            joinColumns = @JoinColumn(name = "barbeiro_id"),
+            inverseJoinColumns = @JoinColumn(name = "servico_id")
+    )
+    private List<ServiceModel> servicos;
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setData_nascimento(String data_nascimento) {
+        this.data_nascimento = data_nascimento;
+    }
+
+    public List<ServiceModel> getServicos() {
+        return servicos;
+    }
+
+    public void setServicos(List<ServiceModel> servicos) {
+        this.servicos = servicos;
+    }
+
+    public void setId(Long id) {
         this.id = id;
     }
 

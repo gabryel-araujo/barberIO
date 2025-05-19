@@ -1,23 +1,17 @@
-import { useEffect, useState } from "react";
-import { AgendamentoAction, useForm } from "@/contexts/AgendamentoContext";
+import { useState } from "react";
+import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
 //import { servicos } from "@/model/servico";
 import { Servico } from "@/types/servico";
 import { Calendar, Clock, Scissors, User } from "lucide-react";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
-import axios from "axios";
-import { baseUrl } from "@/lib/baseUrl";
+import { toast } from "sonner";
+import { Modal } from "@/components/layout/Modal";
+import { DadosCliente, FormData, schema } from "./dadosCliente";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm as useFormZod } from "react-hook-form";
+import { useForm } from "@/contexts/AgendamentoContextProvider";
 
 export const Step4 = () => {
   const { state, dispatch } = useForm();
@@ -25,25 +19,47 @@ export const Step4 = () => {
   const [servicoSelecionado, setServicoSelecionado] = useState<Servico>(
     state.servico
   );
-  const [nome, setNome] = useState(state.nome);
-  const [email, setEmail] = useState(state.email);
-  const [telefone, setTelefone] = useState(state.telefone);
   const [openModal, setOpenModal] = useState(false);
   const [openModalRevisao, setOpenModalRevisao] = useState(false);
 
   const { push } = useRouter();
-  useEffect(() => {
-    axios
-      .get(`${baseUrl}/servico`)
-      .then((response) => setServicos(response.data))
-      .catch((error) => console.error("Erro ao buscar serviços", error));
-  }, []);
+
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+  } = useFormZod<FormData>({ resolver: zodResolver(schema) });
+
+  const review = [
+    {
+      icon: <Calendar className="texto-azul" />,
+      value: state.data.toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "long",
+      }),
+    },
+    {
+      icon: <User className="texto-azul" />,
+      value: state.barbeiro,
+    },
+    ,
+    {
+      icon: <Clock className="texto-azul" />,
+      value: state.horario,
+    },
+    ,
+    {
+      icon: <Scissors className="texto-azul" />,
+      value: state.servico.nome,
+    },
+  ];
 
   function proximoPasso() {
-    dispatch({
-      type: AgendamentoAction.setServico,
-      payload: servicoSelecionado,
-    });
+    //gabryel: removi o dispatch daqui para assim que clicar já atualizar o estado no componente
+    if (state.servico.id === "") {
+      toast.warning("Selecione um serviço");
+      return;
+    }
     if (state.currentStep == 4) {
       setOpenModal(!openModal);
     }
@@ -55,46 +71,55 @@ export const Step4 = () => {
         type: AgendamentoAction.setcurrentStep,
         payload: state.currentStep - 1,
       });
+      dispatch({
+        type: AgendamentoAction.setServico,
+        payload: {
+          duracao: 0,
+          id: "",
+          nome: "",
+          valor: 0,
+          descricao: "",
+        } as Servico,
+      });
     }
   }
-  const finalizarAgendamento = () => {
+
+  const finalizarAgendamento = (data: FormData) => {
     dispatch({
       type: AgendamentoAction.setNome,
-      payload: nome,
+      payload: data.name,
     });
     dispatch({
       type: AgendamentoAction.setEmail,
-      payload: email,
+      payload: data.email,
     });
     dispatch({
       type: AgendamentoAction.setTelefone,
-      payload: telefone,
+      payload: data.phone,
     });
 
+    console.log(data);
     setOpenModal(!openModal);
     setOpenModalRevisao(!openModalRevisao);
-
-    //push("/");
   };
 
   const confirmarAgendamento = () => {
     console.log("Estado Atualizado:", state);
-    dispatch({
-      type: AgendamentoAction.setcurrentStep,
-      payload: 1,
-    });
+    toast.success("Agendamento realizado com sucesso!");
+    setTimeout(() => {
+      push("/");
+    }, 2000);
 
-    setNome("");
-    setEmail("");
-    setTelefone("");
+    //todo:consumo da api para executar o agendamento
     setOpenModalRevisao(!openModalRevisao);
   };
+
   const cancelarAgendamento = () => {
     setOpenModalRevisao(!openModalRevisao);
   };
 
   return (
-    <div className="border rounded-lg md:mx-50 p-5 shadow">
+    <div className="border rounded-lg md:mx-50 p-5 shadow bg-white">
       <div>
         <p className="text-2xl font-bold">Escolha um serviço</p>
         <span className="text-xs text-slate-500">
@@ -107,8 +132,14 @@ export const Step4 = () => {
             <Button
               key={servico.id}
               variant="ghost"
-              onClick={() => setServicoSelecionado(servico)}
-              className={`h-auto md:w-[650px] w-[300px] flex flex-col border-2 items-start p-4 justify-start text-left ${
+              onClick={() => {
+                setServicoSelecionado(servico);
+                dispatch({
+                  type: AgendamentoAction.setServico,
+                  payload: servico,
+                });
+              }}
+              className={`h-auto md:w-[650px] w-[300px] flex flex-col border-2 items-start p-4 justify-start text-left cursor-pointer${
                 servicoSelecionado?.nome == servico.nome
                   ? "border-2 border-[#3f89c5]"
                   : ""
@@ -143,7 +174,7 @@ export const Step4 = () => {
               className="cursor-pointer hover:bg-slate-200"
               onClick={anteriorPasso}
             >
-              Antes
+              Anterior
             </Button>
           )}
 
@@ -152,141 +183,42 @@ export const Step4 = () => {
           </Button>
         </div>
 
-        <Dialog open={openModal}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Finalize seu agendamento</DialogTitle>
-              <DialogDescription>
-                Preencha seus dados para confirmar o agendamento
-              </DialogDescription>
-            </DialogHeader>
+        <Modal
+          title="Finalize seu agendamento"
+          description="Preencha seus dados para confirmar o agendamento"
+          open={openModal}
+          setOpen={setOpenModal}
+          handleSubmit={handleSubmit(finalizarAgendamento)}
+        >
+          <DadosCliente register={register} errors={errors} />
+        </Modal>
 
-            <div className="flex flex-col gap-3">
-              <div>
-                <p className="text-sm">Nome</p>
-                <Input
-                  type="text"
-                  value={nome}
-                  onChange={(e) => setNome(e.target.value)}
-                />
-              </div>
-              <div>
-                <p className="text-sm">Email</p>
-                <Input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-              <div>
-                <p className="text-sm">Telefone</p>
-                <Input
-                  type="text"
-                  value={telefone}
-                  onChange={(e) =>
-                    setTelefone(e.target.value.replace(/\D/g, ""))
-                  }
-                />
-              </div>
-            </div>
-            <div className="flex items-center justify-between px-5">
-              <Button
-                className="w-[150px] cursor-pointer"
-                variant="destructive"
-                onClick={() => setOpenModal(!openModal)}
-              >
-                Cancelar
-              </Button>
-              <Button
-                className="w-[150px] cursor-pointer"
-                onClick={finalizarAgendamento}
-              >
-                Finalizar
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-
-        <Dialog open={openModalRevisao}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Revisão de Agendamento</DialogTitle>
-              <DialogDescription>
-                Revise todos os dados abaixo e confirme
-              </DialogDescription>
-
-              <Card className="my-5">
-                <CardContent>
-                  <div className="grid grid-cols-2 gap-3 pt-3">
-                    {state.data instanceof Date &&
-                    !isNaN(state.data.getTime()) ? (
-                      <div className="flex gap-3">
-                        <Calendar className="texto-azul" />
-                        {state.data.toLocaleDateString("pt-BR", {
-                          day: "2-digit",
-                          month: "long",
-                        })}
-                      </div>
-                    ) : (
-                      ""
-                    )}
-                    <div>
-                      {state.barbeiro !== "" ? (
-                        <div className="flex gap-3">
-                          <User className="texto-azul" />
-                          {state.barbeiro}
-                        </div>
-                      ) : (
-                        ""
-                      )}
+        <Modal
+          title="Revisão de Agendamento"
+          description="Revise todos os dados abaixo e confirme"
+          open={openModalRevisao}
+          setOpen={setOpenModalRevisao}
+          schedule={confirmarAgendamento}
+        >
+          <Card className="my-5">
+            <CardContent>
+              <div className="grid grid-cols-2 gap-3 p-4">
+                {review.map((item, index) => {
+                  return (
+                    <div className="flex gap-3" key={index}>
+                      {item!.icon}
+                      {item?.value}
                     </div>
-                    <div>
-                      {state.horario !== "" ? (
-                        <div className="flex gap-3">
-                          <Clock className="texto-azul" />
-                          {state.horario}
-                        </div>
-                      ) : (
-                        ""
-                      )}
-                    </div>
-                    <div>
-                      {state.servico.nome !== "" ? (
-                        <div className="flex gap-3">
-                          <Scissors className="texto-azul" />
-                          {state.servico.nome} -
-                          {state.servico.preco.toLocaleString("pt-BR", {
-                            style: "currency",
-                            currency: "BRL",
-                          })}
-                        </div>
-                      ) : (
-                        ""
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <DialogFooter>
-                <Button
-                  className="cursor-pointer"
-                  onClick={cancelarAgendamento}
-                  variant="destructive"
-                >
-                  Cancelar
-                </Button>
-
-                <Button
-                  className="cursor-pointer"
-                  onClick={confirmarAgendamento}
-                >
-                  Agendar
-                </Button>
-              </DialogFooter>
-            </DialogHeader>
-          </DialogContent>
-        </Dialog>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+          <div className="flex flex-row items-center gap-1">
+            <p className="font-extrabold ">Valor:</p>
+            <p className="text-sm">R$ {state.servico.valor.toFixed(2)}</p>
+          </div>
+        </Modal>
       </div>
     </div>
   );

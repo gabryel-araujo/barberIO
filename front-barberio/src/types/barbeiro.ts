@@ -1,7 +1,12 @@
 export interface Barbeiro {
-  id: string;
+  id: number;
   nome: string;
-  avatar?: string;
-  servicos: string[];
-  isDisponivel: boolean;
+  email: string;
+  senha: string;
+  data_nascimento: string;
+  disponivel: boolean;
+  avaliacao?: number;
+  experiencia?: number;
+  atendimentos?: number;
+  servicos?: any[];
 }
