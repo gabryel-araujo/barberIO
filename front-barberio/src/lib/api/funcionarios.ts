@@ -1,6 +1,8 @@
+import { cache } from "react";
 import axiosInstance from "../axios";
+import { Barbeiro } from "@/types/barbeiro";
 
-export const getFuncionarios = async (email: String, password: String) => {
+export const login = async (email: String, password: String) => {
   try {
     const response = await axiosInstance.post("/auth/login", {
       email: email,
@@ -14,24 +16,6 @@ export const getFuncionarios = async (email: String, password: String) => {
   }
 };
 
-export const setFuncionario = async (
-  nome: String,
-  email: String,
-  senha: String
-) => {
-  try {
-    const response = await axiosInstance.post("/funcionarios", {
-      nome: nome,
-      email: email,
-      senha: senha,
-    });
-    return response;
-  } catch (errorReg) {
-    console.error("Erro ao cadastrar funcionario", errorReg);
-    throw errorReg;
-  }
-};
-
 export const setGoogleFuncionario = async (nome: String, email: String) => {
   try {
     const response = await axiosInstance.post("/funcionarios", {
@@ -42,5 +26,58 @@ export const setGoogleFuncionario = async (nome: String, email: String) => {
   } catch (errorReg) {
     console.error("Erro ao cadastrar funcionario", errorReg);
     throw errorReg;
+  }
+};
+
+export const GETFuncionarios = cache(async (): Promise<Barbeiro[]> => {
+  try {
+    const respose = await axiosInstance.get<Barbeiro[]>("/funcionarios");
+    return respose.data;
+  } catch (error) {
+    console.error("Erro ao cadastrar funcionario", error);
+    throw error;
+  }
+});
+
+export const SETFuncionario = async (
+  nome: string,
+  email: string,
+  senha: string,
+  data_nascimento: string,
+  disponivel: boolean
+) => {
+  try {
+    const response = await axiosInstance.post("/funcionarios", {
+      nome,
+      email,
+      senha,
+      data_nascimento,
+      disponivel,
+    });
+    return response;
+  } catch (errorReg) {
+    console.error("Erro ao cadastrar funcionario", errorReg);
+    throw errorReg;
+  }
+};
+
+export const changeStatus = async (
+  id: number,
+  nome: string,
+  email: string,
+  senha: string,
+  disponivel: boolean
+) => {
+  try {
+    const response = await axiosInstance.put(`/funcionarios/${id}`, {
+      nome,
+      email,
+      senha,
+      disponivel,
+    });
+    return response;
+  } catch (error) {
+    console.error("Erro ao atualizar", error);
+    throw error;
   }
 };
