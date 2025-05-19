@@ -14,7 +14,7 @@ export const inicialData: State = {
   currentStep: 1,
   data: new Date(),
   horario: "",
-  barbeiro: "",
+  barbeiro: [],
   servico: {
     duracao: 0,
     id: "",

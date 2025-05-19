@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Star, UserPlus } from "lucide-react";
 import { barbeiro } from "../../../model/barbeiro";
 import { Card } from "@/components/ui/card";
-import { servicos } from "@/model/servico";
+// import { servicos } from "@/model/servico";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import {
@@ -26,17 +26,24 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Barbeiro, BarbeiroApi } from "@/types/barbeiro";
-import { getFuncionarios, setFuncionario } from "@/lib/api/funcionarios";
+// import { Checkbox } from "@/components/ui/checkbox";
+import { Barbeiro } from "@/types/barbeiro";
+import {
+  GETFuncionarios,
+  SETFuncionario,
+  changeStatus,
+} from "@/lib/api/funcionarios";
+import { useForm as useFormReducer } from "@/contexts/AgendamentoContextProvider";
+import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
+import { toast } from "sonner";
 
 const barbeiros = () => {
+  const { state, dispatch } = useFormReducer();
   const [openModal, setOpenModal] = useState(false);
-  // const [barbeiroLista, setBabeiroLista] = useState<Barbeiro[]>(barbeiro);
   const [barbeiroLista, setBabeiroLista] = useState<Barbeiro[]>([]);
   const [barbeiroSelecionado, setBarbeiroSelecionado] = useState<Barbeiro>();
   const formSchema = z.object({
-    id: z.string(),
+    id: z.coerce.number(),
     nome: z
       .string()
       .min(2, { message: "Nome deve conter no mínimo 2 caracteres" }),
@@ -45,99 +52,107 @@ const barbeiros = () => {
     data_nascimento: z
       .string()
       .min(10, "A data precisa estar no formato: dd/MM/aaaa"),
-    servico: z.array(z.string()).min(1, "Selecione pelo menos um serviço"),
-    isDisponivel: z.boolean(),
-    avatar: z.string(),
+    // servico: z.array(z.any()).nullable(),
+    disponivel: z.boolean(),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      id: String(barbeiro.length + 1),
+      id: barbeiro.length + 1,
       nome: "",
       email: "",
       senha: "",
       data_nascimento: "",
-      avatar: "",
-      isDisponivel: true,
-      servico: [],
+      disponivel: true,
+      // servico: [],
     },
   });
 
-  function mapBarbeiroApiToBarbeiro(api: BarbeiroApi): Barbeiro {
-    return {
-      id: String(api.id),
-      nome: api.nome,
-      email: api.email,
-      senha: api.senha,
-      data_nascimento: api.data_nascimento,
-      servicos: api.servicos ?? [],
-      isDisponivel: true,
-    };
-  }
-
   useEffect(() => {
     async function fetchData() {
-      const apiData = await getFuncionarios();
-      const mappedData = apiData.map(mapBarbeiroApiToBarbeiro);
-      setBabeiroLista(mappedData);
-
-      console.log(mappedData);
+      const apiData = await GETFuncionarios();
+      setBabeiroLista(apiData);
     }
-
     fetchData();
-  }, []);
+  }, [state.barbeiro]);
 
-  const onSubmit = async (value: z.infer<typeof formSchema>) => {
-    const barbeiroExistente = barbeiroSelecionado;
-
-    const barbeiroAtualizado: Barbeiro = {
-      id: value.id,
-      nome: value.nome,
-      email: value.email,
-      senha: value.senha,
-      data_nascimento: value.data_nascimento,
-      servicos: value.servico,
-      isDisponivel: value.isDisponivel,
-      avatar: value.avatar,
-    };
-    if (barbeiroExistente) {
-      setBabeiroLista((prev) =>
-        prev.map((barber) =>
-          barber.id === barbeiroAtualizado.id ? barbeiroAtualizado : barber
-        )
-      );
-    } else {
-      setBabeiroLista((prev) => [...prev, barbeiroAtualizado]);
-    }
-    setBarbeiroSelecionado(undefined);
-    console.log(barbeiroAtualizado);
-
-    const response = await setFuncionario(
-      barbeiroAtualizado.nome,
-      barbeiroAtualizado.email,
-      barbeiroAtualizado.senha,
-      barbeiroAtualizado.data_nascimento
+  const onSubmit = async (barbeiro: z.infer<typeof formSchema>) => {
+    const response = await SETFuncionario(
+      barbeiro.nome,
+      barbeiro.email,
+      barbeiro.senha,
+      barbeiro.data_nascimento,
+      barbeiro.disponivel
     );
 
-    console.log(response.status);
+    dispatch({
+      type: AgendamentoAction.setBarbeiro,
+      payload: [...state.barbeiro, response.data],
+    });
+
+    if (response.status === 201) {
+      toast.success("Barbeiro cadastrado com sucesso!");
+    } else if (response.status === 400) {
+      toast.error("Erro na requisição! Verifique os dados");
+    } else {
+      toast.error("Oops, ocorreu um erro!");
+      console.error(response.statusText);
+    }
 
     setOpenModal(false);
     form.reset();
   };
-  const abrirModal = () => {
-    setOpenModal(true);
-    form.reset({
-      id: String(barbeiro.length + 1),
-      nome: "",
-      email: "",
-      senha: "",
-      data_nascimento: "",
-      avatar: "",
-      isDisponivel: true,
-      servico: [],
+
+  const updateStatus = async (barbeiro: Barbeiro) => {
+    const response = await changeStatus(
+      barbeiro.id,
+      barbeiro.nome,
+      barbeiro.email,
+      barbeiro.senha,
+      !barbeiro.disponivel
+    );
+
+    dispatch({
+      type: AgendamentoAction.setBarbeiro,
+      payload: [...state.barbeiro, response.data],
     });
+
+    if (response.status === 200) {
+      toast.success("Barbeiro atualizado com sucesso!");
+    } else if (response.status >= 400) {
+      toast.error("Erro na requisição! Verifique os dados");
+    } else {
+      toast.error("Oops, ocorreu um erro!");
+      console.log(response);
+      console.error(response.statusText);
+    }
   };
+
+  const abrirModal = () => {
+    setBarbeiroSelecionado(undefined);
+    setOpenModal(true);
+    form.reset();
+  };
+
+  const handleEditBarbeiro = (barbeiro: Barbeiro) => {
+    console.log(barbeiro);
+    form.reset({
+      nome: barbeiro.nome,
+      email: barbeiro.email,
+      senha: "",
+      data_nascimento: barbeiro.data_nascimento,
+      disponivel: barbeiro.disponivel,
+    });
+
+    const barbeiroAtualizado: Barbeiro = {
+      ...barbeiro,
+      atendimentos: 30,
+    };
+
+    console.log("atualizado:", barbeiroAtualizado);
+  };
+
   return (
     <div className="w-full">
       <div className="w-full flex justify-between px-10 py-5">
@@ -157,31 +172,24 @@ const barbeiros = () => {
           <Card className="" key={barbeiro.id}>
             <div className="rounded-t-md p-3 bg-slate-800 flex justify-start items-center gap-3">
               <div className="border rounded-full h-14 min-w-14 bg-slate-700 items-center justify-center flex text-white">
-                {barbeiro.avatar ? (
-                  <img
-                    className="object-cover rounded-full border-2 border-slate-100 h-14 w-14"
-                    src={barbeiro.avatar}
-                  />
-                ) : (
-                  <p className="font-bold text-3xl">
-                    {barbeiro.nome.split("")[0]}
-                  </p>
-                )}
+                <p className="font-bold text-3xl">
+                  {barbeiro.nome.split("")[0]}
+                </p>
               </div>
               <div className="flex items-center justify-between w-full">
                 <div>
                   <p className="font-bold text-slate-100">{barbeiro.nome}</p>
                   <p
                     className={`font-semibold
-                    ${
-                      barbeiro.isDisponivel ? "text-green-300" : "text-red-400"
-                    }`}
+                    ${barbeiro.disponivel ? "text-green-300" : "text-red-400"}`}
                   >
-                    {barbeiro.isDisponivel ? "Disponível" : "Indisponível"}
+                    {barbeiro.disponivel ? "Disponível" : "Indisponível"}
                   </p>
                 </div>
                 <div className="flex flex-row gap-1 items-center">
-                  <p className="text-amber-300 font-bold">{}</p>
+                  <p className="text-amber-300 font-bold">
+                    {barbeiro.avaliacao}
+                  </p>
                   <Star fill="yellow" color="#ffd230" />
                 </div>
               </div>
@@ -190,30 +198,23 @@ const barbeiros = () => {
             <div className="px-3">
               <p className="text-sm font-semibold">Serviços:</p>
               <span className="">
-                {barbeiro.servicos
-                  .map((id) => servicos.find((s) => s.id === id)?.nome)
-                  .filter(Boolean)
-                  .map((nome, index) => (
+                {barbeiro.servicos?.map((servico) => {
+                  return (
                     <span
-                      key={index}
-                      className="ml-3 bg-slate-100 rounded-sm text-slate-400 text-xs px-2 py-0.5"
+                      key={servico.id}
+                      className="ml-3 bg-slate-100 rounded-sm text-slate-800 text-xs px-2 py-0.5"
                     >
-                      {nome}
+                      {servico.nome}
                     </span>
-                  ))}
+                  );
+                })}
               </span>
             </div>
             <div className="w-full px-3 py-3 flex justify-between items-center">
               <Button
                 onClick={() => {
+                  handleEditBarbeiro(barbeiro);
                   setBarbeiroSelecionado(barbeiro);
-                  form.reset({
-                    id: barbeiro.id,
-                    nome: barbeiro.nome,
-                    avatar: barbeiro.avatar,
-                    isDisponivel: barbeiro.isDisponivel,
-                    servico: barbeiro.servicos,
-                  });
                   setOpenModal(true);
                 }}
                 className="bg-slate-700 hover:bg-slate-600"
@@ -221,9 +222,15 @@ const barbeiros = () => {
                 Gerenciar
               </Button>
               <div className="flex gap-3">
-                <Switch id="disponivel" checked={barbeiro.isDisponivel} />
+                <Switch
+                  id="disponivel"
+                  checked={barbeiro.disponivel}
+                  onCheckedChange={() => {
+                    updateStatus(barbeiro);
+                  }}
+                />
                 <Label htmlFor="disponivel" className="font-normal">
-                  {barbeiro.isDisponivel ? "Disponível" : "Indisponível"}
+                  {barbeiro.disponivel ? "Disponível" : "Indisponível"}
                 </Label>
               </div>
             </div>
@@ -233,7 +240,9 @@ const barbeiros = () => {
       <Dialog open={openModal} onOpenChange={setOpenModal}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Cadastro de Barbeiro</DialogTitle>
+            <DialogTitle>
+              {barbeiroSelecionado ? "Editar Barbeiro" : "Cadastro de Barbeiro"}
+            </DialogTitle>
             <DialogDescription>
               Preencha todos os dados necessários
             </DialogDescription>
@@ -306,23 +315,7 @@ const barbeiros = () => {
                   />
                 </div>
               </div>
-              <FormField
-                control={form.control}
-                name="avatar"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Avatar (Url da imagem):</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="https://exemplo.com/imagem.jpg"
-                        {...field}
-                      ></Input>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="servico"
                 render={({ field }) => {
@@ -358,10 +351,10 @@ const barbeiros = () => {
                     </FormItem>
                   );
                 }}
-              />
+              /> */}
               <FormField
                 control={form.control}
-                name="isDisponivel"
+                name="disponivel"
                 render={({ field }) => (
                   <FormItem className="flex">
                     <FormControl>
@@ -387,7 +380,9 @@ const barbeiros = () => {
                 >
                   Cancelar
                 </Button>
-                <Button type="submit">Cadastrar</Button>
+                <Button type="submit">
+                  {barbeiroSelecionado ? "Atualizar" : "Cadastrar"}
+                </Button>
               </div>
             </form>
           </Form>
