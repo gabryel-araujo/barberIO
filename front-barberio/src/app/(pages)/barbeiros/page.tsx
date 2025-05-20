@@ -1,7 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Star, UserPlus } from "lucide-react";
-import { barbeiro } from "../../../model/barbeiro";
 import { Card } from "@/components/ui/card";
 // import { servicos } from "@/model/servico";
 import { Switch } from "@/components/ui/switch";
@@ -43,7 +42,7 @@ const barbeiros = () => {
   const [barbeiroLista, setBabeiroLista] = useState<Barbeiro[]>([]);
   const [barbeiroSelecionado, setBarbeiroSelecionado] = useState<Barbeiro>();
   const formSchema = z.object({
-    id: z.coerce.number(),
+    //id: z.coerce.number(),
     nome: z
       .string()
       .min(2, { message: "Nome deve conter no mínimo 2 caracteres" }),
@@ -59,7 +58,7 @@ const barbeiros = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      id: barbeiro.length + 1,
+      //id: barbeiro.length + 1,
       nome: "",
       email: "",
       senha: "",
@@ -85,7 +84,7 @@ const barbeiros = () => {
       barbeiro.data_nascimento,
       barbeiro.disponivel
     );
-
+    console.log(response.data);
     dispatch({
       type: AgendamentoAction.setBarbeiro,
       payload: [response.data],
@@ -130,9 +129,15 @@ const barbeiros = () => {
   };
 
   const abrirModal = () => {
+    form.reset({
+      nome: "",
+      email: "",
+      senha: "",
+      data_nascimento: "",
+      disponivel: true,
+    });
     setBarbeiroSelecionado(undefined);
     setOpenModal(true);
-    form.reset();
   };
 
   const handleEditBarbeiro = (barbeiro: Barbeiro) => {
