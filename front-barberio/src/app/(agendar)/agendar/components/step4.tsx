@@ -12,6 +12,9 @@ import { DadosCliente, FormData, schema } from "./dadosCliente";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm as useFormZod } from "react-hook-form";
 import { useForm } from "@/contexts/AgendamentoContextProvider";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { baseUrl } from "@/lib/baseUrl";
+import axios from "axios";
 
 export const Step4 = () => {
   const { state, dispatch } = useForm();
@@ -29,6 +32,17 @@ export const Step4 = () => {
     formState: { errors },
     handleSubmit,
   } = useFormZod<FormData>({ resolver: zodResolver(schema) });
+
+  const query = useQuery({
+    queryKey: ["servicos"],
+    queryFn: async () => {
+      const response = await axios.get(`${baseUrl}/servico`);
+      setServicos(response.data);
+      return response.data;
+    },
+  });
+
+  const queryClient = useQueryClient();
 
   const review = [
     {
@@ -56,7 +70,7 @@ export const Step4 = () => {
 
   function proximoPasso() {
     //gabryel: removi o dispatch daqui para assim que clicar já atualizar o estado no componente
-    if (state.servico.id === "") {
+    if (state.servico.id === 0) {
       toast.warning("Selecione um serviço");
       return;
     }
@@ -75,11 +89,11 @@ export const Step4 = () => {
         type: AgendamentoAction.setServico,
         payload: {
           duracao: 0,
-          id: "",
+          id: 0,
           nome: "",
           valor: 0,
           descricao: "",
-        } as Servico,
+        } as unknown as Servico,
       });
     }
   }
@@ -207,7 +221,7 @@ export const Step4 = () => {
                   return (
                     <div className="flex gap-3" key={index}>
                       {item!.icon}
-                      {item?.value}
+                      {String(item?.value)}
                     </div>
                   );
                 })}
@@ -216,7 +230,9 @@ export const Step4 = () => {
           </Card>
           <div className="flex flex-row items-center gap-1">
             <p className="font-extrabold ">Valor:</p>
-            <p className="text-sm">R$ {state.servico.valor.toFixed(2)}</p>
+            <p className="text-sm">
+              R$ {Number(state.servico.preco).toFixed(2)}
+            </p>
           </div>
         </Modal>
       </div>

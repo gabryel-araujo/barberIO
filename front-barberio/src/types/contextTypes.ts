@@ -10,7 +10,7 @@ export type State = {
   currentStep: number;
   data: Date;
   horario: string;
-  barbeiro: Barbeiro[];
+  barbeiro: Barbeiro;
   servico: Servico;
   nome: string;
   telefone: string;

@@ -23,14 +23,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { Scissors } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const servicos = () => {
   const [openModal, setOpenModal] = useState(false);
   const [servicos, setServicos] = useState<Servico[]>([]);
-  const [render, setRender] = useState(false);
   const [servicoSelecionado, setServicoSelecionado] = useState<Servico>();
 
   const query = useQuery({

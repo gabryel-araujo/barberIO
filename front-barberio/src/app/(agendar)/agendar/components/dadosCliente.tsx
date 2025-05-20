@@ -18,7 +18,7 @@ type DadosClienteProps = {
 export function DadosCliente({ register, errors }: DadosClienteProps) {
   return (
     <div className="flex flex-col gap-3">
-      <form>
+      <form className="flex flex-col gap-3">
         <div>
           <p className="text-sm">Nome</p>
           <Input type="text" {...register("name")} />

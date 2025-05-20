@@ -88,7 +88,7 @@ const barbeiros = () => {
 
     dispatch({
       type: AgendamentoAction.setBarbeiro,
-      payload: [...state.barbeiro, response.data],
+      payload: [response.data],
     });
 
     if (response.status === 201) {
@@ -115,7 +115,7 @@ const barbeiros = () => {
 
     dispatch({
       type: AgendamentoAction.setBarbeiro,
-      payload: [...state.barbeiro, response.data],
+      payload: [response.data],
     });
 
     if (response.status === 200) {
