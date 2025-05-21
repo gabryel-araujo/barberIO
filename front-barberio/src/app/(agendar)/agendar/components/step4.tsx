@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
-import { servicos } from "@/model/servico";
+//import { servicos } from "@/model/servico";
 import { Servico } from "@/types/servico";
 import { Calendar, Clock, Scissors, User } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -12,9 +12,13 @@ import { DadosCliente, FormData, schema } from "./dadosCliente";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm as useFormZod } from "react-hook-form";
 import { useForm } from "@/contexts/AgendamentoContextProvider";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { baseUrl } from "@/lib/baseUrl";
+import axios from "axios";
 
 export const Step4 = () => {
   const { state, dispatch } = useForm();
+  const [servicos, setServicos] = useState<Servico[]>([]);
   const [servicoSelecionado, setServicoSelecionado] = useState<Servico>(
     state.servico
   );
@@ -28,6 +32,17 @@ export const Step4 = () => {
     formState: { errors },
     handleSubmit,
   } = useFormZod<FormData>({ resolver: zodResolver(schema) });
+
+  const query = useQuery({
+    queryKey: ["servicos"],
+    queryFn: async () => {
+      const response = await axios.get(`${baseUrl}/servico`);
+      setServicos(response.data);
+      return response.data;
+    },
+  });
+
+  const queryClient = useQueryClient();
 
   const review = [
     {
@@ -55,7 +70,7 @@ export const Step4 = () => {
 
   function proximoPasso() {
     //gabryel: removi o dispatch daqui para assim que clicar já atualizar o estado no componente
-    if (state.servico.id === "") {
+    if (state.servico.id === 0) {
       toast.warning("Selecione um serviço");
       return;
     }
@@ -74,11 +89,11 @@ export const Step4 = () => {
         type: AgendamentoAction.setServico,
         payload: {
           duracao: 0,
-          id: "",
+          id: 0,
           nome: "",
           valor: 0,
           descricao: "",
-        } as Servico,
+        } as unknown as Servico,
       });
     }
   }
@@ -149,7 +164,12 @@ export const Step4 = () => {
                   <Scissors />
                   {servico.nome}
                 </div>
-                <div>R$ {servico.valor.toFixed(2)}</div>
+                <div>
+                  {servico.preco.toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
+                </div>
               </div>
               <div className="flex justify-between w-full mt-1 gap-2">
                 <div className="text-slate-500 overflow-auto">
@@ -201,7 +221,7 @@ export const Step4 = () => {
                   return (
                     <div className="flex gap-3" key={index}>
                       {item!.icon}
-                      {item?.value}
+                      {String(item?.value)}
                     </div>
                   );
                 })}
@@ -210,7 +230,9 @@ export const Step4 = () => {
           </Card>
           <div className="flex flex-row items-center gap-1">
             <p className="font-extrabold ">Valor:</p>
-            <p className="text-sm">R$ {state.servico.valor.toFixed(2)}</p>
+            <p className="text-sm">
+              R$ {Number(state.servico.preco).toFixed(2)}
+            </p>
           </div>
         </Modal>
       </div>

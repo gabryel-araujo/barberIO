@@ -1,7 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Star, UserPlus } from "lucide-react";
-import { barbeiro } from "../../../model/barbeiro";
 import { Card } from "@/components/ui/card";
 // import { servicos } from "@/model/servico";
 import { Switch } from "@/components/ui/switch";
@@ -43,7 +42,7 @@ const barbeiros = () => {
   const [barbeiroLista, setBabeiroLista] = useState<Barbeiro[]>([]);
   const [barbeiroSelecionado, setBarbeiroSelecionado] = useState<Barbeiro>();
   const formSchema = z.object({
-    id: z.coerce.number(),
+    //id: z.coerce.number(),
     nome: z
       .string()
       .min(2, { message: "Nome deve conter no mínimo 2 caracteres" }),
@@ -59,7 +58,7 @@ const barbeiros = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      id: barbeiro.length + 1,
+      //id: barbeiro.length + 1,
       nome: "",
       email: "",
       senha: "",
@@ -85,10 +84,10 @@ const barbeiros = () => {
       barbeiro.data_nascimento,
       barbeiro.disponivel
     );
-
+    console.log(response.data);
     dispatch({
       type: AgendamentoAction.setBarbeiro,
-      payload: [...state.barbeiro, response.data],
+      payload: [response.data],
     });
 
     if (response.status === 201) {
@@ -115,7 +114,7 @@ const barbeiros = () => {
 
     dispatch({
       type: AgendamentoAction.setBarbeiro,
-      payload: [...state.barbeiro, response.data],
+      payload: [response.data],
     });
 
     if (response.status === 200) {
@@ -130,9 +129,15 @@ const barbeiros = () => {
   };
 
   const abrirModal = () => {
+    form.reset({
+      nome: "",
+      email: "",
+      senha: "",
+      data_nascimento: "",
+      disponivel: true,
+    });
     setBarbeiroSelecionado(undefined);
     setOpenModal(true);
-    form.reset();
   };
 
   const handleEditBarbeiro = (barbeiro: Barbeiro) => {
@@ -155,11 +160,11 @@ const barbeiros = () => {
 
   return (
     <div className="w-full">
-      <div className="w-full flex justify-between px-10 py-5">
+      <div className="w-full flex items-center justify-between px-10 py-5">
         <div className="flex flex-col">
           <p className="text-3xl font-bold">Barbeiros</p>
           <p className="text-slate-500">
-            Gerencie os profissionais da barbearia.
+            Gerencie os profissionais da barbearia
           </p>
         </div>
         <Button onClick={abrirModal}>
@@ -167,75 +172,77 @@ const barbeiros = () => {
           Novo Barbeiro
         </Button>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 px-5">
-        {barbeiroLista.map((barbeiro) => (
-          <Card className="" key={barbeiro.id}>
-            <div className="rounded-t-md p-3 bg-slate-800 flex justify-start items-center gap-3">
-              <div className="border rounded-full h-14 min-w-14 bg-slate-700 items-center justify-center flex text-white">
-                <p className="font-bold text-3xl">
-                  {barbeiro.nome.split("")[0]}
-                </p>
-              </div>
-              <div className="flex items-center justify-between w-full">
-                <div>
-                  <p className="font-bold text-slate-100">{barbeiro.nome}</p>
-                  <p
-                    className={`font-semibold
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 px-5">
+        {barbeiroLista
+          .sort((a, b) => b.id - a.id)
+          .map((barbeiro) => (
+            <Card className="" key={barbeiro.id}>
+              <div className="rounded-t-md p-3 bg-slate-800 flex justify-start items-center gap-3">
+                <div className="border rounded-full h-14 min-w-14 bg-slate-700 items-center justify-center flex text-white">
+                  <p className="font-bold text-3xl">
+                    {barbeiro.nome.split("")[0]}
+                  </p>
+                </div>
+                <div className="flex items-center justify-between w-full">
+                  <div>
+                    <p className="font-bold text-slate-100">{barbeiro.nome}</p>
+                    <p
+                      className={`font-semibold
                     ${barbeiro.disponivel ? "text-green-300" : "text-red-400"}`}
-                  >
-                    {barbeiro.disponivel ? "Disponível" : "Indisponível"}
-                  </p>
-                </div>
-                <div className="flex flex-row gap-1 items-center">
-                  <p className="text-amber-300 font-bold">
-                    {barbeiro.avaliacao}
-                  </p>
-                  <Star fill="yellow" color="#ffd230" />
-                </div>
-              </div>
-            </div>
-
-            <div className="px-3">
-              <p className="text-sm font-semibold">Serviços:</p>
-              <span className="">
-                {barbeiro.servicos?.map((servico) => {
-                  return (
-                    <span
-                      key={servico.id}
-                      className="ml-3 bg-slate-100 rounded-sm text-slate-800 text-xs px-2 py-0.5"
                     >
-                      {servico.nome}
-                    </span>
-                  );
-                })}
-              </span>
-            </div>
-            <div className="w-full px-3 py-3 flex justify-between items-center">
-              <Button
-                onClick={() => {
-                  handleEditBarbeiro(barbeiro);
-                  setBarbeiroSelecionado(barbeiro);
-                  setOpenModal(true);
-                }}
-                className="bg-slate-700 hover:bg-slate-600"
-              >
-                Gerenciar
-              </Button>
-              <div className="flex gap-3">
-                <Switch
-                  id="disponivel"
-                  checked={barbeiro.disponivel}
-                  onCheckedChange={() => {
-                    updateStatus(barbeiro);
-                  }}
-                />
-                <Label htmlFor="disponivel" className="font-normal">
-                  {barbeiro.disponivel ? "Disponível" : "Indisponível"}
-                </Label>
+                      {barbeiro.disponivel ? "Disponível" : "Indisponível"}
+                    </p>
+                  </div>
+                  <div className="flex flex-row gap-1 items-center">
+                    <p className="text-amber-300 font-bold">
+                      {barbeiro.avaliacao}
+                    </p>
+                    <Star fill="yellow" color="#ffd230" />
+                  </div>
+                </div>
               </div>
-            </div>
-          </Card>
-        ))}
+
+              <div className="px-3">
+                <p className="text-sm font-semibold">Serviços:</p>
+                <span className="">
+                  {barbeiro.servicos?.map((servico) => {
+                    return (
+                      <span
+                        key={servico.id}
+                        className="ml-3 bg-slate-100 rounded-sm text-slate-800 text-xs px-2 py-0.5"
+                      >
+                        {servico.nome}
+                      </span>
+                    );
+                  })}
+                </span>
+              </div>
+              <div className="w-full px-3 py-3 flex justify-between items-center">
+                <Button
+                  onClick={() => {
+                    handleEditBarbeiro(barbeiro);
+                    setBarbeiroSelecionado(barbeiro);
+                    setOpenModal(true);
+                  }}
+                  className="bg-slate-700 hover:bg-slate-600"
+                >
+                  Gerenciar
+                </Button>
+                <div className="flex gap-3">
+                  <Switch
+                    id="disponivel"
+                    checked={barbeiro.disponivel}
+                    onCheckedChange={() => {
+                      updateStatus(barbeiro);
+                    }}
+                  />
+                  <Label htmlFor="disponivel" className="font-normal">
+                    {barbeiro.disponivel ? "Disponível" : "Indisponível"}
+                  </Label>
+                </div>
+              </div>
+            </Card>
+          ))}
       </div>
       <Dialog open={openModal} onOpenChange={setOpenModal}>
         <DialogContent>

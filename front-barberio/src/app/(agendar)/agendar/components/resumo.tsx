@@ -20,10 +20,10 @@ export const ResumoAgendamento = () => {
           ""
         )}
         <div>
-          {state.barbeiro !== "" ? (
+          {state.barbeiro.nome !== "" ? (
             <div className="flex gap-3">
               <User className="texto-azul" />
-              {state.barbeiro}
+              {state.barbeiro.nome}
             </div>
           ) : (
             ""
@@ -43,7 +43,11 @@ export const ResumoAgendamento = () => {
           {state.servico.nome !== "" ? (
             <div className="flex gap-3">
               <Scissors className="texto-azul" />
-              {state.servico.nome} - R${state.servico.valor.toFixed(2)}
+              {state.servico.nome} -{" "}
+              {state.servico.preco.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              })}
             </div>
           ) : (
             ""
