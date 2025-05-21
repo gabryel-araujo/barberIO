@@ -23,14 +23,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { Scissors } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const servicos = () => {
   const [openModal, setOpenModal] = useState(false);
   const [servicos, setServicos] = useState<Servico[]>([]);
-  const [render, setRender] = useState(false);
   const [servicoSelecionado, setServicoSelecionado] = useState<Servico>();
 
   const query = useQuery({
@@ -136,7 +135,7 @@ const servicos = () => {
           Novo Serviço
         </Button>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 px-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 px-5">
         {servicos
           .sort((a, b) => Number(b.id) - Number(a.id))
           .map((servico) => (

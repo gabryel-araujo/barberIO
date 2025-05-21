@@ -3,6 +3,7 @@ import "../globals.css";
 import { LayoutResponsivo } from "@/components/layout/layoutResponsivo";
 import { AgendamentoProvider } from "@/contexts/AgendamentoContextProvider";
 import { Toaster } from "sonner";
+import { Providers } from "@/utils/providers";
 
 export const metadata: Metadata = {
   title: "BaberIO",
@@ -18,8 +19,10 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body className={`antialiased`}>
         <AgendamentoProvider>
-          <Toaster richColors position="top-right" duration={3000} />
-          <LayoutResponsivo>{children}</LayoutResponsivo>
+          <Providers>
+            <Toaster richColors position="top-right" duration={3000} />
+            <LayoutResponsivo>{children}</LayoutResponsivo>
+          </Providers>
         </AgendamentoProvider>
       </body>
     </html>

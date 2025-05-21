@@ -2,15 +2,25 @@ import { useState } from "react";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
 import { User } from "lucide-react";
-import { useForm } from "@/contexts/AgendamentoContextProvider";
+import { inicialData, useForm } from "@/contexts/AgendamentoContextProvider";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
+import { GETFuncionarios } from "@/lib/api/funcionarios";
 
 export const Step3 = () => {
   const { state, dispatch } = useForm();
   const [barbeiro, setbarbeiro] = useState(state.barbeiro);
 
+  const { data: barbeiros = [] } = useQuery({
+    queryKey: ["barbeirosDisponivel"],
+    queryFn: GETFuncionarios,
+    //staleTime: 3000,
+  });
+
+  const barbeiroDisponivel = barbeiros.filter((b) => b.disponivel);
+
   function proximoPasso() {
-    if (state.barbeiro === "") {
+    if (state.barbeiro.nome === "") {
       toast.warning("Selecione um profissional");
       return;
     }
@@ -34,12 +44,10 @@ export const Step3 = () => {
       //gabryel: adicionei esse dispatch para caso o usuário volte, o sistema retirar o barbeiro selecionado
       dispatch({
         type: AgendamentoAction.setBarbeiro,
-        payload: "",
+        payload: inicialData.barbeiro,
       });
     }
   }
-
-  const barbeiroDisponivel = ["Renato Willon", "Gabryel Araújo", "Hugo Rocha"];
 
   return (
     <div className="border rounded-lg md:mx-50 p-5 shadow bg-white">
@@ -53,7 +61,7 @@ export const Step3 = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {barbeiroDisponivel.map((barber) => (
             <Button
-              key={barber}
+              key={barber.id}
               onClick={() => {
                 setbarbeiro(barber);
                 dispatch({
@@ -63,12 +71,12 @@ export const Step3 = () => {
               }}
               variant={"outline"}
               className={`border-2 md:w-[350px] w-[250px]  py-10 cursor-pointer${
-                barber === barbeiro ? "border-2 border-[#3f89c5]" : ""
+                barber.nome === barbeiro.nome ? "border-2 border-[#3f89c5]" : ""
               }`}
             >
               <p className="text-sm flex gap-3">
                 <User className="texto-azul" />
-                {barber}
+                {barber.nome}
               </p>
             </Button>
           ))}

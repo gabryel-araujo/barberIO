@@ -20,10 +20,10 @@ export const ResumoAgendamento = () => {
           ""
         )}
         <div>
-          {state.barbeiro !== "" ? (
+          {state.barbeiro.nome !== "" ? (
             <div className="flex gap-3">
               <User className="texto-azul" />
-              {state.barbeiro}
+              {state.barbeiro.nome}
             </div>
           ) : (
             ""
