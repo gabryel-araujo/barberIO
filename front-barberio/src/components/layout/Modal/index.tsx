@@ -16,6 +16,7 @@ type ModalProps = {
   description: string;
   handleSubmit?: (e?: React.BaseSyntheticEvent) => Promise<void>;
   schedule?: () => void;
+  buttonLabel?: string;
 };
 
 export function Modal({
@@ -26,6 +27,7 @@ export function Modal({
   description,
   handleSubmit,
   schedule,
+  buttonLabel,
 }: ModalProps) {
   return (
     <Dialog open={open}>
@@ -48,7 +50,7 @@ export function Modal({
             className="w-[150px] cursor-pointer"
             onClick={handleSubmit ? handleSubmit : schedule}
           >
-            Finalizar
+            {buttonLabel ? buttonLabel : "Finalizar"}
           </Button>
         </div>
       </DialogContent>

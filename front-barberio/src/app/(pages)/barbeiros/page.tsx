@@ -5,26 +5,12 @@ import { Card } from "@/components/ui/card";
 // import { servicos } from "@/model/servico";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Form } from "@/components/ui/form";
+
 // import { Checkbox } from "@/components/ui/checkbox";
 import { Barbeiro } from "@/types/barbeiro";
 import {
@@ -35,38 +21,40 @@ import {
 import { useForm as useFormReducer } from "@/contexts/AgendamentoContextProvider";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { toast } from "sonner";
+import { Modal } from "@/components/layout/Modal";
+import { BarberForm } from "../../../../components/BarberForm";
 
 const barbeiros = () => {
   const { state, dispatch } = useFormReducer();
   const [openModal, setOpenModal] = useState(false);
   const [barbeiroLista, setBabeiroLista] = useState<Barbeiro[]>([]);
   const [barbeiroSelecionado, setBarbeiroSelecionado] = useState<Barbeiro>();
-  const formSchema = z.object({
-    //id: z.coerce.number(),
-    nome: z
-      .string()
-      .min(2, { message: "Nome deve conter no mínimo 2 caracteres" }),
-    email: z.string().email("Email inválido"),
-    senha: z.string().min(7, "A senha precisa conter no mínimo 7 caracteres"),
-    data_nascimento: z
-      .string()
-      .min(10, "A data precisa estar no formato: dd/MM/aaaa"),
-    // servico: z.array(z.any()).nullable(),
-    disponivel: z.boolean(),
-  });
+  // const formSchema = z.object({
+  //   //id: z.coerce.number(),
+  //   nome: z
+  //     .string()
+  //     .min(2, { message: "Nome deve conter no mínimo 2 caracteres" }),
+  //   email: z.string().email("Email inválido"),
+  //   senha: z.string().min(7, "A senha precisa conter no mínimo 7 caracteres"),
+  //   data_nascimento: z
+  //     .string()
+  //     .min(10, "A data precisa estar no formato: dd/MM/aaaa"),
+  //   // servico: z.array(z.any()).nullable(),
+  //   disponivel: z.boolean(),
+  // });
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      //id: barbeiro.length + 1,
-      nome: "",
-      email: "",
-      senha: "",
-      data_nascimento: "",
-      disponivel: true,
-      // servico: [],
-    },
-  });
+  // const form = useForm<z.infer<typeof formSchema>>({
+  //   resolver: zodResolver(formSchema),
+  //   defaultValues: {
+  //     //id: barbeiro.length + 1,
+  //     nome: "",
+  //     email: "",
+  //     senha: "",
+  //     data_nascimento: "",
+  //     disponivel: true,
+  //     // servico: [],
+  //   },
+  // });
 
   useEffect(() => {
     async function fetchData() {
@@ -76,32 +64,31 @@ const barbeiros = () => {
     fetchData();
   }, [state.barbeiro]);
 
-  const onSubmit = async (barbeiro: z.infer<typeof formSchema>) => {
-    const response = await SETFuncionario(
-      barbeiro.nome,
-      barbeiro.email,
-      barbeiro.senha,
-      barbeiro.data_nascimento,
-      barbeiro.disponivel
-    );
-    console.log(response.data);
-    dispatch({
-      type: AgendamentoAction.setBarbeiro,
-      payload: [response.data],
-    });
+  // const onSubmit = async (barbeiro: z.infer<typeof formSchema>) => {
+  //   const response = await SETFuncionario(
+  //     barbeiro.nome,
+  //     barbeiro.email,
+  //     barbeiro.senha,
+  //     barbeiro.data_nascimento,
+  //     barbeiro.disponivel
+  //   );
 
-    if (response.status === 201) {
-      toast.success("Barbeiro cadastrado com sucesso!");
-    } else if (response.status === 400) {
-      toast.error("Erro na requisição! Verifique os dados");
-    } else {
-      toast.error("Oops, ocorreu um erro!");
-      console.error(response.statusText);
-    }
+  //   dispatch({
+  //     type: AgendamentoAction.setBarbeiro,
+  //     payload: [response.data],
+  //   });
 
-    setOpenModal(false);
-    form.reset();
-  };
+  //   if (response.status === 201) {
+  //     toast.success("Barbeiro cadastrado com sucesso!");
+  //   } else if (response.status === 400) {
+  //     toast.error("Erro na requisição! Verifique os dados");
+  //   } else {
+  //     toast.error("Oops, ocorreu um erro!");
+  //   }
+
+  //   setOpenModal(false);
+  //   form.reset();
+  // };
 
   const updateStatus = async (barbeiro: Barbeiro) => {
     const response = await changeStatus(
@@ -157,6 +144,7 @@ const barbeiros = () => {
 
     console.log("atualizado:", barbeiroAtualizado);
   };
+  //todo: criar o card barbeiro para modularizar mais
 
   return (
     <div className="w-full">
@@ -244,157 +232,25 @@ const barbeiros = () => {
             </Card>
           ))}
       </div>
-      <Dialog open={openModal} onOpenChange={setOpenModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {barbeiroSelecionado ? "Editar Barbeiro" : "Cadastro de Barbeiro"}
-            </DialogTitle>
-            <DialogDescription>
-              Preencha todos os dados necessários
-            </DialogDescription>
-          </DialogHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
-              <FormField
-                control={form.control}
-                name="nome"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nome:</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Nome do barbeiro" {...field}></Input>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email:</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Digite aqui..." {...field}></Input>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="flex flex-row gap-2">
-                <div className="w-1/2">
-                  <FormField
-                    control={form.control}
-                    name="senha"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Senha:</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="*********"
-                            type="password"
-                            {...field}
-                          ></Input>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className="w-1/2">
-                  <FormField
-                    control={form.control}
-                    name="data_nascimento"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Data de Nascimento:</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="dd/MM/aaaa"
-                            {...field}
-                            maxLength={10}
-                          ></Input>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-              {/* <FormField
-                control={form.control}
-                name="servico"
-                render={({ field }) => {
-                  const handleCheckBox = (id: string) => {
-                    const novoValor = field.value.includes(id)
-                      ? field.value.filter((item: string) => item != id)
-                      : [...field.value, id];
-                    field.onChange(novoValor);
-                  };
-                  return (
-                    <FormItem>
-                      <FormLabel>Serviços que realiza:</FormLabel>
-                      <FormControl>
-                        <div className="grid grid-cols-2">
-                          {servicos.map((servico) => (
-                            <div
-                              key={servico.id}
-                              className="flex gap-3 items-center"
-                            >
-                              <Checkbox
-                                id={servico.id}
-                                checked={field.value?.includes(servico.id)}
-                                onCheckedChange={() =>
-                                  handleCheckBox(servico.id)
-                                }
-                              />
-                              <label htmlFor={servico.id}>{servico.nome}</label>
-                            </div>
-                          ))}
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              /> */}
-              <FormField
-                control={form.control}
-                name="disponivel"
-                render={({ field }) => (
-                  <FormItem className="flex">
-                    <FormControl>
-                      <div className="flex gap-3">
-                        <Switch
-                          className=""
-                          id="disponivel"
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormLabel>Disponível para agendamentos</FormLabel>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="flex items-center justify-end gap-3">
-                <Button
-                  onClick={() => setOpenModal(false)}
-                  variant={"secondary"}
-                  type="button"
-                >
-                  Cancelar
-                </Button>
-                <Button type="submit">
-                  {barbeiroSelecionado ? "Atualizar" : "Cadastrar"}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
+
+      <Modal
+        open={openModal}
+        setOpen={setOpenModal}
+        title={barbeiroSelecionado ? "Editar Barbeiro" : "Cadastro de Barbeiro"}
+        description="Preencha todos os dados necessários"
+        buttonLabel={barbeiroSelecionado ? "Atualizar" : "Cadastrar"}
+        handleSubmit={() =>
+          barbeiroSelecionado
+            ? onSubmit(barbeiroSelecionado!)
+            : onSubmit(form.getValues() as Barbeiro)
+        }
+      >
+        {/* <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3"> */}
+        <BarberForm form={form} onSubmit={onSubmit} />
+        {/* </form> */}
+        {/* </Form> */}
+      </Modal>
     </div>
   );
 };
