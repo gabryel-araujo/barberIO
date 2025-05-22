@@ -29,6 +29,7 @@ import { Input } from "@/components/ui/input";
 import { Barbeiro } from "@/types/barbeiro";
 import {
   GETFuncionarios,
+  PUTFuncionario,
   SETFuncionario,
   changeStatus,
 } from "@/lib/api/funcionarios";
@@ -50,13 +51,54 @@ const barbeiros = () => {
     senha: z.string().min(7, "A senha precisa conter no mínimo 7 caracteres"),
     data_nascimento: z
       .string()
-      .min(10, "A data precisa estar no formato: dd/MM/aaaa"),
+      .optional()
+      .refine(
+        (val) => {
+          return val === undefined || val === "" || val.length >= 10;
+        },
+        {
+          message: "A data precisa estar no formato: dd/MM/aaaa",
+        }
+      ),
+    disponivel: z.boolean(),
+  });
+
+  const editFormSchema = z.object({
+    //id: z.coerce.number(),
+    nome: z
+      .string()
+      .min(2, { message: "Nome deve conter no mínimo 2 caracteres" }),
+    email: z.string().email("Email inválido"),
+    senha: z
+      .string()
+      .optional() // Torna o campo opcional em si
+      .refine(
+        (val) => {
+          return val == null || val === "" || val.length >= 7;
+        },
+        {
+          message: "A senha precisa conter no mínimo 7 caracteres",
+        }
+      ),
+    data_nascimento: z
+      .string()
+      .optional()
+      .refine(
+        (val) => {
+          return val === undefined || val === "" || val.length >= 10;
+        },
+        {
+          message: "A data precisa estar no formato: dd/MM/aaaa",
+        }
+      ),
     // servico: z.array(z.any()).nullable(),
     disponivel: z.boolean(),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(
+      barbeiroSelecionado ? editFormSchema : formSchema
+    ) as any,
     defaultValues: {
       //id: barbeiro.length + 1,
       nome: "",
@@ -81,7 +123,7 @@ const barbeiros = () => {
       barbeiro.nome,
       barbeiro.email,
       barbeiro.senha,
-      barbeiro.data_nascimento,
+      barbeiro.data_nascimento!,
       barbeiro.disponivel
     );
     console.log(response.data);
@@ -140,7 +182,7 @@ const barbeiros = () => {
     setOpenModal(true);
   };
 
-  const handleEditBarbeiro = (barbeiro: Barbeiro) => {
+  const handleRecoveryBarbeiro = (barbeiro: Barbeiro) => {
     console.log(barbeiro);
     form.reset({
       nome: barbeiro.nome,
@@ -149,13 +191,36 @@ const barbeiros = () => {
       data_nascimento: barbeiro.data_nascimento,
       disponivel: barbeiro.disponivel,
     });
+  };
 
-    const barbeiroAtualizado: Barbeiro = {
-      ...barbeiro,
-      atendimentos: 30,
-    };
+  const handleEditBarbeiro = async (barbeiro: Barbeiro) => {
+    const newBarber = form.getValues();
 
-    console.log("atualizado:", barbeiroAtualizado);
+    const response = await PUTFuncionario(
+      barbeiro.id,
+      newBarber.nome,
+      newBarber.email,
+      newBarber.data_nascimento!,
+      newBarber.disponivel,
+      newBarber.senha != "" ? newBarber.senha : barbeiro.senha
+    );
+
+    dispatch({
+      type: AgendamentoAction.setBarbeiro,
+      payload: [response.data],
+    });
+
+    if (response.status === 200) {
+      toast.success("Barbeiro atualizado com sucesso!");
+    } else if (response.status >= 400) {
+      toast.error("Erro na requisição! Verifique os dados");
+    } else {
+      toast.error("Oops, ocorreu um erro!");
+      console.log(response);
+      console.error(response.statusText);
+    }
+
+    setOpenModal(false);
   };
 
   return (
@@ -220,7 +285,7 @@ const barbeiros = () => {
               <div className="w-full px-3 py-3 flex justify-between items-center">
                 <Button
                   onClick={() => {
-                    handleEditBarbeiro(barbeiro);
+                    handleRecoveryBarbeiro(barbeiro);
                     setBarbeiroSelecionado(barbeiro);
                     setOpenModal(true);
                   }}
@@ -387,7 +452,14 @@ const barbeiros = () => {
                 >
                   Cancelar
                 </Button>
-                <Button type="submit">
+                <Button
+                  type={barbeiroSelecionado ? "button" : "submit"}
+                  onClick={() => {
+                    if (barbeiroSelecionado) {
+                      handleEditBarbeiro(barbeiroSelecionado);
+                    }
+                  }}
+                >
                   {barbeiroSelecionado ? "Atualizar" : "Cadastrar"}
                 </Button>
               </div>

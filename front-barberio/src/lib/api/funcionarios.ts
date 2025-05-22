@@ -55,9 +55,9 @@ export const SETFuncionario = async (
       disponivel,
     });
     return response;
-  } catch (errorReg) {
-    console.error("Erro ao cadastrar funcionario", errorReg);
-    throw errorReg;
+  } catch (error) {
+    console.error("Erro ao cadastrar funcionario", error);
+    throw error;
   }
 };
 
@@ -78,6 +78,29 @@ export const changeStatus = async (
     return response;
   } catch (error) {
     console.error("Erro ao atualizar", error);
+    throw error;
+  }
+};
+
+export const PUTFuncionario = async (
+  id: number,
+  nome: string,
+  email: string,
+  data_nascimento: string,
+  disponivel: boolean,
+  senha?: string
+) => {
+  try {
+    const response = await axiosInstance.put(`/funcionarios/${id}`, {
+      nome,
+      email,
+      senha,
+      data_nascimento,
+      disponivel,
+    });
+    return response;
+  } catch (error) {
+    console.error("Erro ao cadastrar funcionario", error);
     throw error;
   }
 };
