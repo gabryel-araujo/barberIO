@@ -30,8 +30,9 @@ import { Barbeiro } from "@/types/barbeiro";
 import {
   GETFuncionarios,
   PUTFuncionario,
-  SETFuncionario,
+  POSTFuncionario,
   changeStatus,
+  DELETEFuncionario,
 } from "@/lib/api/funcionarios";
 import { useForm as useFormReducer } from "@/contexts/AgendamentoContextProvider";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
@@ -119,7 +120,7 @@ const barbeiros = () => {
   }, [state.barbeiro]);
 
   const onSubmit = async (barbeiro: z.infer<typeof formSchema>) => {
-    const response = await SETFuncionario(
+    const response = await POSTFuncionario(
       barbeiro.nome,
       barbeiro.email,
       barbeiro.senha,
@@ -222,6 +223,25 @@ const barbeiros = () => {
 
     setOpenModal(false);
   };
+
+  async function handleDeleteBarbeiro(id: number) {
+    const response = await DELETEFuncionario(id);
+
+    dispatch({
+      type: AgendamentoAction.setBarbeiro,
+      payload: [response.data],
+    });
+
+    if (response.status === 200) {
+      toast.success("Barbeiro atualizado com sucesso!");
+    } else if (response.status >= 400) {
+      toast.error("Erro na requisição! Verifique os dados");
+    } else {
+      toast.error("Oops, ocorreu um erro!");
+      console.log(response);
+      console.error(response.statusText);
+    }
+  }
 
   return (
     <div className="w-full">
@@ -445,6 +465,16 @@ const barbeiros = () => {
                 )}
               />
               <div className="flex items-center justify-end gap-3">
+                {barbeiroSelecionado && (
+                  <Button
+                    onClick={() => handleDeleteBarbeiro(barbeiroSelecionado.id)}
+                    variant={"destructive"}
+                    type="button"
+                  >
+                    Excluir
+                  </Button>
+                )}
+
                 <Button
                   onClick={() => setOpenModal(false)}
                   variant={"secondary"}

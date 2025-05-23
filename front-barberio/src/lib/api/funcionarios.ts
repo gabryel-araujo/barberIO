@@ -39,7 +39,7 @@ export const GETFuncionarios = cache(async (): Promise<Barbeiro[]> => {
   }
 });
 
-export const SETFuncionario = async (
+export const POSTFuncionario = async (
   nome: string,
   email: string,
   senha: string,
@@ -101,6 +101,15 @@ export const PUTFuncionario = async (
     return response;
   } catch (error) {
     console.error("Erro ao cadastrar funcionario", error);
+    throw error;
+  }
+};
+
+export const DELETEFuncionario = async (id: number) => {
+  try {
+    const response = await axiosInstance.delete(`funcionarios/${id}`);
+    return response;
+  } catch (error) {
     throw error;
   }
 };
