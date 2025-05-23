@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Edit, Edit2, Search, Underline, UserPlus } from "lucide-react";
+import { Edit, Search, UserPlus } from "lucide-react";
 import { Clientes } from "@/model/clientes";
 import { Cliente } from "@/types/cliente";
 import { useState } from "react";
@@ -32,6 +32,9 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatarTelefone } from "@/utils/functions";
+import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import { baseUrl } from "@/lib/baseUrl";
 const clientes = () => {
   const [openModal, setOpenModal] = useState(false);
   const [clienteListado, setClienteListado] = useState<Cliente[]>(Clientes);
@@ -47,8 +50,7 @@ const clientes = () => {
   const filtroCliente = clienteListado.filter(
     (cliente) =>
       cliente.nome.toLowerCase().includes(pesquisaInput.toLowerCase()) ||
-      cliente.telefone.includes(pesquisaInput) ||
-      cliente.email.toLowerCase().includes(pesquisaInput.toLowerCase())
+      cliente.telefone.includes(pesquisaInput)
   );
 
   //mostrar os dados do cliente selecionado
@@ -83,15 +85,23 @@ const clientes = () => {
     },
   });
 
+  const queryCliente = useQueryClient();
+  const query = useQuery({
+    queryKey: ["clientes"],
+    queryFn: async () => {
+      const response = await axios.get(`${baseUrl}/clientes`);
+      setClienteListado(response.data);
+      return response.data;
+    },
+  });
+
   const onSubmit = (values: z.infer<typeof formShema>) => {
     const clienteExistente = clienteSelecionado;
     //primeiro pega os dados do novoCliente
     const clienteAtualizado: Cliente = {
       id: values.id,
       nome: values.nome,
-      email: values.email,
       telefone: values.telefone,
-      dataCadastro: new Date(values.dataCadastro),
     };
     if (clienteExistente) {
       // se for cliente atualiza o cliente na lista
@@ -100,6 +110,7 @@ const clientes = () => {
           cli.id === clienteAtualizado.id ? clienteAtualizado : cli
         )
       );
+      queryCliente.invalidateQueries({ queryKey: ["clientes"] });
     } else {
       //agora seta o novo cliente nos clientes
       setClienteListado((prev) => [...prev, clienteAtualizado]);
@@ -151,37 +162,31 @@ const clientes = () => {
       <div className="px-10 py-5 bg-white">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="">
               <TableHead>Nome</TableHead>
               <TableHead>Telefone</TableHead>
-              <TableHead>Email</TableHead>
+              <TableHead>Último Atendimento</TableHead>
               <TableHead>Data de Cadastro</TableHead>
-              <TableHead>Ações</TableHead>
+              <TableHead className="flex justify-end pl-10">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filtroCliente.map((cliente) => (
               <TableRow key={cliente.id}>
                 <TableCell>{cliente.nome}</TableCell>
-                <TableCell>{formatarTelefone(cliente.telefone)}</TableCell>
-                <TableCell>{cliente.email}</TableCell>
                 <TableCell>
-                  {cliente.dataCadastro.toLocaleDateString("pt-BR", {
-                    day: "2-digit",
-                    month: "long",
-                    year: "numeric",
-                  })}
+                  {/*{formatarTelefone(cliente.telefone)}*/} 83 988332659
                 </TableCell>
-                <TableCell>
+                <TableCell>22/05/2025</TableCell>
+                <TableCell>01/01/1990</TableCell>
+                <TableCell className="flex justify-end pl-10">
                   <Button
                     onClick={() => {
                       handleClienteDados(cliente);
                       form.reset({
                         id: cliente.id,
                         nome: cliente.nome,
-                        email: cliente.email,
                         telefone: cliente.telefone,
-                        dataCadastro: cliente.dataCadastro,
                       });
                       setOpenModal(true);
                     }}
@@ -236,19 +241,6 @@ const clientes = () => {
                           field.onChange(e.target.value.replace(/\D/g, ""))
                         }
                       />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder="digite seu email" {...field}></Input>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
