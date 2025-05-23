@@ -16,6 +16,7 @@ type ModalProps = {
   description: string;
   handleSubmit?: (e?: React.BaseSyntheticEvent) => Promise<void>;
   schedule?: () => void;
+  footerButtons: React.ReactNode;
 };
 
 export function Modal({
@@ -26,6 +27,7 @@ export function Modal({
   description,
   handleSubmit,
   schedule,
+  footerButtons,
 }: ModalProps) {
   return (
     <Dialog open={open}>
@@ -37,7 +39,8 @@ export function Modal({
 
         {children}
         <div className="flex items-center justify-between">
-          <Button
+          {footerButtons}
+          {/* <Button
             className="w-[150px] cursor-pointer"
             variant="secondary"
             onClick={() => setOpen(!open)}
@@ -49,7 +52,7 @@ export function Modal({
             onClick={handleSubmit ? handleSubmit : schedule}
           >
             Finalizar
-          </Button>
+          </Button> */}
         </div>
       </DialogContent>
     </Dialog>
