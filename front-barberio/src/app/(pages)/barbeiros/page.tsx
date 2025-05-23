@@ -1,10 +1,8 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Star, UserPlus } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { UserPlus } from "lucide-react";
 // import { servicos } from "@/model/servico";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+
 import {
   Dialog,
   DialogContent,
@@ -31,12 +29,13 @@ import {
   GETFuncionarios,
   PUTFuncionario,
   POSTFuncionario,
-  changeStatus,
   DELETEFuncionario,
 } from "@/lib/api/funcionarios";
 import { useForm as useFormReducer } from "@/contexts/AgendamentoContextProvider";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { toast } from "sonner";
+import { BarberCard } from "../../../../components/BarberCard";
+import { Switch } from "@/components/ui/switch";
 
 const barbeiros = () => {
   const { state, dispatch } = useFormReducer();
@@ -146,30 +145,31 @@ const barbeiros = () => {
     form.reset();
   };
 
-  const updateStatus = async (barbeiro: Barbeiro) => {
-    const response = await changeStatus(
-      barbeiro.id,
-      barbeiro.nome,
-      barbeiro.email,
-      barbeiro.senha,
-      !barbeiro.disponivel
-    );
+  //!Transferido para BarberCard
+  // const updateStatus = async (barbeiro: Barbeiro) => {
+  //   const response = await changeStatus(
+  //     barbeiro.id,
+  //     barbeiro.nome,
+  //     barbeiro.email,
+  //     barbeiro.senha,
+  //     barbeiro.disponivel
+  //   );
 
-    dispatch({
-      type: AgendamentoAction.setBarbeiro,
-      payload: [response.data],
-    });
+  //   dispatch({
+  //     type: AgendamentoAction.setBarbeiro,
+  //     payload: [response.data],
+  //   });
 
-    if (response.status === 200) {
-      toast.success("Barbeiro atualizado com sucesso!");
-    } else if (response.status >= 400) {
-      toast.error("Erro na requisição! Verifique os dados");
-    } else {
-      toast.error("Oops, ocorreu um erro!");
-      console.log(response);
-      console.error(response.statusText);
-    }
-  };
+  //   if (response.status === 200) {
+  //     toast.success("Barbeiro atualizado com sucesso!");
+  //   } else if (response.status >= 400) {
+  //     toast.error("Erro na requisição! Verifique os dados");
+  //   } else {
+  //     toast.error("Oops, ocorreu um erro!");
+  //     console.log(response);
+  //     console.error(response.statusText);
+  //   }
+  // };
 
   const abrirModal = () => {
     form.reset({
@@ -183,16 +183,17 @@ const barbeiros = () => {
     setOpenModal(true);
   };
 
-  const handleRecoveryBarbeiro = (barbeiro: Barbeiro) => {
-    console.log(barbeiro);
-    form.reset({
-      nome: barbeiro.nome,
-      email: barbeiro.email,
-      senha: "",
-      data_nascimento: barbeiro.data_nascimento,
-      disponivel: barbeiro.disponivel,
-    });
-  };
+  //!Transferido para BarberCard
+  // const handleRecoveryBarbeiro = (barbeiro: Barbeiro) => {
+  //   console.log(barbeiro);
+  //   form.reset({
+  //     nome: barbeiro.nome,
+  //     email: barbeiro.email,
+  //     senha: "",
+  //     data_nascimento: barbeiro.data_nascimento,
+  //     disponivel: barbeiro.disponivel,
+  //   });
+  // };
 
   const handleEditBarbeiro = async (barbeiro: Barbeiro) => {
     const newBarber = form.getValues();
@@ -261,72 +262,12 @@ const barbeiros = () => {
         {barbeiroLista
           .sort((a, b) => b.id - a.id)
           .map((barbeiro) => (
-            <Card className="" key={barbeiro.id}>
-              <div className="rounded-t-md p-3 bg-slate-800 flex justify-start items-center gap-3">
-                <div className="border rounded-full h-14 min-w-14 bg-slate-700 items-center justify-center flex text-white">
-                  <p className="font-bold text-3xl">
-                    {barbeiro.nome.split("")[0]}
-                  </p>
-                </div>
-                <div className="flex items-center justify-between w-full">
-                  <div>
-                    <p className="font-bold text-slate-100">{barbeiro.nome}</p>
-                    <p
-                      className={`font-semibold
-                    ${barbeiro.disponivel ? "text-green-300" : "text-red-400"}`}
-                    >
-                      {barbeiro.disponivel ? "Disponível" : "Indisponível"}
-                    </p>
-                  </div>
-                  <div className="flex flex-row gap-1 items-center">
-                    <p className="text-amber-300 font-bold">
-                      {barbeiro.avaliacao}
-                    </p>
-                    <Star fill="yellow" color="#ffd230" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="px-3">
-                <p className="text-sm font-semibold">Serviços:</p>
-                <span className="">
-                  {barbeiro.servicos?.map((servico) => {
-                    return (
-                      <span
-                        key={servico.id}
-                        className="ml-3 bg-slate-100 rounded-sm text-slate-800 text-xs px-2 py-0.5"
-                      >
-                        {servico.nome}
-                      </span>
-                    );
-                  })}
-                </span>
-              </div>
-              <div className="w-full px-3 py-3 flex justify-between items-center">
-                <Button
-                  onClick={() => {
-                    handleRecoveryBarbeiro(barbeiro);
-                    setBarbeiroSelecionado(barbeiro);
-                    setOpenModal(true);
-                  }}
-                  className="bg-slate-700 hover:bg-slate-600"
-                >
-                  Gerenciar
-                </Button>
-                <div className="flex gap-3">
-                  <Switch
-                    id="disponivel"
-                    checked={barbeiro.disponivel}
-                    onCheckedChange={() => {
-                      updateStatus(barbeiro);
-                    }}
-                  />
-                  <Label htmlFor="disponivel" className="font-normal">
-                    {barbeiro.disponivel ? "Disponível" : "Indisponível"}
-                  </Label>
-                </div>
-              </div>
-            </Card>
+            <BarberCard
+              barbeiro={barbeiro}
+              form={form}
+              setBarbeiroSelecionado={setBarbeiroSelecionado}
+              setOpenModal={setOpenModal}
+            />
           ))}
       </div>
       <Dialog open={openModal} onOpenChange={setOpenModal}>
