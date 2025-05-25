@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,7 +37,7 @@ public class FuncionarioModel implements Serializable {
             joinColumns = @JoinColumn(name = "barbeiro_id"),
             inverseJoinColumns = @JoinColumn(name = "servico_id")
     )
-    private List<ServiceModel> servicos;
+    private List<ServiceModel> servicos = new ArrayList<>();
 
     public Long getId() {
         return id;
