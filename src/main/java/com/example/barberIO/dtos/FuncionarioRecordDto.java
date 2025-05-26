@@ -15,3 +15,4 @@ public record FuncionarioRecordDto(
         int atendimentos,
         boolean disponivel,
         String[] newServices) {}
+

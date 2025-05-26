@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button";
 import { UserPlus } from "lucide-react";
 // import { servicos } from "@/model/servico";
-
 import {
   Dialog,
   DialogContent,
@@ -10,19 +9,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Form } from "@/components/ui/form";
+
 // import { Checkbox } from "@/components/ui/checkbox";
 import { Barbeiro } from "@/types/barbeiro";
 import {
@@ -36,12 +30,15 @@ import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { toast } from "sonner";
 import { BarberCard } from "../../../../components/BarberCard";
 import { Switch } from "@/components/ui/switch";
+import { Modal } from "@/components/layout/Modal";
+import { BarberForm } from "../../../../components/BarberForm";
 
 const barbeiros = () => {
   const { state, dispatch } = useFormReducer();
   const [openModal, setOpenModal] = useState(false);
   const [barbeiroLista, setBabeiroLista] = useState<Barbeiro[]>([]);
   const [barbeiroSelecionado, setBarbeiroSelecionado] = useState<Barbeiro>();
+
   const formSchema = z.object({
     //id: z.coerce.number(),
     nome: z
@@ -109,6 +106,33 @@ const barbeiros = () => {
       // servico: [],
     },
   });
+  // const formSchema = z.object({
+  //   //id: z.coerce.number(),
+  //   nome: z
+  //     .string()
+  //     .min(2, { message: "Nome deve conter no mínimo 2 caracteres" }),
+  //   email: z.string().email("Email inválido"),
+  //   senha: z.string().min(7, "A senha precisa conter no mínimo 7 caracteres"),
+  //   data_nascimento: z
+  //     .string()
+  //     .min(10, "A data precisa estar no formato: dd/MM/aaaa"),
+  //   // servico: z.array(z.any()).nullable(),
+  //   disponivel: z.boolean(),
+  // });
+
+  // const form = useForm<z.infer<typeof formSchema>>({
+  //   resolver: zodResolver(formSchema),
+  //   defaultValues: {
+  //     //id: barbeiro.length + 1,
+  //     nome: "",
+  //     email: "",
+  //     senha: "",
+  //     data_nascimento: "",
+  //     disponivel: true,
+  //     // servico: [],
+  //   },
+  // });
+
 
   useEffect(() => {
     async function fetchData() {
@@ -117,6 +141,7 @@ const barbeiros = () => {
     }
     fetchData();
   }, [state.barbeiro]);
+
 
   const onSubmit = async (barbeiro: z.infer<typeof formSchema>) => {
     const response = await POSTFuncionario(
@@ -131,19 +156,32 @@ const barbeiros = () => {
       type: AgendamentoAction.setBarbeiro,
       payload: [response.data],
     });
+  // const onSubmit = async (barbeiro: z.infer<typeof formSchema>) => {
+  //   const response = await SETFuncionario(
+  //     barbeiro.nome,
+  //     barbeiro.email,
+  //     barbeiro.senha,
+  //     barbeiro.data_nascimento,
+  //     barbeiro.disponivel
+  //   );
 
-    if (response.status === 201) {
-      toast.success("Barbeiro cadastrado com sucesso!");
-    } else if (response.status === 400) {
-      toast.error("Erro na requisição! Verifique os dados");
-    } else {
-      toast.error("Oops, ocorreu um erro!");
-      console.error(response.statusText);
-    }
 
-    setOpenModal(false);
-    form.reset();
-  };
+  //   dispatch({
+  //     type: AgendamentoAction.setBarbeiro,
+  //     payload: [response.data],
+  //   });
+
+  //   if (response.status === 201) {
+  //     toast.success("Barbeiro cadastrado com sucesso!");
+  //   } else if (response.status === 400) {
+  //     toast.error("Erro na requisição! Verifique os dados");
+  //   } else {
+  //     toast.error("Oops, ocorreu um erro!");
+  //   }
+
+  //   setOpenModal(false);
+  //   form.reset();
+  // };
 
   //!Transferido para BarberCard
   // const updateStatus = async (barbeiro: Barbeiro) => {
@@ -233,6 +271,7 @@ const barbeiros = () => {
       payload: [response.data],
     });
 
+
     if (response.status === 200) {
       toast.success("Barbeiro atualizado com sucesso!");
     } else if (response.status >= 400) {
@@ -243,6 +282,11 @@ const barbeiros = () => {
       console.error(response.statusText);
     }
   }
+
+    console.log("atualizado:", barbeiroAtualizado);
+  };
+  //todo: criar o card barbeiro para modularizar mais
+
 
   return (
     <div className="w-full">
@@ -270,6 +314,7 @@ const barbeiros = () => {
             />
           ))}
       </div>
+
       <Dialog open={openModal} onOpenChange={setOpenModal}>
         <DialogContent>
           <DialogHeader>
@@ -438,6 +483,27 @@ const barbeiros = () => {
           </Form>
         </DialogContent>
       </Dialog>
+
+
+      <Modal
+        open={openModal}
+        setOpen={setOpenModal}
+        title={barbeiroSelecionado ? "Editar Barbeiro" : "Cadastro de Barbeiro"}
+        description="Preencha todos os dados necessários"
+        buttonLabel={barbeiroSelecionado ? "Atualizar" : "Cadastrar"}
+        handleSubmit={() =>
+          barbeiroSelecionado
+            ? onSubmit(barbeiroSelecionado!)
+            : onSubmit(form.getValues() as Barbeiro)
+        }
+      >
+        {/* <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3"> */}
+        <BarberForm form={form} onSubmit={onSubmit} />
+        {/* </form> */}
+        {/* </Form> */}
+      </Modal>
+
     </div>
   );
 };

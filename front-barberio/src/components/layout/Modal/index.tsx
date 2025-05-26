@@ -16,18 +16,9 @@ type ModalProps = {
   description: string;
   handleSubmit?: (e?: React.BaseSyntheticEvent) => Promise<void>;
   schedule?: () => void;
-  footerButtons: React.ReactNode;
-};
 
-export function Modal({
-  open,
-  setOpen,
-  children,
-  title,
-  description,
-  handleSubmit,
-  schedule,
-  footerButtons,
+  footerButtons: React.ReactNode;
+  buttonLabel?: string;
 }: ModalProps) {
   return (
     <Dialog open={open}>
@@ -53,6 +44,8 @@ export function Modal({
           >
             Finalizar
           </Button> */}
+            {buttonLabel ? buttonLabel : "Finalizar"}
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
