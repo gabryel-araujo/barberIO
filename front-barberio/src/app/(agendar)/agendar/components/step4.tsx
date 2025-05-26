@@ -203,6 +203,23 @@ export const Step4 = () => {
           open={openModal}
           setOpen={setOpenModal}
           handleSubmit={handleSubmit(finalizarAgendamento)}
+          footerButtons={
+            <>
+              <Button
+                className="w-[150px] cursor-pointer"
+                variant="secondary"
+                onClick={() => setOpenModal(!open)}
+              >
+                Cancelar
+              </Button>
+              <Button
+                className="w-[150px] cursor-pointer"
+                onClick={handleSubmit(finalizarAgendamento)}
+              >
+                Finalizar
+              </Button>
+            </>
+          }
         >
           <DadosCliente register={register} errors={errors} />
         </Modal>

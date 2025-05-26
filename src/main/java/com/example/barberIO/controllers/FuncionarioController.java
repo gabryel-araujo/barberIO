@@ -15,10 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 public class FuncionarioController {
@@ -33,19 +30,44 @@ public class FuncionarioController {
     }
 
     @PostMapping("/funcionarios")
-    public ResponseEntity<Object> addFuncionario(@RequestBody @Valid FuncionarioModel funcionarioRecordDto){
+    public ResponseEntity<Object> addFuncionario(@RequestBody @Valid FuncionarioRecordDto funcionarioRecordDto) {
+        try {
+            System.out.println("DTO recebido: " + funcionarioRecordDto);
 
-        Optional<FuncionarioModel> funcionario = funcionarioRepository.findByEmail(funcionarioRecordDto.getEmail());
+            Optional<FuncionarioModel> funcionario = funcionarioRepository.findByEmail(funcionarioRecordDto.email());
+            if(funcionario.isPresent()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Email já cadastrado!");
+            }
 
-        if(funcionario.isPresent()){
-//            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email já cadastrado!");
-            return ResponseEntity.ok().body("Email já cadastrado");
+            FuncionarioModel funcionarioModel = new FuncionarioModel();
+            BeanUtils.copyProperties(funcionarioRecordDto, funcionarioModel);
+            System.out.println("Model após copiar propriedades: " + funcionarioModel);
+
+            FuncionarioModel salvo = funcionarioRepository.save(funcionarioModel);
+            System.out.println("Funcionário salvo com ID: " + salvo);
+
+            // Pegue os serviços do DTO
+            String[] servicosArray = funcionarioRecordDto.newServices();
+            System.out.println("Serviços recebidos: " + (servicosArray != null ? Arrays.toString(servicosArray) : "null"));
+
+            if (servicosArray != null) {
+                for (String s : servicosArray) {
+                    try {
+                        System.out.println("Adicionando serviço ID: " + s);
+                        this.adicionarServicoAux(salvo.getId(), Long.parseLong(s));
+                    } catch (Exception e) {
+                        System.err.println("Erro ao adicionar serviço " + s + ": " + e.getMessage());
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
+        } catch (Exception e) {
+            System.err.println("Erro no processamento: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao processar: " + e.getMessage());
         }
-
-        FuncionarioModel funcionarioModel = new FuncionarioModel();
-        BeanUtils.copyProperties(funcionarioRecordDto, funcionarioModel);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(funcionarioRepository.save(funcionarioModel));
     }
 
     @PutMapping("/funcionarios/{id}")
@@ -116,4 +138,33 @@ public class FuncionarioController {
         return ResponseEntity.status(HttpStatus.OK).body(funcionario);
 
     }
+
+    public void adicionarServicoAux(Long id,Long servicoId){
+        Optional<FuncionarioModel> funcionarioO = funcionarioRepository.findById(id);
+        Optional<ServiceModel> serviceO = serviceRepository.findById(servicoId);
+
+        if (funcionarioO.isEmpty()) {
+            throw new RuntimeException("Funcionário com ID " + id + " não encontrado!");
+            // Considere usar exceções mais específicas, como EntityNotFoundException
+        }
+        if (serviceO.isEmpty()) {
+            throw new RuntimeException("Serviço com ID " + servicoId + " não encontrado!");
+        }
+
+        FuncionarioModel funcionarioModel = funcionarioO.get();
+        ServiceModel serviceModel = serviceO.get();
+
+        if(funcionarioModel.getServicos() != null){
+            boolean servicoAdicionado = funcionarioModel.getServicos().stream().anyMatch(s -> s.getId().equals(serviceModel.getId()));
+
+            if(servicoAdicionado){
+                throw new RuntimeException("Serviço já adicionado");
+            }
+        }
+
+        funcionarioModel.getServicos().add(serviceModel);
+        funcionarioRepository.save(funcionarioModel);
+
+    }
 }
+

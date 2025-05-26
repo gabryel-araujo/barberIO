@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Email;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -35,13 +36,23 @@ public class FuncionarioModel implements Serializable {
 
     private int atendimentos = 0;
 
+    private boolean disponivel = false;
+
     @ManyToMany
     @JoinTable(
             name = "barbeiro_servico",
             joinColumns = @JoinColumn(name = "barbeiro_id"),
             inverseJoinColumns = @JoinColumn(name = "servico_id")
     )
-    private List<ServiceModel> servicos;
+    private List<ServiceModel> servicos = new ArrayList<>();
+
+    public boolean isDisponivel() {
+        return disponivel;
+    }
+
+    public void setDisponivel(boolean disponivel) {
+        this.disponivel = disponivel;
+    }
 
     public boolean isDisponivel() {
         return disponivel;
