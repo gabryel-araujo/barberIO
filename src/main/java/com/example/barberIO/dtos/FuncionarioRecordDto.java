@@ -13,4 +13,5 @@ public record FuncionarioRecordDto(
         float avaliacao,
         float experiencia,
         int atendimentos,
+        boolean disponivel,
         String[] newServices) {}
