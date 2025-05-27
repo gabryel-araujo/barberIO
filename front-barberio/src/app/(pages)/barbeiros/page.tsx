@@ -129,7 +129,8 @@ const barbeiros = () => {
       barbeiro.email,
       barbeiro.senha,
       barbeiro.data_nascimento!,
-      barbeiro.disponivel
+      barbeiro.disponivel,
+      servicoSelecionado
     );
     console.log(servicoSelecionado);
     console.log(response.data);
@@ -341,12 +342,31 @@ const barbeiros = () => {
                             >
                               <Checkbox
                                 id={String(servico.id)}
-                                checked={field.value?.includes(servico.id)}
-                                onCheckedChange={() => {
-                                  setServicoSelecionado((previous) => [
-                                    ...previous,
-                                    String(servico.id),
-                                  ]);
+                                checked={field.value?.includes(
+                                  String(servico.id)
+                                )}
+                                onCheckedChange={(isChecked) => {
+                                  const currentSelectedIds = field.value || []; // Pega os IDs já selecionados
+                                  let newSelectedIds;
+
+                                  if (isChecked) {
+                                    // Adiciona o ID do serviço atual se marcado
+                                    newSelectedIds = [
+                                      ...currentSelectedIds,
+                                      String(servico.id),
+                                    ];
+                                  } else {
+                                    // Remove o ID do serviço atual se desmarcado
+                                    newSelectedIds = currentSelectedIds.filter(
+                                      (id) => id !== String(servico.id)
+                                    );
+                                  }
+                                  // ATUALIZA O ESTADO DO FORMULÁRIO PARA ESTE CAMPO
+                                  field.onChange(newSelectedIds);
+
+                                  // Se você ainda precisar do estado 'servicoSelecionado' para alguma outra lógica
+                                  // fora do formulário, sincronize-o aqui. Caso contrário, pode ser redundante.
+                                  setServicoSelecionado(newSelectedIds);
                                 }}
                               />
                               <label htmlFor={String(servico.id)}>

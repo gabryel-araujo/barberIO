@@ -44,7 +44,8 @@ export const POSTFuncionario = async (
   email: string,
   senha: string,
   data_nascimento: string,
-  disponivel: boolean
+  disponivel: boolean,
+  servicos?: string[]
 ) => {
   try {
     const response = await axiosInstance.post("/funcionarios", {
@@ -53,6 +54,7 @@ export const POSTFuncionario = async (
       senha,
       data_nascimento,
       disponivel,
+      newServices: servicos,
     });
     return response;
   } catch (error) {
