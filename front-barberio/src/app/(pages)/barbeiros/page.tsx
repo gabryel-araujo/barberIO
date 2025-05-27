@@ -35,7 +35,7 @@ import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { toast } from "sonner";
 import { BarberCard } from "../../../../components/BarberCard";
 import { Switch } from "@/components/ui/switch";
-import { useQuery } from "@tanstack/react-query";
+import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { baseUrl } from "@/lib/baseUrl";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -115,6 +115,8 @@ const barbeiros = () => {
     },
   });
 
+  const queryClient = useQueryClient();
+
   useEffect(() => {
     async function fetchData() {
       const apiData = await GETFuncionarios();
@@ -148,6 +150,7 @@ const barbeiros = () => {
       console.error(response.statusText);
     }
 
+    queryClient.invalidateQueries({ queryKey: ["servicos"] });
     setOpenModal(false);
     form.reset();
   };
@@ -190,7 +193,6 @@ const barbeiros = () => {
       console.log(response);
       console.error(response.statusText);
     }
-
     setOpenModal(false);
   };
 
@@ -220,6 +222,7 @@ const barbeiros = () => {
       setServicos(response.data);
       return response.data;
     },
+    staleTime: 5 * (60 * 1000),
   });
 
   return (
@@ -346,6 +349,7 @@ const barbeiros = () => {
                                   String(servico.id)
                                 )}
                                 onCheckedChange={(isChecked) => {
+                                  console.log(isChecked);
                                   const currentSelectedIds = field.value || []; // Pega os IDs já selecionados
                                   let newSelectedIds;
 
