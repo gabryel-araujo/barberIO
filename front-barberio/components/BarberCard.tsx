@@ -14,6 +14,7 @@ import { Switch } from "@/components/ui/switch";
 type BarberCardProps = {
   barbeiro: Barbeiro;
   form: UseFormReturn<{
+    servico: any[] | null;
     nome: string;
     email: string;
     senha: string;
