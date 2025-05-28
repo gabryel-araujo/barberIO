@@ -41,6 +41,7 @@ export function BarberCard({
       senha: "",
       data_nascimento: barbeiro.data_nascimento,
       disponivel: barbeiro.disponivel,
+      servico: barbeiro.servicos?.map((s) => String(s.id)) || [],
     });
   };
 
