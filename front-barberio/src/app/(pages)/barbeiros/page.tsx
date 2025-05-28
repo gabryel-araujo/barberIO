@@ -40,10 +40,12 @@ import axios from "axios";
 import { baseUrl } from "@/lib/baseUrl";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Servico } from "@/types/servico";
+import { DialogComponent } from "@/components/layout/Dialog";
 
 const barbeiros = () => {
   const { state, dispatch } = useFormReducer();
   const [openModal, setOpenModal] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
   const [barbeiroLista, setBabeiroLista] = useState<Barbeiro[]>([]);
   const [barbeiroSelecionado, setBarbeiroSelecionado] = useState<Barbeiro>();
   const [servicos, setServicos] = useState<Servico[]>([]);
@@ -205,7 +207,7 @@ const barbeiros = () => {
     });
 
     if (response.status === 200) {
-      toast.success("Barbeiro atualizado com sucesso!");
+      toast.success("Barbeiro excluído com sucesso!");
     } else if (response.status >= 400) {
       toast.error("Erro na requisição! Verifique os dados");
     } else {
@@ -408,7 +410,10 @@ const barbeiros = () => {
               <div className="flex items-center justify-end gap-3">
                 {barbeiroSelecionado && (
                   <Button
-                    onClick={() => handleDeleteBarbeiro(barbeiroSelecionado.id)}
+                    onClick={() => {
+                      setOpenDialog(!openDialog);
+                      setOpenModal(!openModal);
+                    }}
                     variant={"destructive"}
                     type="button"
                   >
@@ -438,6 +443,14 @@ const barbeiros = () => {
           </Form>
         </DialogContent>
       </Dialog>
+
+      <DialogComponent
+        title={`Você deseja excluir o barbeiro ${barbeiroSelecionado?.nome}?`}
+        actionLabel="Excluir"
+        open={openDialog}
+        setOpen={setOpenDialog}
+        action={() => handleDeleteBarbeiro(barbeiroSelecionado!.id)}
+      />
     </div>
   );
 };
