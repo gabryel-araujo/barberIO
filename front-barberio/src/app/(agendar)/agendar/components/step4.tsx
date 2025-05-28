@@ -15,6 +15,7 @@ import { useForm } from "@/contexts/AgendamentoContextProvider";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { baseUrl } from "@/lib/baseUrl";
 import axios from "axios";
+import { format } from "date-fns";
 
 export const Step4 = () => {
   const { state, dispatch } = useForm();
@@ -115,6 +116,9 @@ export const Step4 = () => {
 
   const confirmarAgendamento = () => {
     console.log("Estado Atualizado:", state);
+    const formatada = format(state.data, "yyyy-MM-dd'T'HH:mm:ss");
+
+    console.log(formatada.replace("00:00:00", state.horario));
     toast.success("Agendamento realizado com sucesso!");
     // setTimeout(() => {
     //   push("/");
