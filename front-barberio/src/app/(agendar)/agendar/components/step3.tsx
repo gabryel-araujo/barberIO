@@ -58,7 +58,7 @@ export const Step3 = () => {
         </span>
       </div>
       <div className="flex flex-col gap-5 items-center justify-center">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 mt-4 w-full justify-items-center">
           {barbeiroDisponivel.map((barber) => (
             <Button
               key={barber.id}
@@ -70,7 +70,7 @@ export const Step3 = () => {
                 });
               }}
               variant={"outline"}
-              className={`border-2 md:w-[350px] w-[250px]  py-10 cursor-pointer${
+              className={`border-2 w-4/5 py-10 cursor-pointer${
                 barber.nome === barbeiro.nome ? "border-2 border-[#3f89c5]" : ""
               }`}
             >

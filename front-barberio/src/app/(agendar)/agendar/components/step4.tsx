@@ -54,7 +54,7 @@ export const Step4 = () => {
     },
     {
       icon: <User className="texto-azul" />,
-      value: state.barbeiro,
+      value: state.barbeiro.nome,
     },
     ,
     {
@@ -104,10 +104,6 @@ export const Step4 = () => {
       payload: data.name,
     });
     dispatch({
-      type: AgendamentoAction.setEmail,
-      payload: data.email,
-    });
-    dispatch({
       type: AgendamentoAction.setTelefone,
       payload: data.phone,
     });
@@ -120,9 +116,9 @@ export const Step4 = () => {
   const confirmarAgendamento = () => {
     console.log("Estado Atualizado:", state);
     toast.success("Agendamento realizado com sucesso!");
-    setTimeout(() => {
-      push("/");
-    }, 2000);
+    // setTimeout(() => {
+    //   push("/");
+    // }, 2000);
 
     //todo:consumo da api para executar o agendamento
     setOpenModalRevisao(!openModalRevisao);
@@ -141,7 +137,7 @@ export const Step4 = () => {
         </span>
       </div>
       <div className="flex flex-col gap-5 items-center justify-center">
-        <div className="grid grid-cols-1 gap-3 pt-5">
+        <div className="grid grid-cols-1 gap-3 pt-5 w-full">
           {servicos.map((servico) => (
             <Button
               key={servico.id}
@@ -153,7 +149,7 @@ export const Step4 = () => {
                   payload: servico,
                 });
               }}
-              className={`h-auto md:w-[650px] w-[300px] flex flex-col border-2 items-start p-4 justify-start text-left cursor-pointer${
+              className={`h-auto flex flex-col border-2 items-start p-4 justify-start text-left cursor-pointer${
                 servicoSelecionado?.nome == servico.nome
                   ? "border-2 border-[#3f89c5]"
                   : ""
@@ -172,7 +168,7 @@ export const Step4 = () => {
                 </div>
               </div>
               <div className="flex justify-between w-full mt-1 gap-2">
-                <div className="text-slate-500 overflow-auto">
+                <div className="text-slate-500 truncate">
                   {servico.descricao}
                 </div>
                 <div className="text-slate-500">{servico.duracao}min</div>
@@ -206,14 +202,14 @@ export const Step4 = () => {
           footerButtons={
             <>
               <Button
-                className="w-[150px] cursor-pointer"
+                className=" cursor-pointer"
                 variant="secondary"
                 onClick={() => setOpenModal(!open)}
               >
                 Cancelar
               </Button>
               <Button
-                className="w-[150px] cursor-pointer"
+                className=" cursor-pointer"
                 onClick={handleSubmit(finalizarAgendamento)}
               >
                 Finalizar
@@ -230,6 +226,23 @@ export const Step4 = () => {
           open={openModalRevisao}
           setOpen={setOpenModalRevisao}
           schedule={confirmarAgendamento}
+          footerButtons={
+            <>
+              <Button
+                className="w-[150px] cursor-pointer"
+                variant="secondary"
+                onClick={cancelarAgendamento}
+              >
+                Cancelar
+              </Button>
+              <Button
+                className="w-[150px] cursor-pointer"
+                onClick={handleSubmit(confirmarAgendamento)}
+              >
+                Finalizar
+              </Button>
+            </>
+          }
         >
           <Card className="my-5">
             <CardContent>
