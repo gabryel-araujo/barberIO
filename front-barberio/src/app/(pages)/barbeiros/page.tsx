@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { ControllerRenderProps, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import {
@@ -29,6 +29,8 @@ import {
   PUTFuncionario,
   POSTFuncionario,
   DELETEFuncionario,
+  addServicoFuncionario,
+  removeServicoFuncionario,
 } from "@/lib/api/funcionarios";
 import { useForm as useFormReducer } from "@/contexts/AgendamentoContextProvider";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
@@ -41,6 +43,7 @@ import { baseUrl } from "@/lib/baseUrl";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Servico } from "@/types/servico";
 import { DialogComponent } from "@/components/layout/Dialog";
+import axiosInstance from "@/lib/axios";
 
 const barbeiros = () => {
   const { state, dispatch } = useFormReducer();
@@ -227,6 +230,35 @@ const barbeiros = () => {
     staleTime: 5 * (60 * 1000),
   });
 
+  async function handleEditService(
+    isChecked: string | boolean,
+    funcionarioId: number,
+    servicoId: number
+  ) {
+    if (isChecked) {
+      //todo:logica de chamar o endpoint aqui
+      const response = await addServicoFuncionario(funcionarioId, servicoId);
+
+      if (response.status === 200) {
+        toast.warning("Atualizando serviços...");
+      } else {
+        toast.error("Oops ocorreu um erro!");
+        console.log(response);
+      }
+    } else {
+      //todo:logica de chamar o endpoint aqui
+
+      const response = await removeServicoFuncionario(funcionarioId, servicoId);
+
+      if (response.status === 200) {
+        toast.warning("Atualizando serviços...");
+      } else {
+        toast.error("Oops ocorreu um erro!");
+        console.log(response);
+      }
+    }
+  }
+
   return (
     <div className="w-full">
       <div className="w-full flex items-center justify-between px-10 py-5">
@@ -351,28 +383,33 @@ const barbeiros = () => {
                                   String(servico.id)
                                 )}
                                 onCheckedChange={(isChecked) => {
-                                  console.log(isChecked);
-                                  const currentSelectedIds = field.value || []; // Pega os IDs já selecionados
+                                  // 1. Calcular o novo array de IDs selecionados
+                                  const currentSelectedIds = field.value || [];
                                   let newSelectedIds;
+                                  const currentServiceIdStr = String(
+                                    servico.id
+                                  );
 
                                   if (isChecked) {
-                                    // Adiciona o ID do serviço atual se marcado
                                     newSelectedIds = [
                                       ...currentSelectedIds,
-                                      String(servico.id),
+                                      currentServiceIdStr,
                                     ];
                                   } else {
-                                    // Remove o ID do serviço atual se desmarcado
                                     newSelectedIds = currentSelectedIds.filter(
-                                      (id) => id !== String(servico.id)
+                                      (id: string) => id !== currentServiceIdStr
                                     );
                                   }
-                                  // ATUALIZA O ESTADO DO FORMULÁRIO PARA ESTE CAMPO
                                   field.onChange(newSelectedIds);
-
-                                  // Se você ainda precisar do estado 'servicoSelecionado' para alguma outra lógica
-                                  // fora do formulário, sincronize-o aqui. Caso contrário, pode ser redundante.
                                   setServicoSelecionado(newSelectedIds);
+
+                                  if (barbeiroSelecionado) {
+                                    handleEditService(
+                                      isChecked,
+                                      barbeiroSelecionado.id,
+                                      servico.id
+                                    );
+                                  }
                                 }}
                               />
                               <label htmlFor={String(servico.id)}>
