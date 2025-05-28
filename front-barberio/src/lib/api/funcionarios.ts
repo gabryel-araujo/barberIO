@@ -115,3 +115,31 @@ export const DELETEFuncionario = async (id: number) => {
     throw error;
   }
 };
+
+export const addServicoFuncionario = async (
+  funcionarioId: number,
+  servicoId: number
+) => {
+  try {
+    const response = await axiosInstance.patch(
+      `funcionarios/${funcionarioId}/adicionarServico/${servicoId}`
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const removeServicoFuncionario = async (
+  funcionarioId: number,
+  servicoId: number
+) => {
+  try {
+    const response = await axiosInstance.patch(
+      `funcionarios/${funcionarioId}/servico/${servicoId}`
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
