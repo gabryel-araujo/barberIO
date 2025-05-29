@@ -136,7 +136,7 @@ export const removeServicoFuncionario = async (
 ) => {
   try {
     const response = await axiosInstance.patch(
-      `funcionarios/${funcionarioId}/servico/${servicoId}`
+      `funcionarios/${funcionarioId}/removerServico/${servicoId}`
     );
     return response;
   } catch (error) {

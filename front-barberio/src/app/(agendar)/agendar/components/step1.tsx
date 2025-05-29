@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useForm } from "@/contexts/AgendamentoContextProvider";
 import { HomeIcon } from "lucide-react";
+import { format } from "date-fns";
 
 export const Step1 = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());

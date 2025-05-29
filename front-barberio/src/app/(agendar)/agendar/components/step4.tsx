@@ -116,9 +116,10 @@ export const Step4 = () => {
 
   const confirmarAgendamento = () => {
     console.log("Estado Atualizado:", state);
-    const formatada = format(state.data, "yyyy-MM-dd'T'HH:mm:ss");
+    const data = format(state.data, "yyyy-MM-dd'T'");
+    const horario = data + state.horario;
+    console.log(horario);
 
-    console.log(formatada.replace("00:00:00", state.horario));
     toast.success("Agendamento realizado com sucesso!");
     // setTimeout(() => {
     //   push("/");
