@@ -14,7 +14,7 @@ type ModalProps = {
   title: string;
   description: string;
   handleSubmit?: (e?: React.BaseSyntheticEvent) => Promise<void>;
-  schedule?: () => void;
+  schedule?: (arg0: number) => Promise<void>;
   footerButtons?: React.ReactNode;
   buttonLabel?: string;
 };
