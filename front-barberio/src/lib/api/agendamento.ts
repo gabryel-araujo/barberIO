@@ -15,7 +15,7 @@ export const agendar = async (
     });
     return response;
   } catch (error) {
-    console.error("Erro ao cadastrar funcionario", error);
+    console.error("Erro ao realizar agendamento", error);
     throw error;
   }
 };
