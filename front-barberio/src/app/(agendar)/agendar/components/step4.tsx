@@ -16,6 +16,9 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { baseUrl } from "@/lib/baseUrl";
 import axios from "axios";
 import { format } from "date-fns";
+import axiosInstance from "@/lib/axios";
+import { agendar } from "@/lib/api/agendamento";
+import { findByTelefone, GETClientes, POSTCliente } from "@/lib/api/cliente";
 
 export const Step4 = () => {
   const { state, dispatch } = useForm();
@@ -99,7 +102,7 @@ export const Step4 = () => {
     }
   }
 
-  const finalizarAgendamento = (data: FormData) => {
+  const finalizarAgendamento = async (data: FormData) => {
     dispatch({
       type: AgendamentoAction.setNome,
       payload: data.name,
@@ -109,23 +112,38 @@ export const Step4 = () => {
       payload: data.phone,
     });
 
-    console.log(data);
+    console.log(data.phone);
+
+    const response = await findByTelefone(data.phone);
+    if (response.length == 0) {
+      await POSTCliente(data.name, data.phone);
+    }
+
     setOpenModal(!openModal);
     setOpenModalRevisao(!openModalRevisao);
   };
 
-  const confirmarAgendamento = () => {
+  const confirmarAgendamento = async () => {
     console.log("Estado Atualizado:", state);
     const data = format(state.data, "yyyy-MM-dd'T'");
     const horario = data + state.horario;
-    console.log(horario);
+    const findCliente = await findByTelefone(state.telefone);
 
-    toast.success("Agendamento realizado com sucesso!");
-    // setTimeout(() => {
-    //   push("/");
-    // }, 2000);
+    const response = await agendar(
+      state.barbeiro.id,
+      findCliente[0].id!,
+      state.servico.id,
+      horario
+    );
 
-    //todo:consumo da api para executar o agendamento
+    if (response.status === 201) {
+      toast.success("Agendamento realizado com sucesso!");
+      setTimeout(() => {
+        push("/");
+      }, 2000);
+    } else if (response.status === 409) {
+      toast.error("O barbeiro está ocupado no horário selecionado");
+    }
     setOpenModalRevisao(!openModalRevisao);
   };
 
