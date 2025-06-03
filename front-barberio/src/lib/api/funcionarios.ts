@@ -34,7 +34,7 @@ export const GETFuncionarios = cache(async (): Promise<Barbeiro[]> => {
     const respose = await axiosInstance.get<Barbeiro[]>("/funcionarios");
     return respose.data;
   } catch (error) {
-    console.error("Erro ao cadastrar funcionario", error);
+    console.error("Erro ao listar funcionarios", error);
     throw error;
   }
 });
