@@ -2,7 +2,7 @@ import { Button } from "../../components/ui/button";
 import { Calendar } from "lucide-react";
 import Link from "next/link";
 
-const home = () => {
+const Home = () => {
   return (
     <div className="w-full flex flex-col items-center justify-center space-y-7 px-7 pt-7 md:pt-0 bg-[#e6f0ff]">
       <p className="text-5xl font-bold text-center ">
@@ -51,4 +51,4 @@ const home = () => {
     </div>
   );
 };
-export default home;
+export default Home;
