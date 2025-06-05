@@ -6,14 +6,14 @@ const Home = () => {
   return (
     <div className="w-full flex flex-col items-center justify-center space-y-7 px-7 pt-7 md:pt-0 bg-[#e6f0ff]">
       <p className="text-5xl font-bold text-center ">
-        Bem-Vindo à <span className="text-[#3f88c5]">Barber</span> iO
+        Bem-Vindo à <span className="text-primary">Barber</span>iO
       </p>
       <p className="text-slate-500 text-xl text-center">
         Agende seu horário de forma rápida e fácil com os melhores barbeiros da
         cidade.
       </p>
       <div className="flex">
-        <Button asChild className="rounded-sm bg-[#3f88c5] h-12 w-60">
+        <Button asChild className="rounded-sm bg-primary h-12 w-60">
           <Link href="/agendar">
             <Calendar /> <p className="font-bold text-lg">Agendar Horário</p>
           </Link>

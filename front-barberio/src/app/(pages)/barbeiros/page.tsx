@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { z } from "zod";
-import { ControllerRenderProps, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import {
@@ -37,13 +37,12 @@ import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { toast } from "sonner";
 import { BarberCard } from "../../../../components/BarberCard";
 import { Switch } from "@/components/ui/switch";
-import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { baseUrl } from "@/lib/baseUrl";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Servico } from "@/types/servico";
-import { DialogComponent } from "@/components/layout/Dialog";
-import axiosInstance from "@/lib/axios";
+import { DialogComponent } from "@/components/layout/DialogComponent";
 
 const barbeiros = () => {
   const { state, dispatch } = useFormReducer();
