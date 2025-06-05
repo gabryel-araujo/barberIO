@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Edit, Search, UserPlus } from "lucide-react";
 import { Cliente } from "@/types/cliente";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -34,12 +34,18 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { baseUrl } from "@/lib/baseUrl";
 import { toast } from "sonner";
+import { DialogComponent } from "@/components/layout/DialogComponent";
+import { formatarTelefone } from "@/utils/functions";
+import { whatsapp } from "@/lib/whstsapp";
+import Link from "next/link";
+import { Whatsapp } from "../../../../components/Whatsapp";
+import { Badge } from "@/components/ui/badge";
 const clientes = () => {
   const [openModal, setOpenModal] = useState(false);
   //const [clienteListado, setClienteListado] = useState<Cliente[]>([]);
   const [pesquisaInput, setPesquisaInput] = useState("");
   const [clienteSelecionado, setClienteSelecionado] = useState<Cliente>();
-  const [openModalDelete, setOpenModalDelete] = useState(true);
+  const [openModalDelete, setOpenModalDelete] = useState(false);
 
   //função para pegar o que ta escrito no input pesquisa
   const handlePesquisa = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -139,7 +145,7 @@ const clientes = () => {
     setOpenModal(!openModal);
   };
 
-  const deleteCliente = async (id: string) => {
+  const deleteCliente = async (id: number) => {
     try {
       console.log(`Deletando: ${baseUrl}/clientes/${id}`);
       await axios.delete(`${baseUrl}/clientes/${id}`);
@@ -150,7 +156,7 @@ const clientes = () => {
       console.error("Erro deletando cliente:", error);
       toast.error("Ops ocorreu um erro!");
     }
-    setOpenModal(!openModal);
+
     setOpenModalDelete(false);
   };
 
@@ -191,7 +197,24 @@ const clientes = () => {
               <TableRow key={cliente.id}>
                 <TableCell>{cliente.nome}</TableCell>
                 <TableCell>
-                  {/*{formatarTelefone(cliente.telefone)}*/} 83 988332659
+                  {
+                    <Link
+                      className="flex gap-2 group"
+                      target="_blank"
+                      href={`${whatsapp}${cliente.telefone}`}
+                    >
+                      <Badge
+                        variant="default"
+                        className="min-w-[150px] py-1 hover:bg-green-600 font-semibold hover:font-semibold hover:text-white transition-all duration-400"
+                      >
+                        {formatarTelefone(cliente.telefone)}
+
+                        <div className="group-hover:animate-bounce group-hover:fill-green-200 fill-green-100">
+                          <Whatsapp height={15} width={15} />
+                        </div>
+                      </Badge>
+                    </Link>
+                  }
                 </TableCell>
                 <TableCell>22/05/2025</TableCell>
                 <TableCell>01/01/1990</TableCell>
@@ -269,7 +292,10 @@ const clientes = () => {
                     <Button
                       type="button"
                       variant="destructive"
-                      onClick={() => setOpenModalDelete(true)}
+                      onClick={() => {
+                        setOpenModalDelete(true);
+                        setOpenModal(false);
+                      }}
                     >
                       Deletar
                     </Button>
@@ -292,31 +318,14 @@ const clientes = () => {
           </Form>
         </DialogContent>
       </Dialog>
-      <Dialog open={openModalDelete}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              Deseja realmente confirmar a exclusão do Cliente?
-            </DialogTitle>
-          </DialogHeader>
-          <div className="flex items-center justify-between px-5">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => setOpenModalDelete(false)}
-            >
-              Fechar
-            </Button>
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={() => deleteCliente(clienteSelecionado?.id!)}
-            >
-              Excluir
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+
+      <DialogComponent
+        actionLabel="Excluir"
+        open={openModalDelete}
+        setOpen={setOpenModalDelete}
+        title={`Deseja realmente apagar o cliente ${clienteSelecionado?.nome}?`}
+        action={() => deleteCliente(clienteSelecionado?.id!)}
+      />
     </div>
   );
 };
