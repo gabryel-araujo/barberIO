@@ -1,33 +1,22 @@
 import { useState } from "react";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
-import { User } from "lucide-react";
-import { inicialData, useForm } from "@/contexts/AgendamentoContextProvider";
+import { Clock } from "lucide-react";
+import { useForm } from "@/contexts/AgendamentoContextProvider";
 import { toast } from "sonner";
-import { useQuery } from "@tanstack/react-query";
-import { GETFuncionarios } from "@/lib/api/funcionarios";
 
 export const Step3 = () => {
   const { state, dispatch } = useForm();
-  const [barbeiro, setbarbeiro] = useState(state.barbeiro);
-
-  const { data: barbeiros = [] } = useQuery({
-    queryKey: ["barbeirosDisponivel"],
-    queryFn: GETFuncionarios,
-    //staleTime: 3000,
-  });
-
-  const barbeiroDisponivel = barbeiros.filter((b) => b.disponivel);
+  const [hora, setHora] = useState<string | undefined>(state.horario);
 
   function proximoPasso() {
-    if (state.barbeiro.nome === "") {
-      toast.warning("Selecione um profissional");
+    if (state.horario === "") {
+      toast.warning("Selecione um horário");
       return;
     }
-
     if (state.currentStep >= 4) return;
     else {
-      //gabryel: retirei o dispatch daqui para sempre que clicar no barbeiro atualizar o resumo
+      //gabryel: retirei o dispatch daqui para modificar o estado do componente assim que clicar na hora
       dispatch({
         type: AgendamentoAction.setcurrentStep,
         payload: state.currentStep + 1,
@@ -41,47 +30,71 @@ export const Step3 = () => {
         type: AgendamentoAction.setcurrentStep,
         payload: state.currentStep - 1,
       });
-      //gabryel: adicionei esse dispatch para caso o usuário volte, o sistema retirar o barbeiro selecionado
+      //gabryel: adicionei esse dispatch para caso o usuário volte, o sistema retirar o horario selecionado
       dispatch({
-        type: AgendamentoAction.setBarbeiro,
-        payload: inicialData.barbeiro,
+        type: AgendamentoAction.setHorario,
+        payload: "",
       });
     }
   }
+  const horariosDisponiveis = [
+    //todo: trazer isso da API, pois se a barbearia precisar mudar de horário ela vai poder
+    "09:00",
+    "09:30",
+    "10:00",
+    "10:30",
+    "11:00",
+    "11:30",
+    "12:00",
+    "12:30",
+    "13:00",
+    "13:30",
+    "14:00",
+    "14:30",
+    "15:00",
+    "15:30",
+    "16:00",
+    "16:30",
+    "17:00",
+    "17:30",
+    "18:00",
+    "18:30",
+  ];
 
   return (
     <div className="border rounded-lg md:mx-50 p-5 shadow bg-white">
       <div>
-        <p className="text-2xl font-bold">Escolha um barbeiro</p>
+        <p className="text-2xl font-bold">Escolha um horário</p>
         <span className="text-xs text-slate-500">
-          Selecione o profissional de sua preferência
+          Escolha um horário disponível para o seu atendimento
         </span>
       </div>
-      <div className="flex flex-col gap-5 items-center justify-center">
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 mt-4 w-full justify-items-center">
-          {barbeiroDisponivel.map((barber) => (
+      <div className="flex flex-col gap-5 items-center justify-center pt-5">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-5">
+          {horariosDisponiveis.map((horario) => (
             <Button
-              key={barber.id}
+              key={horario}
+              variant={hora === horario ? "default" : "outline"}
+              className={
+                hora === horario
+                  ? "bg-primary hover:bg-barber-accent/90 w-[150px]"
+                  : "w-[150px] cursor-pointer"
+              }
               onClick={() => {
-                setbarbeiro(barber);
+                setHora(horario);
                 dispatch({
-                  type: AgendamentoAction.setBarbeiro,
-                  payload: barber,
+                  type: AgendamentoAction.setHorario,
+                  payload: horario,
                 });
               }}
-              variant={"outline"}
-              className={`border-2 w-4/5 py-10 cursor-pointer${
-                barber.nome === barbeiro.nome ? "border-2 border-[#3f89c5]" : ""
-              }`}
             >
-              <p className="text-sm flex gap-3">
-                <User className="texto-azul" />
-                {barber.nome}
-              </p>
+              <Clock className="mr-2 h-4 w-4" />
+              {horario}
             </Button>
           ))}
         </div>
-        <div className="flex gap-3">
+
+        <div className="flex gap-3 items-center justify-between">
           {state.currentStep != 1 && (
             <Button
               variant="ghost"
