@@ -9,10 +9,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Edit, Edit2, Search, Underline, UserPlus } from "lucide-react";
-import { Clientes } from "@/model/clientes";
+import { Edit, Search, UserPlus } from "lucide-react";
 import { Cliente } from "@/types/cliente";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -31,24 +30,38 @@ import {
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { formatarTelefone } from "@/utils/functions";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import { baseUrl } from "@/lib/baseUrl";
+import { toast } from "sonner";
 const clientes = () => {
   const [openModal, setOpenModal] = useState(false);
-  const [clienteListado, setClienteListado] = useState<Cliente[]>(Clientes);
+  //const [clienteListado, setClienteListado] = useState<Cliente[]>([]);
   const [pesquisaInput, setPesquisaInput] = useState("");
   const [clienteSelecionado, setClienteSelecionado] = useState<Cliente>();
+  const [openModalDelete, setOpenModalDelete] = useState(true);
 
   //função para pegar o que ta escrito no input pesquisa
   const handlePesquisa = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPesquisaInput(e.target.value);
   };
 
+  const queryClient = useQueryClient();
+
+  const { data: clienteListado = [] } = useQuery({
+    queryKey: ["clientes"],
+    queryFn: async () => {
+      const response = await axios.get(`${baseUrl}/clientes`);
+      return response.data;
+    },
+    staleTime: 5 * (60 * 1000),
+  });
+
   //filtrando os clientes com base no que ta escrito no input pesquisa
   const filtroCliente = clienteListado.filter(
-    (cliente) =>
+    (cliente: Cliente) =>
       cliente.nome.toLowerCase().includes(pesquisaInput.toLowerCase()) ||
-      cliente.telefone.includes(pesquisaInput) ||
-      cliente.email.toLowerCase().includes(pesquisaInput.toLowerCase())
+      cliente.telefone.includes(pesquisaInput)
   );
 
   //mostrar os dados do cliente selecionado
@@ -58,7 +71,6 @@ const clientes = () => {
   };
 
   const formShema = z.object({
-    id: z.string(),
     nome: z
       .string({ required_error: "Digite seu nome" })
       .min(2, { message: "Nome precisa ter no minimo 2 caracteres" })
@@ -66,47 +78,50 @@ const clientes = () => {
     telefone: z
       .string({ required_error: "Digite seu telefone" })
       .min(11, { message: "Nome precisa ter no minimo 11 caracteres" }),
-    email: z
-      .string({ required_error: "Email Inválido" })
-      .email({ message: "Email Inválido" }),
-    dataCadastro: z.date(),
   });
 
   const form = useForm<z.infer<typeof formShema>>({
     resolver: zodResolver(formShema),
     defaultValues: {
-      id: String(clienteListado.length + 1),
       nome: "",
       telefone: "",
-      email: "",
-      dataCadastro: new Date(),
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formShema>) => {
-    const clienteExistente = clienteSelecionado;
-    //primeiro pega os dados do novoCliente
-    const clienteAtualizado: Cliente = {
-      id: values.id,
-      nome: values.nome,
-      email: values.email,
-      telefone: values.telefone,
-      dataCadastro: new Date(values.dataCadastro),
-    };
-    if (clienteExistente) {
-      // se for cliente atualiza o cliente na lista
-      setClienteListado((prev) =>
-        prev.map((cli) =>
-          cli.id === clienteAtualizado.id ? clienteAtualizado : cli
-        )
-      );
-    } else {
-      //agora seta o novo cliente nos clientes
-      setClienteListado((prev) => [...prev, clienteAtualizado]);
+  const onSubmit = async (values: Cliente) => {
+    console.log("onSubmit Chamando com: ", values);
+
+    try {
+      const clienteExistente = clienteSelecionado;
+      //primeiro pega os dados do novoCliente
+      const clienteAtualizado: Cliente = {
+        id: clienteExistente?.id, // será opcional para tirar.
+        nome: values.nome,
+        telefone: values.telefone,
+      };
+      if (clienteExistente) {
+        // se for cliente atualiza o cliente na lista
+        const response = await axios.put(
+          `${baseUrl}/clientes/${clienteExistente.id}`,
+          clienteAtualizado
+        );
+        console.log("Cliente Salvo:", clienteAtualizado);
+        toast.success("Cliente alterado com sucesso!");
+      } else {
+        //agora seta o novo cliente nos clientes
+        const response = await axios.post(
+          `${baseUrl}/clientes`,
+          clienteAtualizado
+        );
+        console.log("Cliente Novo:", clienteAtualizado);
+        toast.success("Cliente cadastrado com sucesso!");
+      }
+      await queryClient.invalidateQueries({ queryKey: ["clientes"] });
+    } catch (error) {
+      console.error("Erro ao enviar os dados:", error);
     }
 
     //logs
-    console.log("Cliente salvo:", clienteAtualizado);
     console.log(values);
     //fecha modal
     setOpenModal(false);
@@ -117,14 +132,26 @@ const clientes = () => {
 
   const abrirModal = () => {
     form.reset({
-      id: String(clienteListado.length + 1),
       nome: "",
       telefone: "",
-      email: "",
-      dataCadastro: new Date(),
     });
     setClienteSelecionado(undefined);
     setOpenModal(!openModal);
+  };
+
+  const deleteCliente = async (id: string) => {
+    try {
+      console.log(`Deletando: ${baseUrl}/clientes/${id}`);
+      await axios.delete(`${baseUrl}/clientes/${id}`);
+
+      await queryClient.invalidateQueries({ queryKey: ["clientes"] });
+      toast.success("Cliente deletado com sucesso!");
+    } catch (error) {
+      console.error("Erro deletando cliente:", error);
+      toast.error("Ops ocorreu um erro!");
+    }
+    setOpenModal(!openModal);
+    setOpenModalDelete(false);
   };
 
   return (
@@ -151,37 +178,31 @@ const clientes = () => {
       <div className="px-10 py-5 bg-white">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="">
               <TableHead>Nome</TableHead>
               <TableHead>Telefone</TableHead>
-              <TableHead>Email</TableHead>
+              <TableHead>Último Atendimento</TableHead>
               <TableHead>Data de Cadastro</TableHead>
-              <TableHead>Ações</TableHead>
+              <TableHead className="flex justify-end pl-10">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filtroCliente.map((cliente) => (
+            {filtroCliente.map((cliente: Cliente) => (
               <TableRow key={cliente.id}>
                 <TableCell>{cliente.nome}</TableCell>
-                <TableCell>{formatarTelefone(cliente.telefone)}</TableCell>
-                <TableCell>{cliente.email}</TableCell>
                 <TableCell>
-                  {cliente.dataCadastro.toLocaleDateString("pt-BR", {
-                    day: "2-digit",
-                    month: "long",
-                    year: "numeric",
-                  })}
+                  {/*{formatarTelefone(cliente.telefone)}*/} 83 988332659
                 </TableCell>
-                <TableCell>
+                <TableCell>22/05/2025</TableCell>
+                <TableCell>01/01/1990</TableCell>
+                <TableCell className="flex justify-end pl-10">
                   <Button
                     onClick={() => {
                       handleClienteDados(cliente);
                       form.reset({
-                        id: cliente.id,
+                        // id: cliente.id,
                         nome: cliente.nome,
-                        email: cliente.email,
                         telefone: cliente.telefone,
-                        dataCadastro: cliente.dataCadastro,
                       });
                       setOpenModal(true);
                     }}
@@ -241,34 +262,59 @@ const clientes = () => {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder="digite seu email" {...field}></Input>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
 
-              <div className="pt-5 flex gap-5">
-                <Button
-                  type="button"
-                  onClick={() => setOpenModal(!openModal)}
-                  variant="destructive"
-                >
-                  Cancelar
-                </Button>
-                <Button type="submit">
-                  {clienteSelecionado ? "Salvar" : "Cadastrar"}
-                </Button>
+              <div className="pt-5 flex justify-between gap-5">
+                {clienteSelecionado && (
+                  <div>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      onClick={() => setOpenModalDelete(true)}
+                    >
+                      Deletar
+                    </Button>
+                  </div>
+                )}
+                <div className="flex gap-5">
+                  <Button
+                    type="button"
+                    onClick={() => setOpenModal(!openModal)}
+                    variant="ghost"
+                  >
+                    Cancelar
+                  </Button>
+                  <Button type="submit">
+                    {clienteSelecionado ? "Salvar" : "Cadastrar"}
+                  </Button>
+                </div>
               </div>
             </form>
           </Form>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={openModalDelete}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Deseja realmente confirmar a exclusão do Cliente?
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex items-center justify-between px-5">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setOpenModalDelete(false)}
+            >
+              Fechar
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={() => deleteCliente(clienteSelecionado?.id!)}
+            >
+              Excluir
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
