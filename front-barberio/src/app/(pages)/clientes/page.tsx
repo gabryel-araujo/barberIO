@@ -33,11 +33,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { baseUrl } from "@/lib/baseUrl";
+import { toast } from "sonner";
 const clientes = () => {
   const [openModal, setOpenModal] = useState(false);
   //const [clienteListado, setClienteListado] = useState<Cliente[]>([]);
   const [pesquisaInput, setPesquisaInput] = useState("");
   const [clienteSelecionado, setClienteSelecionado] = useState<Cliente>();
+  const [openModalDelete, setOpenModalDelete] = useState(true);
 
   //função para pegar o que ta escrito no input pesquisa
   const handlePesquisa = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,15 +101,20 @@ const clientes = () => {
       };
       if (clienteExistente) {
         // se for cliente atualiza o cliente na lista
-        await axios.put(
+        const response = await axios.put(
           `${baseUrl}/clientes/${clienteExistente.id}`,
           clienteAtualizado
         );
         console.log("Cliente Salvo:", clienteAtualizado);
+        toast.success("Cliente alterado com sucesso!");
       } else {
         //agora seta o novo cliente nos clientes
-        await axios.post(`${baseUrl}/clientes`, clienteAtualizado);
+        const response = await axios.post(
+          `${baseUrl}/clientes`,
+          clienteAtualizado
+        );
         console.log("Cliente Novo:", clienteAtualizado);
+        toast.success("Cliente cadastrado com sucesso!");
       }
       await queryClient.invalidateQueries({ queryKey: ["clientes"] });
     } catch (error) {
@@ -115,7 +122,6 @@ const clientes = () => {
     }
 
     //logs
-
     console.log(values);
     //fecha modal
     setOpenModal(false);
@@ -139,10 +145,13 @@ const clientes = () => {
       await axios.delete(`${baseUrl}/clientes/${id}`);
 
       await queryClient.invalidateQueries({ queryKey: ["clientes"] });
+      toast.success("Cliente deletado com sucesso!");
     } catch (error) {
       console.error("Erro deletando cliente:", error);
+      toast.error("Ops ocorreu um erro!");
     }
     setOpenModal(!openModal);
+    setOpenModalDelete(false);
   };
 
   return (
@@ -260,7 +269,7 @@ const clientes = () => {
                     <Button
                       type="button"
                       variant="destructive"
-                      onClick={() => deleteCliente(clienteSelecionado.id!)}
+                      onClick={() => setOpenModalDelete(true)}
                     >
                       Deletar
                     </Button>
@@ -281,6 +290,31 @@ const clientes = () => {
               </div>
             </form>
           </Form>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={openModalDelete}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Deseja realmente confirmar a exclusão do Cliente?
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex items-center justify-between px-5">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setOpenModalDelete(false)}
+            >
+              Fechar
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={() => deleteCliente(clienteSelecionado?.id!)}
+            >
+              Excluir
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
