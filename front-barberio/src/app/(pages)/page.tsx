@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const home = () => {
   return (
-    <div className="w-full flex flex-col items-center justify-center space-y-7 px-7 pt-7 md:pt-0">
+    <div className="w-full flex flex-col items-center justify-center space-y-7 px-7 pt-7 md:pt-0 bg-[#e6f0ff]">
       <p className="text-5xl font-bold text-center ">
         Bem-Vindo à <span className="text-[#3f88c5]">Barber</span> iO
       </p>

@@ -16,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className={`antialiased bg-[#f3f4f6]`}>
-        <div className="p-5">
+        <div className="p-5 lg:p-0 md:p-0">
           <Providers>
             <Toaster richColors position="top-center" />
             <AgendamentoProvider>{children}</AgendamentoProvider>

@@ -34,17 +34,18 @@ export const GETFuncionarios = cache(async (): Promise<Barbeiro[]> => {
     const respose = await axiosInstance.get<Barbeiro[]>("/funcionarios");
     return respose.data;
   } catch (error) {
-    console.error("Erro ao cadastrar funcionario", error);
+    console.error("Erro ao listar funcionarios", error);
     throw error;
   }
 });
 
-export const SETFuncionario = async (
+export const POSTFuncionario = async (
   nome: string,
   email: string,
   senha: string,
   data_nascimento: string,
-  disponivel: boolean
+  disponivel: boolean,
+  servicos?: string[]
 ) => {
   try {
     const response = await axiosInstance.post("/funcionarios", {
@@ -53,11 +54,12 @@ export const SETFuncionario = async (
       senha,
       data_nascimento,
       disponivel,
+      newServices: servicos,
     });
     return response;
-  } catch (errorReg) {
-    console.error("Erro ao cadastrar funcionario", errorReg);
-    throw errorReg;
+  } catch (error) {
+    console.error("Erro ao cadastrar funcionario", error);
+    throw error;
   }
 };
 
@@ -78,6 +80,66 @@ export const changeStatus = async (
     return response;
   } catch (error) {
     console.error("Erro ao atualizar", error);
+    throw error;
+  }
+};
+
+export const PUTFuncionario = async (
+  id: number,
+  nome: string,
+  email: string,
+  data_nascimento: string,
+  disponivel: boolean,
+  senha?: string
+) => {
+  try {
+    const response = await axiosInstance.put(`/funcionarios/${id}`, {
+      nome,
+      email,
+      senha,
+      data_nascimento,
+      disponivel,
+    });
+    return response;
+  } catch (error) {
+    console.error("Erro ao cadastrar funcionario", error);
+    throw error;
+  }
+};
+
+export const DELETEFuncionario = async (id: number) => {
+  try {
+    const response = await axiosInstance.delete(`funcionarios/${id}`);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const addServicoFuncionario = async (
+  funcionarioId: number,
+  servicoId: number
+) => {
+  try {
+    const response = await axiosInstance.patch(
+      `funcionarios/${funcionarioId}/adicionarServico/${servicoId}`
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const removeServicoFuncionario = async (
+  funcionarioId: number,
+  servicoId: number
+) => {
+  try {
+    const response = await axiosInstance.patch(
+      `funcionarios/${funcionarioId}/removerServico/${servicoId}`
+    );
+    return response;
+  } catch (error) {
     throw error;
   }
 };
