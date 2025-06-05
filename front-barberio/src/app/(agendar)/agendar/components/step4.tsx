@@ -19,6 +19,7 @@ import { format } from "date-fns";
 import axiosInstance from "@/lib/axios";
 import { agendar } from "@/lib/api/agendamento";
 import { findByTelefone, GETClientes, POSTCliente } from "@/lib/api/cliente";
+import { LoadingComponent } from "../../../../../components/LoadingComponent";
 
 export const Step4 = () => {
   const { state, dispatch } = useForm();
@@ -28,6 +29,7 @@ export const Step4 = () => {
   );
   const [openModal, setOpenModal] = useState(false);
   const [openModalRevisao, setOpenModalRevisao] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { push } = useRouter();
 
@@ -124,32 +126,38 @@ export const Step4 = () => {
   };
 
   const confirmarAgendamento = async () => {
-    console.log("Estado Atualizado:", state);
-    const data = format(state.data, "yyyy-MM-dd'T'");
-    const horario = data + state.horario;
-    const findCliente = await findByTelefone(state.telefone);
+    try {
+      const data = format(state.data, "yyyy-MM-dd'T'");
+      const horario = data + state.horario;
+      const findCliente = await findByTelefone(state.telefone);
 
-    const response = await agendar(
-      state.barbeiro.id,
-      findCliente[0].id!,
-      state.servico.id,
-      horario
-    );
+      const response = await agendar(
+        state.barbeiro.id,
+        findCliente[0].id!,
+        state.servico.id,
+        horario
+      );
 
-    if (response.status === 201) {
-      toast.success("Agendamento realizado com sucesso!");
-      setTimeout(() => {
-        push("/");
-      }, 2000);
-    } else if (response.status === 409) {
+      if (response.status === 201) {
+        toast.success("Agendamento realizado com sucesso!");
+        setIsLoading(true);
+        setTimeout(() => {
+          push("/");
+        }, 2000);
+      }
+      setOpenModalRevisao(!openModalRevisao);
+    } catch (error) {
       toast.error("O barbeiro está ocupado no horário selecionado");
     }
-    setOpenModalRevisao(!openModalRevisao);
   };
 
   const cancelarAgendamento = () => {
     setOpenModalRevisao(!openModalRevisao);
   };
+
+  if (isLoading) {
+    return <LoadingComponent />;
+  }
 
   return (
     <div className="border rounded-lg md:mx-50 p-5 shadow bg-white">
