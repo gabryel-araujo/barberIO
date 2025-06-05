@@ -26,11 +26,15 @@ public class ClienteController {
     }
 
     @PostMapping("/clientes")
-    public ResponseEntity<ClienteModel> addCliente(@RequestBody @Valid ClienteModel clienteRecordDto){
+    public ResponseEntity<Object> addCliente(@RequestBody @Valid ClienteRecordDto clienteRecordDto){
+        Optional<ClienteModel> clienteO = clienteRepository.findByTelefone(clienteRecordDto.telefone());
+
+        if(clienteO.isPresent()){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Cliente já cadastrado");
+        }
+
         ClienteModel clienteModel = new ClienteModel();
         BeanUtils.copyProperties(clienteRecordDto, clienteModel);
-
-        //todo: lançar uma validação de email já existente antes de criar
 
         return ResponseEntity.status(HttpStatus.CREATED).body(clienteRepository.save(clienteModel));
     }
@@ -62,7 +66,6 @@ public class ClienteController {
         return ResponseEntity.status(HttpStatus.OK).body("Cliente removido com sucesso.");
     }
 
-    //Um comentário só pra testar o git
     @GetMapping("/clientes/{id}")
     public ResponseEntity<Object> getOneClient(@PathVariable (value = "id") Long id ){
         Optional<ClienteModel> clienteO = clienteRepository.findById(id);

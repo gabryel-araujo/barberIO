@@ -34,7 +34,7 @@ export const GETFuncionarios = cache(async (): Promise<Barbeiro[]> => {
     const respose = await axiosInstance.get<Barbeiro[]>("/funcionarios");
     return respose.data;
   } catch (error) {
-    console.error("Erro ao cadastrar funcionario", error);
+    console.error("Erro ao listar funcionarios", error);
     throw error;
   }
 });
@@ -44,7 +44,8 @@ export const POSTFuncionario = async (
   email: string,
   senha: string,
   data_nascimento: string,
-  disponivel: boolean
+  disponivel: boolean,
+  servicos?: string[]
 ) => {
   try {
     const response = await axiosInstance.post("/funcionarios", {
@@ -53,6 +54,7 @@ export const POSTFuncionario = async (
       senha,
       data_nascimento,
       disponivel,
+      newServices: servicos,
     });
     return response;
   } catch (error) {
@@ -108,6 +110,34 @@ export const PUTFuncionario = async (
 export const DELETEFuncionario = async (id: number) => {
   try {
     const response = await axiosInstance.delete(`funcionarios/${id}`);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const addServicoFuncionario = async (
+  funcionarioId: number,
+  servicoId: number
+) => {
+  try {
+    const response = await axiosInstance.patch(
+      `funcionarios/${funcionarioId}/adicionarServico/${servicoId}`
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const removeServicoFuncionario = async (
+  funcionarioId: number,
+  servicoId: number
+) => {
+  try {
+    const response = await axiosInstance.patch(
+      `funcionarios/${funcionarioId}/removerServico/${servicoId}`
+    );
     return response;
   } catch (error) {
     throw error;

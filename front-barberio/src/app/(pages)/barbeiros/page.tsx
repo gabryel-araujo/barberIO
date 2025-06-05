@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button";
 import { UserPlus } from "lucide-react";
 // import { servicos } from "@/model/servico";
-
 import {
   Dialog,
   DialogContent,
@@ -11,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { ControllerRenderProps, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import {
@@ -30,20 +29,31 @@ import {
   PUTFuncionario,
   POSTFuncionario,
   DELETEFuncionario,
+  addServicoFuncionario,
+  removeServicoFuncionario,
 } from "@/lib/api/funcionarios";
 import { useForm as useFormReducer } from "@/contexts/AgendamentoContextProvider";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { toast } from "sonner";
 import { BarberCard } from "../../../../components/BarberCard";
 import { Switch } from "@/components/ui/switch";
+import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import { baseUrl } from "@/lib/baseUrl";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Servico } from "@/types/servico";
+import { DialogComponent } from "@/components/layout/Dialog";
+import axiosInstance from "@/lib/axios";
 
 const barbeiros = () => {
   const { state, dispatch } = useFormReducer();
   const [openModal, setOpenModal] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
   const [barbeiroLista, setBabeiroLista] = useState<Barbeiro[]>([]);
   const [barbeiroSelecionado, setBarbeiroSelecionado] = useState<Barbeiro>();
+  const [servicos, setServicos] = useState<Servico[]>([]);
+  const [servicoSelecionado, setServicoSelecionado] = useState<string[]>([]);
   const formSchema = z.object({
-    //id: z.coerce.number(),
     nome: z
       .string()
       .min(2, { message: "Nome deve conter no mínimo 2 caracteres" }),
@@ -60,18 +70,18 @@ const barbeiros = () => {
           message: "A data precisa estar no formato: dd/MM/aaaa",
         }
       ),
+    servico: z.array(z.any()).nullable(),
     disponivel: z.boolean(),
   });
 
   const editFormSchema = z.object({
-    //id: z.coerce.number(),
     nome: z
       .string()
       .min(2, { message: "Nome deve conter no mínimo 2 caracteres" }),
     email: z.string().email("Email inválido"),
     senha: z
       .string()
-      .optional() // Torna o campo opcional em si
+      .optional()
       .refine(
         (val) => {
           return val == null || val === "" || val.length >= 7;
@@ -91,7 +101,7 @@ const barbeiros = () => {
           message: "A data precisa estar no formato: dd/MM/aaaa",
         }
       ),
-    // servico: z.array(z.any()).nullable(),
+    servico: z.array(z.any()).nullable(),
     disponivel: z.boolean(),
   });
 
@@ -106,9 +116,11 @@ const barbeiros = () => {
       senha: "",
       data_nascimento: "",
       disponivel: true,
-      // servico: [],
+      servico: [],
     },
   });
+
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     async function fetchData() {
@@ -124,8 +136,10 @@ const barbeiros = () => {
       barbeiro.email,
       barbeiro.senha,
       barbeiro.data_nascimento!,
-      barbeiro.disponivel
+      barbeiro.disponivel,
+      servicoSelecionado
     );
+    console.log(servicoSelecionado);
     console.log(response.data);
     dispatch({
       type: AgendamentoAction.setBarbeiro,
@@ -141,35 +155,10 @@ const barbeiros = () => {
       console.error(response.statusText);
     }
 
+    queryClient.invalidateQueries({ queryKey: ["servicos"] });
     setOpenModal(false);
     form.reset();
   };
-
-  //!Transferido para BarberCard
-  // const updateStatus = async (barbeiro: Barbeiro) => {
-  //   const response = await changeStatus(
-  //     barbeiro.id,
-  //     barbeiro.nome,
-  //     barbeiro.email,
-  //     barbeiro.senha,
-  //     barbeiro.disponivel
-  //   );
-
-  //   dispatch({
-  //     type: AgendamentoAction.setBarbeiro,
-  //     payload: [response.data],
-  //   });
-
-  //   if (response.status === 200) {
-  //     toast.success("Barbeiro atualizado com sucesso!");
-  //   } else if (response.status >= 400) {
-  //     toast.error("Erro na requisição! Verifique os dados");
-  //   } else {
-  //     toast.error("Oops, ocorreu um erro!");
-  //     console.log(response);
-  //     console.error(response.statusText);
-  //   }
-  // };
 
   const abrirModal = () => {
     form.reset({
@@ -182,18 +171,6 @@ const barbeiros = () => {
     setBarbeiroSelecionado(undefined);
     setOpenModal(true);
   };
-
-  //!Transferido para BarberCard
-  // const handleRecoveryBarbeiro = (barbeiro: Barbeiro) => {
-  //   console.log(barbeiro);
-  //   form.reset({
-  //     nome: barbeiro.nome,
-  //     email: barbeiro.email,
-  //     senha: "",
-  //     data_nascimento: barbeiro.data_nascimento,
-  //     disponivel: barbeiro.disponivel,
-  //   });
-  // };
 
   const handleEditBarbeiro = async (barbeiro: Barbeiro) => {
     const newBarber = form.getValues();
@@ -221,7 +198,6 @@ const barbeiros = () => {
       console.log(response);
       console.error(response.statusText);
     }
-
     setOpenModal(false);
   };
 
@@ -234,13 +210,52 @@ const barbeiros = () => {
     });
 
     if (response.status === 200) {
-      toast.success("Barbeiro atualizado com sucesso!");
+      toast.success("Barbeiro excluído com sucesso!");
     } else if (response.status >= 400) {
       toast.error("Erro na requisição! Verifique os dados");
     } else {
       toast.error("Oops, ocorreu um erro!");
       console.log(response);
       console.error(response.statusText);
+    }
+  }
+
+  useQuery({
+    queryKey: ["servicos"],
+    queryFn: async () => {
+      const response = await axios.get(`${baseUrl}/servico`);
+      setServicos(response.data);
+      return response.data;
+    },
+    staleTime: 5 * (60 * 1000),
+  });
+
+  async function handleEditService(
+    isChecked: string | boolean,
+    funcionarioId: number,
+    servicoId: number
+  ) {
+    if (isChecked) {
+      //todo:logica de chamar o endpoint aqui
+      const response = await addServicoFuncionario(funcionarioId, servicoId);
+
+      if (response.status === 200) {
+        toast.warning("Atualizando serviços...");
+      } else {
+        toast.error("Oops ocorreu um erro!");
+        console.log(response);
+      }
+    } else {
+      //todo:logica de chamar o endpoint aqui
+
+      const response = await removeServicoFuncionario(funcionarioId, servicoId);
+
+      if (response.status === 200) {
+        toast.warning("Atualizando serviços...");
+      } else {
+        toast.error("Oops ocorreu um erro!");
+        console.log(response);
+      }
     }
   }
 
@@ -348,16 +363,10 @@ const barbeiros = () => {
                   />
                 </div>
               </div>
-              {/* <FormField
+              <FormField
                 control={form.control}
                 name="servico"
                 render={({ field }) => {
-                  const handleCheckBox = (id: string) => {
-                    const novoValor = field.value.includes(id)
-                      ? field.value.filter((item: string) => item != id)
-                      : [...field.value, id];
-                    field.onChange(novoValor);
-                  };
                   return (
                     <FormItem>
                       <FormLabel>Serviços que realiza:</FormLabel>
@@ -369,13 +378,43 @@ const barbeiros = () => {
                               className="flex gap-3 items-center"
                             >
                               <Checkbox
-                                id={servico.id}
-                                checked={field.value?.includes(servico.id)}
-                                onCheckedChange={() =>
-                                  handleCheckBox(servico.id)
-                                }
+                                id={String(servico.id)}
+                                checked={field.value?.includes(
+                                  String(servico.id)
+                                )}
+                                onCheckedChange={(isChecked) => {
+                                  // 1. Calcular o novo array de IDs selecionados
+                                  const currentSelectedIds = field.value || [];
+                                  let newSelectedIds;
+                                  const currentServiceIdStr = String(
+                                    servico.id
+                                  );
+
+                                  if (isChecked) {
+                                    newSelectedIds = [
+                                      ...currentSelectedIds,
+                                      currentServiceIdStr,
+                                    ];
+                                  } else {
+                                    newSelectedIds = currentSelectedIds.filter(
+                                      (id: string) => id !== currentServiceIdStr
+                                    );
+                                  }
+                                  field.onChange(newSelectedIds);
+                                  setServicoSelecionado(newSelectedIds);
+
+                                  if (barbeiroSelecionado) {
+                                    handleEditService(
+                                      isChecked,
+                                      barbeiroSelecionado.id,
+                                      servico.id
+                                    );
+                                  }
+                                }}
                               />
-                              <label htmlFor={servico.id}>{servico.nome}</label>
+                              <label htmlFor={String(servico.id)}>
+                                {servico.nome}
+                              </label>
                             </div>
                           ))}
                         </div>
@@ -384,7 +423,7 @@ const barbeiros = () => {
                     </FormItem>
                   );
                 }}
-              /> */}
+              />
               <FormField
                 control={form.control}
                 name="disponivel"
@@ -408,7 +447,10 @@ const barbeiros = () => {
               <div className="flex items-center justify-end gap-3">
                 {barbeiroSelecionado && (
                   <Button
-                    onClick={() => handleDeleteBarbeiro(barbeiroSelecionado.id)}
+                    onClick={() => {
+                      setOpenDialog(!openDialog);
+                      setOpenModal(!openModal);
+                    }}
                     variant={"destructive"}
                     type="button"
                   >
@@ -438,6 +480,14 @@ const barbeiros = () => {
           </Form>
         </DialogContent>
       </Dialog>
+
+      <DialogComponent
+        title={`Você deseja excluir o barbeiro ${barbeiroSelecionado?.nome}?`}
+        actionLabel="Excluir"
+        open={openDialog}
+        setOpen={setOpenDialog}
+        action={() => handleDeleteBarbeiro(barbeiroSelecionado!.id)}
+      />
     </div>
   );
 };

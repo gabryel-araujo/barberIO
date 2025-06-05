@@ -36,8 +36,6 @@ public class FuncionarioModel implements Serializable {
 
     private int atendimentos = 0;
 
-    private boolean disponivel = false;
-
     @ManyToMany
     @JoinTable(
             name = "barbeiro_servico",
@@ -45,14 +43,6 @@ public class FuncionarioModel implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "servico_id")
     )
     private List<ServiceModel> servicos = new ArrayList<>();
-
-    public boolean isDisponivel() {
-        return disponivel;
-    }
-
-    public void setDisponivel(boolean disponivel) {
-        this.disponivel = disponivel;
-    }
 
     public boolean isDisponivel() {
         return disponivel;

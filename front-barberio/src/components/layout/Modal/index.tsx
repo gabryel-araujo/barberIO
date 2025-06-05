@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -15,10 +14,18 @@ type ModalProps = {
   title: string;
   description: string;
   handleSubmit?: (e?: React.BaseSyntheticEvent) => Promise<void>;
-  schedule?: () => void;
-
-  footerButtons: React.ReactNode;
+  schedule?: (arg0: number) => Promise<void>;
+  footerButtons?: React.ReactNode;
   buttonLabel?: string;
+};
+
+export function Modal({
+  open,
+  children,
+  title,
+  description,
+  footerButtons,
+  buttonLabel,
 }: ModalProps) {
   return (
     <Dialog open={open}>
@@ -43,9 +50,9 @@ type ModalProps = {
             onClick={handleSubmit ? handleSubmit : schedule}
           >
             Finalizar
-          </Button> */}
+          </Button> 
             {buttonLabel ? buttonLabel : "Finalizar"}
-          </Button>
+          </Button> */}
         </div>
       </DialogContent>
     </Dialog>

@@ -14,6 +14,7 @@ import { Switch } from "@/components/ui/switch";
 type BarberCardProps = {
   barbeiro: Barbeiro;
   form: UseFormReturn<{
+    servico: any[] | null;
     nome: string;
     email: string;
     senha: string;
@@ -40,6 +41,7 @@ export function BarberCard({
       senha: "",
       data_nascimento: barbeiro.data_nascimento,
       disponivel: barbeiro.disponivel,
+      servico: barbeiro.servicos?.map((s) => String(s.id)) || [],
     });
   };
 

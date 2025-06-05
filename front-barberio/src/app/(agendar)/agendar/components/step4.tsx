@@ -15,6 +15,11 @@ import { useForm } from "@/contexts/AgendamentoContextProvider";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { baseUrl } from "@/lib/baseUrl";
 import axios from "axios";
+import { format } from "date-fns";
+import axiosInstance from "@/lib/axios";
+import { agendar } from "@/lib/api/agendamento";
+import { findByTelefone, GETClientes, POSTCliente } from "@/lib/api/cliente";
+import { LoadingComponent } from "../../../../../components/LoadingComponent";
 
 export const Step4 = () => {
   const { state, dispatch } = useForm();
@@ -24,6 +29,7 @@ export const Step4 = () => {
   );
   const [openModal, setOpenModal] = useState(false);
   const [openModalRevisao, setOpenModalRevisao] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { push } = useRouter();
 
@@ -54,7 +60,7 @@ export const Step4 = () => {
     },
     {
       icon: <User className="texto-azul" />,
-      value: state.barbeiro,
+      value: state.barbeiro.nome,
     },
     ,
     {
@@ -98,39 +104,60 @@ export const Step4 = () => {
     }
   }
 
-  const finalizarAgendamento = (data: FormData) => {
+  const finalizarAgendamento = async (data: FormData) => {
     dispatch({
       type: AgendamentoAction.setNome,
       payload: data.name,
-    });
-    dispatch({
-      type: AgendamentoAction.setEmail,
-      payload: data.email,
     });
     dispatch({
       type: AgendamentoAction.setTelefone,
       payload: data.phone,
     });
 
-    console.log(data);
+    console.log(data.phone);
+
+    const response = await findByTelefone(data.phone);
+    if (response.length == 0) {
+      await POSTCliente(data.name, data.phone);
+    }
+
     setOpenModal(!openModal);
     setOpenModalRevisao(!openModalRevisao);
   };
 
-  const confirmarAgendamento = () => {
-    console.log("Estado Atualizado:", state);
-    toast.success("Agendamento realizado com sucesso!");
-    setTimeout(() => {
-      push("/");
-    }, 2000);
+  const confirmarAgendamento = async () => {
+    try {
+      const data = format(state.data, "yyyy-MM-dd'T'");
+      const horario = data + state.horario;
+      const findCliente = await findByTelefone(state.telefone);
 
-    //todo:consumo da api para executar o agendamento
-    setOpenModalRevisao(!openModalRevisao);
+      const response = await agendar(
+        state.barbeiro.id,
+        findCliente[0].id!,
+        state.servico.id,
+        horario
+      );
+
+      if (response.status === 201) {
+        toast.success("Agendamento realizado com sucesso!");
+        setIsLoading(true);
+        setTimeout(() => {
+          push("/");
+        }, 2000);
+      }
+      setOpenModalRevisao(!openModalRevisao);
+    } catch (error) {
+      toast.error("O barbeiro está ocupado no horário selecionado");
+    }
   };
 
   const cancelarAgendamento = () => {
     setOpenModalRevisao(!openModalRevisao);
   };
+
+  if (isLoading) {
+    return <LoadingComponent />;
+  }
 
   return (
     <div className="border rounded-lg md:mx-50 p-5 shadow bg-white">
@@ -141,7 +168,7 @@ export const Step4 = () => {
         </span>
       </div>
       <div className="flex flex-col gap-5 items-center justify-center">
-        <div className="grid grid-cols-1 gap-3 pt-5">
+        <div className="grid grid-cols-1 gap-3 pt-5 w-full">
           {servicos.map((servico) => (
             <Button
               key={servico.id}
@@ -153,7 +180,7 @@ export const Step4 = () => {
                   payload: servico,
                 });
               }}
-              className={`h-auto md:w-[650px] w-[300px] flex flex-col border-2 items-start p-4 justify-start text-left cursor-pointer${
+              className={`h-auto flex flex-col border-2 items-start p-4 justify-start text-left cursor-pointer${
                 servicoSelecionado?.nome == servico.nome
                   ? "border-2 border-[#3f89c5]"
                   : ""
@@ -172,7 +199,7 @@ export const Step4 = () => {
                 </div>
               </div>
               <div className="flex justify-between w-full mt-1 gap-2">
-                <div className="text-slate-500 overflow-auto">
+                <div className="text-slate-500 truncate">
                   {servico.descricao}
                 </div>
                 <div className="text-slate-500">{servico.duracao}min</div>
@@ -206,14 +233,14 @@ export const Step4 = () => {
           footerButtons={
             <>
               <Button
-                className="w-[150px] cursor-pointer"
+                className=" cursor-pointer"
                 variant="secondary"
                 onClick={() => setOpenModal(!open)}
               >
                 Cancelar
               </Button>
               <Button
-                className="w-[150px] cursor-pointer"
+                className=" cursor-pointer"
                 onClick={handleSubmit(finalizarAgendamento)}
               >
                 Finalizar
@@ -230,6 +257,23 @@ export const Step4 = () => {
           open={openModalRevisao}
           setOpen={setOpenModalRevisao}
           schedule={confirmarAgendamento}
+          footerButtons={
+            <>
+              <Button
+                className="w-[150px] cursor-pointer"
+                variant="secondary"
+                onClick={cancelarAgendamento}
+              >
+                Cancelar
+              </Button>
+              <Button
+                className="w-[150px] cursor-pointer"
+                onClick={handleSubmit(confirmarAgendamento)}
+              >
+                Finalizar
+              </Button>
+            </>
+          }
         >
           <Card className="my-5">
             <CardContent>
