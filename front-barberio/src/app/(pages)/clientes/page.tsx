@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Edit, Search, UserPlus } from "lucide-react";
+import { Edit, Filter, Search, UserPlus } from "lucide-react";
 import { Cliente } from "@/types/cliente";
 import { useState } from "react";
 import {
@@ -40,12 +40,21 @@ import { whatsapp } from "@/lib/whstsapp";
 import Link from "next/link";
 import { Whatsapp } from "../../../../components/Whatsapp";
 import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 const clientes = () => {
   const [openModal, setOpenModal] = useState(false);
   //const [clienteListado, setClienteListado] = useState<Cliente[]>([]);
   const [pesquisaInput, setPesquisaInput] = useState("");
   const [clienteSelecionado, setClienteSelecionado] = useState<Cliente>();
   const [openModalDelete, setOpenModalDelete] = useState(false);
+  const [exibirInativos, setExibirInativos] = useState(false);
 
   //função para pegar o que ta escrito no input pesquisa
   const handlePesquisa = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -167,10 +176,30 @@ const clientes = () => {
           <p className="text-3xl font-bold">Clientes</p>
           <p className="text-slate-500">Gerencie os clientes da barbearia</p>
         </div>
-        <Button onClick={abrirModal}>
-          <UserPlus />
-          Novo Cliente
-        </Button>
+        <div className="flex gap-3">
+          <Button onClick={abrirModal}>
+            <UserPlus />
+            Novo Cliente
+          </Button>
+          {/* filtro de inatividade e talvez outras funcionalidades */}
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Button variant={"outline"}>
+                <Filter />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-40">
+              <DropdownMenuLabel>Exibição</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuCheckboxItem
+                checked={exibirInativos}
+                onCheckedChange={setExibirInativos}
+              >
+                Exibir Inativos
+              </DropdownMenuCheckboxItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
       <div className="relative flex-1 max-w-sm px-10">
         <Search className="absolute left-12 top-2.5 h-4 w-4 text-slate-500 " />
@@ -199,19 +228,23 @@ const clientes = () => {
                 <TableCell>
                   {
                     <Link
-                      className="flex gap-2 group"
+                      className="group"
                       target="_blank"
                       href={`${whatsapp}${cliente.telefone}`}
                     >
                       <Badge
                         variant="default"
-                        className="min-w-[150px] py-1 hover:bg-green-600 font-semibold hover:font-semibold hover:text-white transition-all duration-400"
+                        className="items-center justify-center flex min-w-[150px] py-1 hover:bg-green-600 font-semibold hover:font-semibold hover:text-white transition-all duration-400"
                       >
-                        {formatarTelefone(cliente.telefone)}
+                        {/* <div className="flex items-center justify-center gap-2"> */}
+                        <p className="flex items-center justify-center">
+                          {formatarTelefone(cliente.telefone)}
+                        </p>
 
                         <div className="group-hover:animate-bounce group-hover:fill-green-200 fill-green-100">
                           <Whatsapp height={15} width={15} />
                         </div>
+                        {/* </div> */}
                       </Badge>
                     </Link>
                   }
