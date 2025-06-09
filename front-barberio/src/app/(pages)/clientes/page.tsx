@@ -64,10 +64,14 @@ const clientes = () => {
   const queryClient = useQueryClient();
 
   const { data: clienteListado = [] } = useQuery({
-    queryKey: ["clientes"],
+    queryKey: ["clientes", exibirInativos],
     queryFn: async () => {
       const response = await axios.get(`${baseUrl}/clientes`);
-      return response.data;
+      const clientes = response.data;
+      const clientesFiltrado = exibirInativos
+        ? clientes
+        : clientes.filter((clientes: Cliente) => clientes.ativo === true);
+      return clientesFiltrado;
     },
     staleTime: 5 * (60 * 1000),
   });
@@ -116,7 +120,7 @@ const clientes = () => {
       };
       if (clienteExistente) {
         // se for cliente atualiza o cliente na lista
-        const response = await axios.put(
+        await axios.put(
           `${baseUrl}/clientes/${clienteExistente.id}`,
           clienteAtualizado
         );
@@ -124,10 +128,7 @@ const clientes = () => {
         toast.success("Cliente alterado com sucesso!");
       } else {
         //agora seta o novo cliente nos clientes
-        const response = await axios.post(
-          `${baseUrl}/clientes`,
-          clienteAtualizado
-        );
+        await axios.post(`${baseUrl}/clientes`, clienteAtualizado);
         console.log("Cliente Novo:", clienteAtualizado);
         toast.success("Cliente cadastrado com sucesso!");
       }
@@ -154,10 +155,14 @@ const clientes = () => {
     setOpenModal(!openModal);
   };
 
-  const deleteCliente = async (id: number) => {
+  const deleteCliente = async (value: Cliente) => {
     try {
-      console.log(`Deletando: ${baseUrl}/clientes/${id}`);
-      await axios.delete(`${baseUrl}/clientes/${id}`);
+      console.log(`Deletando: ${baseUrl}/clientes/${value.id}`);
+      await axios.put(`${baseUrl}/clientes/${value.id}`, {
+        nome: value.nome,
+        telefone: value.telefone,
+        ativo: false,
+      });
 
       await queryClient.invalidateQueries({ queryKey: ["clientes"] });
       toast.success("Cliente deletado com sucesso!");
@@ -228,13 +233,13 @@ const clientes = () => {
                 <TableCell>
                   {
                     <Link
-                      className="group"
+                      className=""
                       target="_blank"
                       href={`${whatsapp}${cliente.telefone}`}
                     >
                       <Badge
                         variant="default"
-                        className="items-center justify-center flex min-w-[150px] py-1 hover:bg-green-600 font-semibold hover:font-semibold hover:text-white transition-all duration-400"
+                        className="group items-center justify-center flex min-w-[150px] py-1 hover:bg-green-600 font-semibold hover:font-semibold hover:text-white transition-all duration-400"
                       >
                         {/* <div className="flex items-center justify-center gap-2"> */}
                         <p className="flex items-center justify-center">
@@ -357,7 +362,7 @@ const clientes = () => {
         open={openModalDelete}
         setOpen={setOpenModalDelete}
         title={`Deseja realmente apagar o cliente ${clienteSelecionado?.nome}?`}
-        action={() => deleteCliente(clienteSelecionado?.id!)}
+        action={() => deleteCliente(clienteSelecionado!)}
       />
     </div>
   );
