@@ -107,9 +107,12 @@ export const PUTFuncionario = async (
   }
 };
 
-export const DELETEFuncionario = async (id: number) => {
+export const DELETEFuncionario = async (value: Barbeiro) => {
   try {
-    const response = await axiosInstance.delete(`funcionarios/${id}`);
+    const response = await axiosInstance.put(`funcionarios/${value.id}`, {
+      ...value,
+      ativo: false,
+    });
     return response;
   } catch (error) {
     throw error;

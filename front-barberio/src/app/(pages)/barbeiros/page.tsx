@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { UserPlus } from "lucide-react";
+import { Filter, UserPlus } from "lucide-react";
 // import { servicos } from "@/model/servico";
 import {
   Dialog,
@@ -43,6 +43,14 @@ import { baseUrl } from "@/lib/baseUrl";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Servico } from "@/types/servico";
 import { DialogComponent } from "@/components/layout/DialogComponent";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const barbeiros = () => {
   const { state, dispatch } = useFormReducer();
@@ -52,6 +60,7 @@ const barbeiros = () => {
   const [barbeiroSelecionado, setBarbeiroSelecionado] = useState<Barbeiro>();
   const [servicos, setServicos] = useState<Servico[]>([]);
   const [servicoSelecionado, setServicoSelecionado] = useState<string[]>([]);
+  const [exibirInativos, setExibirInativos] = useState(false);
   const formSchema = z.object({
     nome: z
       .string()
@@ -123,11 +132,17 @@ const barbeiros = () => {
 
   useEffect(() => {
     async function fetchData() {
-      const apiData = await GETFuncionarios();
-      setBabeiroLista(apiData);
+      const response = await GETFuncionarios();
+      const apiData = response;
+      const funcionariosFiltrado = exibirInativos
+        ? apiData
+        : apiData.filter(
+            (funcionarios: Barbeiro) => funcionarios.ativo === true
+          );
+      setBabeiroLista(funcionariosFiltrado);
     }
     fetchData();
-  }, [state.barbeiro]);
+  }, [state.barbeiro, exibirInativos]);
 
   const onSubmit = async (barbeiro: z.infer<typeof formSchema>) => {
     const response = await POSTFuncionario(
@@ -200,8 +215,8 @@ const barbeiros = () => {
     setOpenModal(false);
   };
 
-  async function handleDeleteBarbeiro(id: number) {
-    const response = await DELETEFuncionario(id);
+  async function handleDeleteBarbeiro(value: Barbeiro) {
+    const response = await DELETEFuncionario(value);
 
     dispatch({
       type: AgendamentoAction.setBarbeiro,
@@ -267,10 +282,30 @@ const barbeiros = () => {
             Gerencie os profissionais da barbearia
           </p>
         </div>
-        <Button onClick={abrirModal}>
-          <UserPlus />
-          Novo Barbeiro
-        </Button>
+        <div className="flex gap-3">
+          <Button onClick={abrirModal}>
+            <UserPlus />
+            Novo Barbeiro
+          </Button>
+          {/* filtro de inatividade e talvez outras funcionalidades */}
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Button variant={"outline"}>
+                <Filter />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-40">
+              <DropdownMenuLabel>Exibição</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuCheckboxItem
+                checked={exibirInativos}
+                onCheckedChange={setExibirInativos}
+              >
+                Exibir Inativos
+              </DropdownMenuCheckboxItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 px-5">
         {barbeiroLista
@@ -485,7 +520,7 @@ const barbeiros = () => {
         actionLabel="Excluir"
         open={openDialog}
         setOpen={setOpenDialog}
-        action={() => handleDeleteBarbeiro(barbeiroSelecionado!.id)}
+        action={() => handleDeleteBarbeiro(barbeiroSelecionado!)}
       />
     </div>
   );
