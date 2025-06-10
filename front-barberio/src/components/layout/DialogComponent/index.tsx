@@ -17,6 +17,7 @@ type DialogProps = {
   title: string;
   actionLabel: string;
   action?: () => {};
+  className?: string;
 };
 
 export function DialogComponent({
@@ -25,6 +26,7 @@ export function DialogComponent({
   title,
   actionLabel,
   action,
+  className,
 }: DialogProps) {
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
@@ -38,7 +40,9 @@ export function DialogComponent({
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
           <AlertDialogAction
-            className={buttonVariants({ variant: "destructive" })}
+            className={`${buttonVariants({ variant: "destructive" })} ${
+              className ?? ""
+            }`}
             onClick={action}
             color="red"
           >

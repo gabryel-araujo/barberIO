@@ -54,7 +54,7 @@ const clientes = () => {
   const [pesquisaInput, setPesquisaInput] = useState("");
   const [clienteSelecionado, setClienteSelecionado] = useState<Cliente>();
   const [openModalDelete, setOpenModalDelete] = useState(false);
-  const [exibirInativos, setExibirInativos] = useState(false);
+  const [exibirInativos, setExibirInativos] = useState(true);
 
   //função para pegar o que ta escrito no input pesquisa
   const handlePesquisa = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -174,6 +174,25 @@ const clientes = () => {
     setOpenModalDelete(false);
   };
 
+  const reativarCliente = async (value: Cliente) => {
+    try {
+      console.log(`Deletando: ${baseUrl}/clientes/${value.id}`);
+      await axios.put(`${baseUrl}/clientes/${value.id}`, {
+        nome: value.nome,
+        telefone: value.telefone,
+        ativo: true,
+      });
+
+      await queryClient.invalidateQueries({ queryKey: ["clientes"] });
+      toast.success("Cliente Ativado com sucesso!");
+    } catch (error) {
+      console.error("Erro Ativando cliente:", error);
+      toast.error("Ops ocorreu um erro!");
+    }
+
+    setOpenModalDelete(false);
+  };
+
   return (
     <div className="w-full">
       <div className="w-full flex items-center justify-between px-10 py-5">
@@ -229,7 +248,14 @@ const clientes = () => {
           <TableBody>
             {filtroCliente.map((cliente: Cliente) => (
               <TableRow key={cliente.id}>
-                <TableCell>{cliente.nome}</TableCell>
+                <TableCell className="flex gap-3">
+                  <p>{cliente.nome}</p>
+                  <p>
+                    {cliente.ativo === false && (
+                      <Badge className="bg-red-500">Inativo</Badge>
+                    )}
+                  </p>
+                </TableCell>
                 <TableCell>
                   {
                     <Link
@@ -325,7 +351,22 @@ const clientes = () => {
               />
 
               <div className="pt-5 flex justify-between gap-5">
-                {clienteSelecionado && (
+                {clienteSelecionado && clienteSelecionado.ativo === false && (
+                  <div>
+                    <Button
+                      type="button"
+                      className="bg-green-600 hover:bg-green-500"
+                      variant="default"
+                      onClick={() => {
+                        setOpenModalDelete(true);
+                        setOpenModal(false);
+                      }}
+                    >
+                      Ativar
+                    </Button>
+                  </div>
+                )}
+                {clienteSelecionado && clienteSelecionado.ativo === true && (
                   <div>
                     <Button
                       type="button"
@@ -358,11 +399,24 @@ const clientes = () => {
       </Dialog>
 
       <DialogComponent
-        actionLabel="Excluir"
+        className={`${
+          clienteSelecionado?.ativo === false
+            ? "bg-green-600 hover:bg-green-500"
+            : ""
+        }`}
+        actionLabel={`${
+          clienteSelecionado?.ativo === false ? "Ativar" : "Excluir"
+        }`}
         open={openModalDelete}
         setOpen={setOpenModalDelete}
-        title={`Deseja realmente apagar o cliente ${clienteSelecionado?.nome}?`}
-        action={() => deleteCliente(clienteSelecionado!)}
+        title={`Deseja realmente ${
+          clienteSelecionado?.ativo === false ? "ativar" : "apagar"
+        } o cliente ${clienteSelecionado?.nome}?`}
+        action={
+          clienteSelecionado?.ativo === true
+            ? () => deleteCliente(clienteSelecionado!)
+            : () => reativarCliente(clienteSelecionado!)
+        }
       />
     </div>
   );
