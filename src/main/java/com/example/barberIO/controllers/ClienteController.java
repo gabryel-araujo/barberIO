@@ -1,8 +1,10 @@
 package com.example.barberIO.controllers;
 
 import com.example.barberIO.dtos.ClienteRecordDto;
+import com.example.barberIO.exceptions.RecursoNaoEncontradoException;
 import com.example.barberIO.models.ClienteModel;
 import com.example.barberIO.repositories.ClienteRepository;
+import com.example.barberIO.services.ClienteService;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,9 @@ import java.util.UUID;
 public class ClienteController {
     @Autowired
     ClienteRepository clienteRepository;
+
+    @Autowired
+    ClienteService clienteService;
 
     @GetMapping("/clientes")
     public ResponseEntity<List<ClienteModel>> getAllClients(){
@@ -71,11 +76,8 @@ public class ClienteController {
 
     @GetMapping("/clientes/{id}")
     public ResponseEntity<Object> getOneClient(@PathVariable (value = "id") Long id ){
-        Optional<ClienteModel> clienteO = clienteRepository.findById(id);
-        if(clienteO.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado");
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(clienteO.get());
+        ClienteModel clienteO = clienteService.buscarPorId(id);
+        return ResponseEntity.status(HttpStatus.OK).body(clienteO);
     }
 
 }
