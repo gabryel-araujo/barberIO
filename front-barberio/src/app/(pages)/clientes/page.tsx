@@ -54,7 +54,7 @@ const clientes = () => {
   const [pesquisaInput, setPesquisaInput] = useState("");
   const [clienteSelecionado, setClienteSelecionado] = useState<Cliente>();
   const [openModalDelete, setOpenModalDelete] = useState(false);
-  const [exibirInativos, setExibirInativos] = useState(true);
+  const [exibirInativos, setExibirInativos] = useState(false);
 
   //função para pegar o que ta escrito no input pesquisa
   const handlePesquisa = (e: React.ChangeEvent<HTMLInputElement>) => {
