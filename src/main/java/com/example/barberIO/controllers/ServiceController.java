@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,7 +29,10 @@ public class ServiceController {
     @PostMapping("/servico")
     public ResponseEntity<Object> addServico(@RequestBody @Valid ServiceRecordDto serviceRecordDto){
         ServiceModel serviceModel = new ServiceModel();
+        LocalDateTime now = LocalDateTime.now();
         BeanUtils.copyProperties(serviceRecordDto,serviceModel);
+        serviceModel.setCreated_at(now);
+        serviceModel.setAtivo(true);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(serviceRepository.save(serviceModel));
     }

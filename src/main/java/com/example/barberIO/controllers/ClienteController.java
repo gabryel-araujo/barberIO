@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,14 +35,16 @@ public class ClienteController {
         }
 
         ClienteModel clienteModel = new ClienteModel();
+        LocalDateTime now = LocalDateTime.now();
         BeanUtils.copyProperties(clienteRecordDto, clienteModel);
+        clienteModel.setAtivo(true);
+        clienteModel.setCreated_at(now);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(clienteRepository.save(clienteModel));
     }
 
     @PutMapping("/clientes/{id}")
-    public ResponseEntity<Object> editCliente(@PathVariable (value = "id") Long id, @RequestBody @Valid ClienteModel clienteRecordDto){
-        //todo: trocar o cliente model para o dto para não precisar passar o id do usuário na requisição
+    public ResponseEntity<Object> editCliente(@PathVariable (value = "id") Long id, @RequestBody @Valid ClienteRecordDto clienteRecordDto){
 
         Optional<ClienteModel> clienteO = clienteRepository.findById(id);
 

@@ -30,6 +30,8 @@ public class FuncionarioModel implements Serializable {
 
     private boolean disponivel = false;
 
+    private boolean ativo = true;
+
     private float avaliacao = 0;
 
     private float experiencia;
@@ -43,6 +45,25 @@ public class FuncionarioModel implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "servico_id")
     )
     private List<ServiceModel> servicos = new ArrayList<>();
+
+    @Column(nullable = true)
+    private LocalDateTime created_at;
+
+    public LocalDateTime getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(LocalDateTime created_at) {
+        this.created_at = created_at;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
+    }
 
     public boolean isDisponivel() {
         return disponivel;
