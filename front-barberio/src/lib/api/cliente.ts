@@ -14,14 +14,14 @@ export const GETClientes = cache(async (): Promise<Cliente[]> => {
 
 export const POSTCliente = async (nome: string, telefone: string) => {
   try {
-    const response = await axiosInstance.post("/cliente", {
+    const response = await axiosInstance.post("/clientes", {
       nome,
       telefone,
     });
     return response;
   } catch (error) {
     console.error("Erro ao cadastrar funcionario", error);
-    throw error;
+    return error;
   }
 };
 
