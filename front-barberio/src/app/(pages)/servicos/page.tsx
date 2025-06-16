@@ -139,6 +139,22 @@ const servicos = () => {
       console.error("Erro ao deletar serviço:", error);
     }
   };
+
+  const reativarServico = async (value: Servico) => {
+    try {
+      const response = await axios.put(`${baseUrl}/servico/${value.id}`, {
+        ...value,
+        ativo: true,
+      });
+
+      console.log(`Serviço ${servicoSelecionado} foi reativado com sucesso`);
+
+      queryClient.invalidateQueries({ queryKey: ["servicos"] });
+    } catch (error) {
+      console.error("Erro ao reativar serviço:", error);
+    }
+  };
+
   return (
     <div className="w-full">
       <div className="w-full flex items-center justify-between px-10 py-5">
@@ -181,11 +197,6 @@ const servicos = () => {
               <div className="flex items-center justify-between">
                 <div className="text-2xl font-semibold flex items-center justify-center gap-3">
                   <p className="flex items-center">{servico.nome}</p>
-                  <p className="flex items-center">
-                    {servico.ativo === false && (
-                      <Badge className="bg-red-500">Inativo</Badge>
-                    )}
-                  </p>
                 </div>
                 <p className="texto-azul text-2xl font-semibold">
                   {servico.preco.toLocaleString("pt-BR", {
@@ -201,7 +212,12 @@ const servicos = () => {
                   {servico.duracao} minutos
                 </p>
               </div>
-              <div className="flex justify-end">
+              <div className="flex justify-between">
+                <p className="flex items-center">
+                  {servico.ativo === false && (
+                    <Badge className="bg-red-500">Inativo</Badge>
+                  )}
+                </p>
                 <Button
                   onClick={() => {
                     setServicoSelecionado(servico);
@@ -317,6 +333,11 @@ const servicos = () => {
                 <div className="flex gap-3 justify-end pt-5">
                   {servicoSelecionado && (
                     <Button
+                      className={`${
+                        servicoSelecionado.ativo === false
+                          ? "bg-green-600 hover:bg-green-500"
+                          : ""
+                      }`}
                       type="button"
                       onClick={() => {
                         setOpenModalDelete(true);
@@ -324,7 +345,7 @@ const servicos = () => {
                       }}
                       variant="destructive"
                     >
-                      Excluir
+                      {servicoSelecionado.ativo === true ? "Excluir" : "Ativar"}
                     </Button>
                   )}
                   <Button onClick={fechaModal} variant={"ghost"} type="button">
@@ -340,11 +361,26 @@ const servicos = () => {
         </Dialog>
 
         <DialogComponent
-          actionLabel="Excluir"
+          className={`${
+            servicoSelecionado?.ativo === false
+              ? "bg-green-600 hover:bg-green-500"
+              : ""
+          }`}
+          actionLabel={`${
+            servicoSelecionado?.ativo === true ? "Excluir" : "Ativar"
+          }`}
           open={openModalDelete}
           setOpen={setOpenModalDelete}
-          title={`Deseja realmente apagar o serviço ${servicoSelecionado?.nome}?`}
-          action={() => deleteServico(servicoSelecionado!)}
+          title={`Deseja realmente ${
+            servicoSelecionado?.ativo === true
+              ? "apagar o serviço"
+              : "reativar o serviço"
+          } ${servicoSelecionado?.nome}?`}
+          action={
+            servicoSelecionado?.ativo === true
+              ? () => deleteServico(servicoSelecionado!)
+              : () => reativarServico(servicoSelecionado!)
+          }
         />
       </div>
     </div>
