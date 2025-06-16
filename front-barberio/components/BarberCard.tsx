@@ -21,6 +21,7 @@ type BarberCardProps = {
     senha: string;
     disponivel: boolean;
     data_nascimento?: string | undefined;
+    //ativo: boolean;
   }>;
   setBarbeiroSelecionado: Dispatch<SetStateAction<Barbeiro | undefined>>;
   setOpenModal: Dispatch<SetStateAction<boolean>>;
@@ -43,6 +44,7 @@ export function BarberCard({
       data_nascimento: barbeiro.data_nascimento,
       disponivel: barbeiro.disponivel,
       servico: barbeiro.servicos?.map((s) => String(s.id)) || [],
+      //ativo: barbeiro.ativo,
     });
   };
 
@@ -52,7 +54,8 @@ export function BarberCard({
       barbeiro.nome,
       barbeiro.email,
       barbeiro.senha,
-      !barbeiro.disponivel
+      !barbeiro.disponivel,
+      barbeiro.ativo!
     );
 
     dispatch({
@@ -132,7 +135,13 @@ export function BarberCard({
         >
           Gerenciar
         </Button>
-        <div className="flex gap-3">
+        <div
+          className={`flex gap-3 ${
+            barbeiro.ativo === false
+              ? "cursor-not-allowed pointer-events-none select-none opacity-60"
+              : ""
+          }`}
+        >
           <Switch
             id="disponivel"
             checked={barbeiro.disponivel}
@@ -140,7 +149,8 @@ export function BarberCard({
               updateStatus(barbeiro);
             }}
           />
-          <Label htmlFor="disponivel" className="font-normal">
+
+          <Label htmlFor="disponivel" className={`"font-normal" `}>
             {barbeiro.disponivel ? "Disponível" : "Indisponível"}
           </Label>
         </div>

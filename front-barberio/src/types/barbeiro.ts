@@ -5,7 +5,7 @@ export interface Barbeiro {
   senha: string;
   data_nascimento: string;
   disponivel: boolean;
-  ativo?: boolean;
+  ativo: boolean;
   avaliacao?: number;
   experiencia?: number;
   atendimentos?: number;

@@ -81,6 +81,7 @@ const barbeiros = () => {
       ),
     servico: z.array(z.any()).nullable(),
     disponivel: z.boolean(),
+    //ativo: z.boolean(),
   });
 
   const editFormSchema = z.object({
@@ -112,6 +113,7 @@ const barbeiros = () => {
       ),
     servico: z.array(z.any()).nullable(),
     disponivel: z.boolean(),
+    //ativo: z.boolean(),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -153,6 +155,7 @@ const barbeiros = () => {
       barbeiro.data_nascimento!,
       barbeiro.disponivel,
       servicoSelecionado
+      //barbeiro.ativo
     );
     console.log(servicoSelecionado);
     console.log(response.data);
@@ -196,7 +199,8 @@ const barbeiros = () => {
       newBarber.email,
       newBarber.data_nascimento!,
       newBarber.disponivel,
-      newBarber.senha != "" ? newBarber.senha : barbeiro.senha
+      newBarber.senha != "" ? newBarber.senha : barbeiro.senha,
+      barbeiro.ativo
     );
 
     dispatch({

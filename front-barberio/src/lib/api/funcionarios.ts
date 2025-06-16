@@ -1,6 +1,7 @@
 import { cache } from "react";
 import axiosInstance from "../axios";
 import { Barbeiro } from "@/types/barbeiro";
+import { toast } from "sonner";
 
 export const login = async (email: String, password: String) => {
   try {
@@ -45,7 +46,8 @@ export const POSTFuncionario = async (
   senha: string,
   data_nascimento: string,
   disponivel: boolean,
-  servicos?: string[]
+  servicos?: string[],
+  ativo?: boolean
 ) => {
   try {
     const response = await axiosInstance.post("/funcionarios", {
@@ -55,6 +57,7 @@ export const POSTFuncionario = async (
       data_nascimento,
       disponivel,
       newServices: servicos,
+      ativo,
     });
     return response;
   } catch (error) {
@@ -68,7 +71,8 @@ export const changeStatus = async (
   nome: string,
   email: string,
   senha: string,
-  disponivel: boolean
+  disponivel: boolean,
+  ativo: boolean
 ) => {
   try {
     const response = await axiosInstance.put(`/funcionarios/${id}`, {
@@ -76,6 +80,7 @@ export const changeStatus = async (
       email,
       senha,
       disponivel,
+      ativo,
     });
     return response;
   } catch (error) {
@@ -113,6 +118,7 @@ export const DELETEFuncionario = async (value: Barbeiro) => {
   try {
     const response = await axiosInstance.put(`funcionarios/${value.id}`, {
       ...value,
+      disponivel: false,
       ativo: false,
     });
     return response;
@@ -125,6 +131,7 @@ export const ReativarFuncionario = async (value: Barbeiro) => {
   try {
     const response = await axiosInstance.put(`funcionarios/${value.id}`, {
       ...value,
+      disponivel: true,
       ativo: true,
     });
     return response;
