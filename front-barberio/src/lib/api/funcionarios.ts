@@ -90,7 +90,8 @@ export const PUTFuncionario = async (
   email: string,
   data_nascimento: string,
   disponivel: boolean,
-  senha?: string
+  senha?: string,
+  ativo?: boolean
 ) => {
   try {
     const response = await axiosInstance.put(`/funcionarios/${id}`, {
@@ -99,6 +100,7 @@ export const PUTFuncionario = async (
       senha,
       data_nascimento,
       disponivel,
+      ativo,
     });
     return response;
   } catch (error) {
@@ -112,6 +114,18 @@ export const DELETEFuncionario = async (value: Barbeiro) => {
     const response = await axiosInstance.put(`funcionarios/${value.id}`, {
       ...value,
       ativo: false,
+    });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const ReativarFuncionario = async (value: Barbeiro) => {
+  try {
+    const response = await axiosInstance.put(`funcionarios/${value.id}`, {
+      ...value,
+      ativo: true,
     });
     return response;
   } catch (error) {

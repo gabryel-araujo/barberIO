@@ -31,6 +31,7 @@ import {
   DELETEFuncionario,
   addServicoFuncionario,
   removeServicoFuncionario,
+  ReativarFuncionario,
 } from "@/lib/api/funcionarios";
 import { useForm as useFormReducer } from "@/contexts/AgendamentoContextProvider";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
@@ -225,6 +226,23 @@ const barbeiros = () => {
 
     if (response.status === 200) {
       toast.success("Barbeiro excluído com sucesso!");
+    } else if (response.status >= 400) {
+      toast.error("Erro na requisição! Verifique os dados");
+    } else {
+      toast.error("Oops, ocorreu um erro!");
+      console.log(response);
+      console.error(response.statusText);
+    }
+  }
+  async function handleReativarBarbeiro(value: Barbeiro) {
+    const response = await ReativarFuncionario(value);
+    dispatch({
+      type: AgendamentoAction.setBarbeiro,
+      payload: [response.data],
+    });
+
+    if (response.status === 200) {
+      toast.success("Barbeiro Ativado com sucesso!");
     } else if (response.status >= 400) {
       toast.error("Erro na requisição! Verifique os dados");
     } else {
@@ -479,7 +497,22 @@ const barbeiros = () => {
                 )}
               />
               <div className="flex items-center justify-end gap-3">
-                {barbeiroSelecionado && (
+                {barbeiroSelecionado && barbeiroSelecionado.ativo === false && (
+                  <div>
+                    <Button
+                      type="button"
+                      className="bg-green-600 hover:bg-green-500"
+                      variant="default"
+                      onClick={() => {
+                        setOpenDialog(!openDialog);
+                        setOpenModal(!openModal);
+                      }}
+                    >
+                      Ativar
+                    </Button>
+                  </div>
+                )}
+                {barbeiroSelecionado && barbeiroSelecionado.ativo === true && (
                   <Button
                     onClick={() => {
                       setOpenDialog(!openDialog);
@@ -516,11 +549,24 @@ const barbeiros = () => {
       </Dialog>
 
       <DialogComponent
-        title={`Você deseja excluir o barbeiro ${barbeiroSelecionado?.nome}?`}
-        actionLabel="Excluir"
+        className={`${
+          barbeiroSelecionado?.ativo === false
+            ? "bg-green-600 hover:bg-green-500"
+            : ""
+        }`}
+        title={`Você deseja ${
+          barbeiroSelecionado?.ativo === false ? "Ativar" : "excluir"
+        } o barbeiro ${barbeiroSelecionado?.nome}?`}
+        actionLabel={`${
+          barbeiroSelecionado?.ativo === false ? "Ativar" : "Excluir"
+        }`}
         open={openDialog}
         setOpen={setOpenDialog}
-        action={() => handleDeleteBarbeiro(barbeiroSelecionado!)}
+        action={
+          barbeiroSelecionado?.ativo === true
+            ? () => handleDeleteBarbeiro(barbeiroSelecionado!)
+            : () => handleReativarBarbeiro(barbeiroSelecionado!)
+        }
       />
     </div>
   );
