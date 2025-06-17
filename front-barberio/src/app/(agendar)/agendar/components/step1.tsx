@@ -52,9 +52,7 @@ export const Step1 = () => {
           mode="single"
           selected={date}
           onSelect={(dataSelecionada) => {
-            if (!dataSelecionada) {
-              return toast.warning("Não pode desmarcar a data!");
-            }
+            if (!dataSelecionada) return;
 
             setDate(dataSelecionada);
             dispatch({
