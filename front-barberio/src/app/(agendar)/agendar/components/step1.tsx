@@ -51,9 +51,6 @@ export const Step1 = () => {
           locale={ptBR}
           mode="single"
           selected={date}
-          disabled={(data) => {
-            return data < new Date() || date?.getDay() === 0;
-          }}
           onSelect={(dataSelecionada) => {
             setDate(dataSelecionada);
             dispatch({
@@ -61,6 +58,7 @@ export const Step1 = () => {
               payload: dataSelecionada,
             });
           }}
+          disabled={{ before: new Date(), dayOfWeek: [0, 7] }}
           className="w-[250px] rounded-md border shadow"
         />
         <div className="flex gap-3">
