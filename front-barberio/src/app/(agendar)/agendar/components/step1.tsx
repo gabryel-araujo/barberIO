@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useForm } from "@/contexts/AgendamentoContextProvider";
 import { HomeIcon } from "lucide-react";
-import { format } from "date-fns";
 
 export const Step1 = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -58,7 +57,14 @@ export const Step1 = () => {
               payload: dataSelecionada,
             });
           }}
-          disabled={{ before: new Date(), dayOfWeek: [0, 7] }}
+          disabled={(date) => {
+            const hoje = new Date();
+            hoje.setHours(0, 0, 0, 0);
+            const isBeforeToday = date < hoje;
+            const isSunday = date.getDay() === 0;
+
+            return isBeforeToday || isSunday;
+          }}
           className="w-[250px] rounded-md border shadow"
         />
         <div className="flex gap-3">
