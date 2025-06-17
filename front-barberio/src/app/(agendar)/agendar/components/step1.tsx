@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useForm } from "@/contexts/AgendamentoContextProvider";
 import { HomeIcon } from "lucide-react";
+import { toast } from "sonner";
 
 export const Step1 = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -51,11 +52,16 @@ export const Step1 = () => {
           mode="single"
           selected={date}
           onSelect={(dataSelecionada) => {
+            if (!dataSelecionada) {
+              return toast.warning("Não pode desmarcar a data!");
+            }
+
             setDate(dataSelecionada);
             dispatch({
               type: AgendamentoAction.setData,
               payload: dataSelecionada,
             });
+            console.log(dataSelecionada);
           }}
           disabled={(date) => {
             const hoje = new Date();
