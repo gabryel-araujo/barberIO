@@ -14,7 +14,7 @@ export const CardPequeno = ({
   Legenda,
 }: CardPequenoProps) => {
   return (
-    <div className="bg-slate-100 w-1/3 border rounded-2xl p-5 space-y-3 shadow-md">
+    <div className="bg-slate-100 md:w-1/3 border rounded-2xl p-5 space-y-3 shadow-md">
       <div className="flex items-center justify-between">
         <p className="font-semibold text-slate-700">{Titulo}</p>
         <p className="text-slate-400">{Icon}</p>
