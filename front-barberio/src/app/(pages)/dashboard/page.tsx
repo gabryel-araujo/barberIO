@@ -3,6 +3,12 @@ import { CardGrande } from "@/components/layout/Dashboard/cardGrande";
 import { CardPequeno } from "@/components/layout/Dashboard/cardPequeno";
 import { TitulosPages } from "@/components/layout/titulosPages";
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
   Table,
   TableBody,
   TableCell,
@@ -21,6 +27,7 @@ import { useState } from "react";
 const dashboard = () => {
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
   const [hoje, setHoje] = useState(new Date());
+  const [expandido, setExpandido] = useState<number | null>(null);
   useQuery({
     queryKey: ["agendamentos"],
     queryFn: async () => {
@@ -66,7 +73,7 @@ const dashboard = () => {
         <div className="pt-5 flex gap-5 flex-col md:flex-row ">
           <CardGrande
             Titulo="Agenda do Dia"
-            Legenda={`Agendamentos para hoje: ${hoje.getDate()} de ${obterNomeMes(
+            Legenda={`Agendamentos para: ${hoje.getDate()} de ${obterNomeMes(
               hoje
             )} de ${hoje.getFullYear()}`}
           >
@@ -80,17 +87,29 @@ const dashboard = () => {
                     <TableHead>Serviço</TableHead>
                   </TableRow>
                 </TableHeader>
-                <TableBody>
-                  {agendamentosDoDia.map((agendamento: Agendamento) => (
-                    <TableRow key={agendamento.id}>
-                      <TableCell>
-                        {/* {ConversaoData(agendamento.horario)} -{" "} */}
-                        {obterHoras(agendamento.horario)}
-                      </TableCell>
-                      <TableCell>{agendamento.cliente.nome}</TableCell>
-                      <TableCell>{agendamento.barbeiro.nome}</TableCell>
-                      <TableCell>{agendamento.servico.nome}</TableCell>
-                    </TableRow>
+                <TableBody className="">
+                  {agendamentosDoDia.map((agendamento: Agendamento, index) => (
+                    <>
+                      <TableRow
+                        key={agendamento.id}
+                        className="hover:bg-slate-200 cursor-pointer"
+                        onClick={() =>
+                          setExpandido(expandido === index ? null : index)
+                        }
+                      >
+                        <TableCell>{obterHoras(agendamento.horario)}</TableCell>
+                        <TableCell>{agendamento.cliente.nome}</TableCell>
+                        <TableCell>{agendamento.barbeiro.nome}</TableCell>
+                        <TableCell>{agendamento.servico.nome}</TableCell>
+                      </TableRow>
+                      {expandido === index && (
+                        <tr>
+                          <td colSpan={4}>
+                            Agendamento de: {agendamento.cliente.nome}
+                          </td>
+                        </tr>
+                      )}
+                    </>
                   ))}
                 </TableBody>
               </Table>
