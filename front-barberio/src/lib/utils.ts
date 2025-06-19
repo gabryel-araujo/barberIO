@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 export function ConversaoData(data: any) {
   const dataAtual = new Date(data);
   const dia = dataAtual.getDate();
-  const mes = dataAtual.getMonth();
+  const mes = String(dataAtual.getMonth()).padStart(2, "0");
   const ano = dataAtual.getFullYear();
   return `${dia}-${mes}-${ano}`;
 }

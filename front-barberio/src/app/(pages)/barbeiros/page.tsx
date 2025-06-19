@@ -296,7 +296,7 @@ const barbeiros = () => {
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full bg-[#e6f0ff]">
       <div className="w-full flex items-center justify-between px-10 py-5">
         <div className="flex flex-col">
           <p className="text-3xl font-bold">Barbeiros</p>

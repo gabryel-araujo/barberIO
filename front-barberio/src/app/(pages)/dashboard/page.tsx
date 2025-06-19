@@ -28,6 +28,7 @@ const dashboard = () => {
   const [barbeiros, setBarbeiros] = useState<Barbeiro[]>([]);
   const [hoje, setHoje] = useState(new Date());
   const [expandido, setExpandido] = useState<number | null>(null);
+  const [expandidoProximo, setExpandidoProximo] = useState<number | null>(null);
 
   useQuery({
     queryKey: ["agendamentos", "serviços"],
@@ -60,6 +61,13 @@ const dashboard = () => {
     .sort(
       (a, b) => new Date(a.horario).getTime() - new Date(b.horario).getTime()
     );
+
+  const proximosAgendamentos: Agendamento[] = agendamentos
+    .filter((age) => ConversaoData(age.horario) > ConversaoData(hoje))
+    .sort(
+      (a, b) => new Date(a.horario).getTime() - new Date(b.horario).getTime()
+    );
+
   return (
     <div className="w-screen min-h-screen flex bg-[#e6f0ff]">
       <div className="w-full flex flex-col md:px-10 px-3 py-5">
@@ -92,8 +100,8 @@ const dashboard = () => {
           />
         </div>
 
-        <div className="pt-5 flex gap-5 flex-col md:flex-row ">
-          <div className="md:w-1/2">
+        <div className="pt-5 flex gap-5 flex-col lg:flex-row ">
+          <div className="lg:w-1/2">
             <CardGrande
               Titulo="Agenda do Dia"
               Legenda={`Agendamentos para: ${hoje.getDate()} de ${obterNomeMes(
@@ -234,12 +242,156 @@ const dashboard = () => {
               </div>
             </CardGrande>
           </div>
-          <div className="md:w-1/2">
+          <div className="lg:w-1/2">
             <CardGrande
               Titulo="Próximos Agendamentos"
-              Legenda="Agendamentos dos próximos dias"
+              Legenda={`Agendamentos dos próximos dias`}
             >
-              <div>Conteúdo da tabela</div>
+              <div>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Data</TableHead>
+                      <TableHead>Horário</TableHead>
+                      <TableHead>Cliente</TableHead>
+                      <TableHead>Barbeiro</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody className="">
+                    {proximosAgendamentos.map(
+                      (agendamentoProx: Agendamento, index) => (
+                        <>
+                          <TableRow
+                            key={agendamentoProx.id}
+                            className="hover:bg-slate-200 cursor-pointer "
+                            onClick={() =>
+                              setExpandidoProximo(
+                                expandidoProximo === index ? null : index
+                              )
+                            }
+                          >
+                            <TableCell>
+                              {ConversaoData(agendamentoProx.horario)}
+                            </TableCell>
+                            <TableCell>
+                              {obterHoras(agendamentoProx.horario)}
+                            </TableCell>
+                            <TableCell>
+                              {agendamentoProx.cliente.nome}
+                            </TableCell>
+                            <TableCell>
+                              {agendamentoProx.barbeiro.nome}
+                            </TableCell>
+                          </TableRow>
+                          {expandidoProximo === index && (
+                            <TableRow className="">
+                              <td
+                                colSpan={4}
+                                className="p-3  bg-slate-200 rounded-b-2xl active:bg-slate-200"
+                              >
+                                <div className="flex flex-col gap-3">
+                                  <p className="flex items-center justify-center font-semibold">
+                                    Detalhamento de Agendamento
+                                  </p>
+                                  <div className="border-y border-slate-300 p-2">
+                                    <p className="flex items-center font-semibold">
+                                      Dados Cliente
+                                    </p>
+                                    <div>
+                                      <Table>
+                                        <TableHeader>
+                                          <TableRow className="font-semibold text-slate-500">
+                                            <TableCell>Nome</TableCell>
+                                            <TableCell>Talefone</TableCell>
+                                            <TableCell>Cliente Deste</TableCell>
+                                          </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                          <TableRow className="text-slate-500">
+                                            <TableCell>
+                                              {agendamentoProx.cliente.nome}
+                                            </TableCell>
+                                            <TableCell>
+                                              {agendamentoProx.cliente.telefone}
+                                            </TableCell>
+                                            <TableCell>01/01/1990</TableCell>
+                                          </TableRow>
+                                        </TableBody>
+                                      </Table>
+                                    </div>
+                                  </div>
+                                  <div className="p-2">
+                                    <p className="flex items-center font-semibold">
+                                      Dados Barbeiro ⭐
+                                    </p>
+                                    <div>
+                                      <Table>
+                                        <TableHeader>
+                                          <TableRow className="font-semibold text-slate-500">
+                                            <TableCell>Nome</TableCell>
+                                            <TableCell>Avaliação</TableCell>
+                                          </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                          <TableRow className="text-slate-500">
+                                            <TableCell>
+                                              {agendamentoProx.barbeiro.nome}
+                                            </TableCell>
+                                            <TableCell>
+                                              {
+                                                agendamentoProx.barbeiro
+                                                  .experiencia
+                                              }
+                                            </TableCell>
+                                          </TableRow>
+                                        </TableBody>
+                                      </Table>
+                                    </div>
+                                  </div>
+                                  <div className="border-y border-slate-300 p-2 space-y-2">
+                                    <p className="flex items-center font-semibold">
+                                      Dados Serviço
+                                    </p>
+                                    <div className="flex items-center justify-between px-5">
+                                      <div className="flex flex-col">
+                                        <p className="font-semibold text-lg text-slate-600">
+                                          {agendamentoProx.servico.nome}
+                                        </p>
+                                        <p className="text-slate-500">
+                                          {agendamentoProx.servico.descricao}
+                                        </p>
+                                      </div>
+                                      <div className="text-slate-600 font-semibold">
+                                        R${" "}
+                                        {agendamentoProx.servico.preco.toFixed(
+                                          2
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="space-y-3">
+                                    <p className="flex items-center justify-center font-semibold">
+                                      Funções de Enviar Lembrete
+                                    </p>
+                                    <div className="flex items-center justify-center">
+                                      <ButtonLembrete
+                                        mensagem="Mensagem será enviada pelo Whatsapp Web"
+                                        link={`${whatsapp}${agendamentoProx.cliente.telefone}`}
+                                      >
+                                        Whatsapp Web
+                                      </ButtonLembrete>
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
+                            </TableRow>
+                          )}
+                        </>
+                      )
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
             </CardGrande>
           </div>
         </div>
