@@ -20,7 +20,7 @@ import { Servico } from "@/types/servico";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Calendar, Scissors, Users2 } from "lucide-react";
-import { useState } from "react";
+import React, { useState } from "react";
 
 const dashboard = () => {
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
@@ -121,9 +121,9 @@ const dashboard = () => {
                   <TableBody className="">
                     {agendamentosDoDia.map(
                       (agendamento: Agendamento, index) => (
-                        <>
+                        <React.Fragment key={agendamento.id}>
                           <TableRow
-                            key={agendamento.id}
+                            // key={agendamento.id}
                             className="hover:bg-slate-200 cursor-pointer "
                             onClick={() =>
                               setExpandido(expandido === index ? null : index)
@@ -234,7 +234,7 @@ const dashboard = () => {
                               </td>
                             </TableRow>
                           )}
-                        </>
+                        </React.Fragment>
                       )
                     )}
                   </TableBody>
@@ -260,9 +260,9 @@ const dashboard = () => {
                   <TableBody className="">
                     {proximosAgendamentos.map(
                       (agendamentoProx: Agendamento, index) => (
-                        <>
+                        <React.Fragment key={agendamentoProx.id}>
                           <TableRow
-                            key={agendamentoProx.id}
+                            //key={agendamentoProx.id}
                             className="hover:bg-slate-200 cursor-pointer "
                             onClick={() =>
                               setExpandidoProximo(
@@ -386,7 +386,7 @@ const dashboard = () => {
                               </td>
                             </TableRow>
                           )}
-                        </>
+                        </React.Fragment>
                       )
                     )}
                   </TableBody>

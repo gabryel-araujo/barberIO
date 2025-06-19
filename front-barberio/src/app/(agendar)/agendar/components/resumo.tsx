@@ -1,3 +1,4 @@
+"use client";
 import { useForm } from "@/contexts/AgendamentoContextProvider";
 import { Calendar, Clock, Scissors, User } from "lucide-react";
 

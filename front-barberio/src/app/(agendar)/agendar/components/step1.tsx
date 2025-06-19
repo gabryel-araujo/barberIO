@@ -1,3 +1,4 @@
+"use client";
 import { Calendar } from "@/components/ui/calendar";
 import { useCallback, useState } from "react";
 import { ptBR } from "date-fns/locale";
