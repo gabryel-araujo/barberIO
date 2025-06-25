@@ -97,7 +97,8 @@ const clientes = () => {
   const filtroCliente = clienteListado.filter(
     (cliente: Cliente) =>
       cliente.nome.toLowerCase().includes(pesquisaInput.toLowerCase()) ||
-      cliente.telefone.includes(pesquisaInput)
+      cliente.telefone.includes(pesquisaInput) ||
+      cliente.id?.toString().includes(pesquisaInput)
   );
   // variaveis para controle de paginação
   const [nomesPorPagina, setNomesPorPagina] = useState(10);
