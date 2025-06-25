@@ -48,6 +48,23 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { ConversaoData } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 const clientes = () => {
   const [openModal, setOpenModal] = useState(false);
   //const [clienteListado, setClienteListado] = useState<Cliente[]>([]);
@@ -82,6 +99,19 @@ const clientes = () => {
       cliente.nome.toLowerCase().includes(pesquisaInput.toLowerCase()) ||
       cliente.telefone.includes(pesquisaInput)
   );
+  // variaveis para controle de paginação
+  const [nomesPorPagina, setNomesPorPagina] = useState(10);
+  const [page, setPage] = useState(1);
+  const range = 1;
+  const totalPages = Math.ceil(filtroCliente.length / nomesPorPagina);
+  const inicio = (page - 1) * nomesPorPagina;
+  const fim = inicio + nomesPorPagina;
+  const inicioPagina = Math.max(1, page - range);
+  const fimPagina = Math.min(totalPages, page + range);
+  const paginasParaMostrar = [];
+  for (let i = inicioPagina; i <= fimPagina; i++) {
+    paginasParaMostrar.push(i);
+  }
 
   //mostrar os dados do cliente selecionado
   const handleClienteDados = (cliente: Cliente) => {
@@ -117,6 +147,7 @@ const clientes = () => {
         id: clienteExistente?.id, // será opcional para tirar.
         nome: values.nome,
         telefone: values.telefone,
+        ativo: clienteExistente?.ativo,
       };
       if (clienteExistente) {
         // se for cliente atualiza o cliente na lista
@@ -238,28 +269,31 @@ const clientes = () => {
         <Table>
           <TableHeader>
             <TableRow className="">
+              <TableHead>ID</TableHead>
               <TableHead>Nome</TableHead>
-              <TableHead>Telefone</TableHead>
-              <TableHead>Último Atendimento</TableHead>
-              <TableHead>Data de Cadastro</TableHead>
+              <TableHead className="">Telefone</TableHead>
+              <TableHead className="text-center">Data de Cadastro</TableHead>
               <TableHead className="flex justify-end pl-10">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filtroCliente.map((cliente: Cliente) => (
-              <TableRow key={cliente.id}>
-                <TableCell className="flex gap-3">
-                  <p>{cliente.nome}</p>
-                  <p>
-                    {cliente.ativo === false && (
-                      <Badge className="bg-red-500">Inativo</Badge>
-                    )}
-                  </p>
-                </TableCell>
-                <TableCell>
-                  {
+            {filtroCliente
+              .sort((a: { id: number }, b: { id: number }) => b.id - a.id)
+              .slice(inicio, fim)
+              .map((cliente: Cliente) => (
+                <TableRow key={cliente.id}>
+                  <TableCell>{cliente.id}</TableCell>
+                  <TableCell className="flex gap-3">
+                    <p>{cliente.nome}</p>
+                    <p>
+                      {cliente.ativo === false && (
+                        <Badge className="bg-red-500">Inativo</Badge>
+                      )}
+                    </p>
+                  </TableCell>
+                  <TableCell className="">
                     <Link
-                      className=""
+                      className="flex gap-3 max-w-[150px]"
                       target="_blank"
                       href={`${whatsapp}${cliente.telefone}`}
                     >
@@ -278,29 +312,93 @@ const clientes = () => {
                         {/* </div> */}
                       </Badge>
                     </Link>
-                  }
-                </TableCell>
-                <TableCell>22/05/2025</TableCell>
-                <TableCell>01/01/1990</TableCell>
-                <TableCell className="flex justify-end pl-10">
-                  <Button
-                    onClick={() => {
-                      handleClienteDados(cliente);
-                      form.reset({
-                        // id: cliente.id,
-                        nome: cliente.nome,
-                        telefone: cliente.telefone,
-                      });
-                      setOpenModal(true);
-                    }}
-                  >
-                    <Edit />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
+                  </TableCell>
+
+                  <TableCell className="text-center">
+                    {ConversaoData(cliente.created_at)}
+                  </TableCell>
+                  <TableCell className="flex justify-end pl-10">
+                    <Button
+                      onClick={() => {
+                        handleClienteDados(cliente);
+                        form.reset({
+                          // id: cliente.id,
+                          nome: cliente.nome,
+                          telefone: cliente.telefone,
+                        });
+                        setOpenModal(true);
+                      }}
+                    >
+                      <Edit />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
+        {/* incio de paginação */}
+        <div className="py-3 text-sm flex items-center justify-between px-5 text-slate-600">
+          <div className="flex items-center gap-2">
+            <div>Mostrar:</div>
+            <div>
+              <Select
+                value={nomesPorPagina.toString()}
+                onValueChange={(value) => setNomesPorPagina(Number(value))}
+              >
+                <SelectTrigger>
+                  <SelectValue defaultChecked></SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="25">25</SelectItem>
+                    <SelectItem value="50">50</SelectItem>
+                    <SelectItem value="100">100</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>de registros: {filtroCliente.length}</div>
+          </div>
+          <div>
+            <Pagination className="">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                    className={
+                      page === 1
+                        ? "pointer-events-none opacity-50"
+                        : " cursor-pointer"
+                    }
+                  ></PaginationPrevious>
+                </PaginationItem>
+                {paginasParaMostrar.map((numero) => (
+                  <PaginationItem key={numero} className="cursor-pointer">
+                    <PaginationLink
+                      onClick={() => setPage(numero)}
+                      isActive={numero === page}
+                    >
+                      {numero}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() =>
+                      setPage((prev) => Math.max(prev + 1, totalPages))
+                    }
+                    className={
+                      page === totalPages
+                        ? "pointer-events-none opacity-50"
+                        : "cursor-pointer"
+                    }
+                  ></PaginationNext>
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        </div>
       </div>
       <Dialog open={openModal} onOpenChange={setOpenModal}>
         <DialogContent>

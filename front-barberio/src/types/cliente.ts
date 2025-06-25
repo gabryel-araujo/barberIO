@@ -3,5 +3,6 @@ export interface Cliente {
   nome: string;
   telefone: string;
   ativo?: boolean;
+  created_at?: Date;
 }
 //ID | NOME | TELEFONE
