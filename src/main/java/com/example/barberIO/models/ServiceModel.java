@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,8 +25,29 @@ public class ServiceModel implements Serializable {
 
     private Integer duracao;
 
+    private boolean ativo;
+
     @ManyToMany(mappedBy = "servicos")
     private List<FuncionarioModel> barbeiros;
+
+    @Column(nullable = true)
+    private LocalDateTime created_at;
+
+    public LocalDateTime getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(LocalDateTime created_at) {
+        this.created_at = created_at;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
+    }
 
     public Long getId() {
         return id;

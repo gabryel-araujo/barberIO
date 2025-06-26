@@ -1,8 +1,12 @@
 package com.example.barberIO.models;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.ColumnDefault;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -15,8 +19,21 @@ public class ClienteModel implements Serializable {
 
     private String nome;
 
+    private boolean ativo = true;
+
     @Column(unique = true)
     private String telefone;
+
+    @Column(nullable = true)
+    private LocalDateTime created_at;
+
+    public LocalDateTime getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(LocalDateTime created_at) {
+        this.created_at = created_at;
+    }
 
     public String getTelefone() {
         return telefone;
@@ -42,4 +59,11 @@ public class ClienteModel implements Serializable {
         this.nome = nome;
     }
 
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
+    }
 }
