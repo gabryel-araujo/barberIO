@@ -112,7 +112,7 @@ const dashboard = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Horárioooooooo</TableHead>
+                      <TableHead>Horário</TableHead>
                       <TableHead>Cliente</TableHead>
                       <TableHead>Barbeiro</TableHead>
                       <TableHead>Serviço</TableHead>
