@@ -1,12 +1,7 @@
 "use client";
 
 import { AlignJustify } from "lucide-react";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetTrigger,
-} from "../ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { Sidebar } from "./Sidebar";
 
 export const MobileSidebar = () => {

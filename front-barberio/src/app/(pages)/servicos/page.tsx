@@ -32,7 +32,7 @@ import { Servico } from "@/types/servico";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { ActivityIcon, Filter, Scissors } from "lucide-react";
+import { Filter, Scissors } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -95,16 +95,13 @@ const servicos = () => {
   const onSubmit = async (value: Servico) => {
     try {
       if (servicoSelecionado) {
-        const response = await axios.put(
-          `${baseUrl}/servico/${servicoSelecionado.id}`,
-          {
-            nome: value.nome,
-            descricao: value.descricao,
-            duracao: value.duracao,
-            preco: value.preco,
-            ativo: servicoSelecionado.ativo,
-          }
-        );
+        await axios.put(`${baseUrl}/servico/${servicoSelecionado.id}`, {
+          nome: value.nome,
+          descricao: value.descricao,
+          duracao: value.duracao,
+          preco: value.preco,
+          ativo: servicoSelecionado.ativo,
+        });
       } else {
         const response = await axios.post(`${baseUrl}/servico`, {
           nome: value.nome,
@@ -128,7 +125,7 @@ const servicos = () => {
   };
   const deleteServico = async (value: Servico) => {
     try {
-      const response = await axios.put(`${baseUrl}/servico/${value.id}`, {
+      await axios.put(`${baseUrl}/servico/${value.id}`, {
         ...value,
         ativo: false,
       });
@@ -143,7 +140,7 @@ const servicos = () => {
 
   const reativarServico = async (value: Servico) => {
     try {
-      const response = await axios.put(`${baseUrl}/servico/${value.id}`, {
+      await axios.put(`${baseUrl}/servico/${value.id}`, {
         ...value,
         ativo: true,
       });

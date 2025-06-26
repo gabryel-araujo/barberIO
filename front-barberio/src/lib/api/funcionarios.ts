@@ -1,7 +1,6 @@
 import { cache } from "react";
 import axiosInstance from "../axios";
 import { Barbeiro } from "@/types/barbeiro";
-import { toast } from "sonner";
 
 export const login = async (email: String, password: String) => {
   try {

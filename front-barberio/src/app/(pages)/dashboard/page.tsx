@@ -26,7 +26,7 @@ const dashboard = () => {
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
   const [servicos, setServicos] = useState<Servico[]>([]);
   const [barbeiros, setBarbeiros] = useState<Barbeiro[]>([]);
-  const [hoje, setHoje] = useState(new Date());
+  const [hoje] = useState(new Date());
   const [expandido, setExpandido] = useState<number | null>(null);
   const [expandidoProximo, setExpandidoProximo] = useState<number | null>(null);
 

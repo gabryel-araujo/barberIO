@@ -1,6 +1,4 @@
 import { TitulosPages } from "@/components/layout/titulosPages";
-import { Button } from "@/components/ui/button";
-import { UserPlus } from "lucide-react";
 
 const agendamentos = () => {
   return (
