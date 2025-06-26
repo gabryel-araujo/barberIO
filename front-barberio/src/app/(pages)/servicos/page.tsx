@@ -32,7 +32,7 @@ import { Servico } from "@/types/servico";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { Filter, Scissors } from "lucide-react";
+import { ActivityIcon, Filter, Scissors } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -92,7 +92,7 @@ const servicos = () => {
       preco: 0,
     },
   });
-  const onSubmit = async (value: z.infer<typeof formSchema>) => {
+  const onSubmit = async (value: Servico) => {
     try {
       if (servicoSelecionado) {
         const response = await axios.put(
@@ -102,6 +102,7 @@ const servicos = () => {
             descricao: value.descricao,
             duracao: value.duracao,
             preco: value.preco,
+            ativo: servicoSelecionado.ativo,
           }
         );
       } else {
