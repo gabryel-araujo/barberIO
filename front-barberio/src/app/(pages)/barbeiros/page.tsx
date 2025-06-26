@@ -463,7 +463,7 @@ const barbeiros = () => {
                                     handleEditService(
                                       isChecked,
                                       barbeiroSelecionado.id,
-                                      servico.id
+                                      servico.id as number
                                     );
                                   }
                                 }}

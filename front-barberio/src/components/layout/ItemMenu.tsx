@@ -1,13 +1,4 @@
-import {
-  Calendar,
-  Users,
-  Scissors,
-  BarChart,
-  Menu,
-  User,
-  X,
-  Home,
-} from "lucide-react";
+import { Calendar, Users, Scissors, BarChart, User, Home } from "lucide-react";
 import { ReactNode } from "react";
 
 type MenuItem = {

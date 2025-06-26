@@ -13,14 +13,13 @@ import { DadosCliente, FormData, schema } from "./dadosCliente";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm as useFormZod } from "react-hook-form";
 import { useForm } from "@/contexts/AgendamentoContextProvider";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { baseUrl } from "@/lib/baseUrl";
 import axios from "axios";
-import { format } from "date-fns";
-import axiosInstance from "@/lib/axios";
 import { agendar } from "@/lib/api/agendamento";
-import { findByTelefone, GETClientes, POSTCliente } from "@/lib/api/cliente";
+import { findByTelefone, POSTCliente } from "@/lib/api/cliente";
 import { LoadingComponent } from "../../../../../components/LoadingComponent";
+import { format } from "date-fns";
 
 export const Step4 = () => {
   const { state, dispatch } = useForm();
@@ -40,7 +39,7 @@ export const Step4 = () => {
     handleSubmit,
   } = useFormZod<FormData>({ resolver: zodResolver(schema) });
 
-  const query = useQuery({
+  useQuery({
     queryKey: ["servicos"],
     queryFn: async () => {
       const response = await axios.get(`${baseUrl}/servico`);
@@ -49,7 +48,7 @@ export const Step4 = () => {
     },
   });
 
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
 
   const review = [
     {
@@ -136,8 +135,8 @@ export const Step4 = () => {
 
       const response = await agendar(
         state.barbeiro.id,
-        findCliente[0].id!,
-        state.servico.id,
+        findCliente[0].id! as number,
+        state.servico.id as number,
         horario
       );
 

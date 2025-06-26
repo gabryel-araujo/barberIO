@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Form } from "@/components/ui/form";
-import { SETFuncionario } from "@/lib/api/funcionarios";
+import { POSTFuncionario } from "@/lib/api/funcionarios";
 import { useForm as useFormReducer } from "@/contexts/AgendamentoContextProvider";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { toast } from "sonner";
@@ -55,9 +55,9 @@ const form = useForm<z.infer<typeof formSchema>>({
 });
 export function BarberForm() {
   const onSubmit = async (barbeiro: z.infer<typeof formSchema>) => {
-    const { state, dispatch } = useFormReducer();
+    const { dispatch } = useFormReducer();
 
-    const response = await SETFuncionario(
+    const response = await POSTFuncionario(
       barbeiro.nome,
       barbeiro.email,
       barbeiro.senha,
@@ -78,7 +78,7 @@ export function BarberForm() {
       toast.error("Oops, ocorreu um erro!");
     }
 
-    setOpenModal(false);
+    // setOpenModal(false);
     form.reset();
   };
 
