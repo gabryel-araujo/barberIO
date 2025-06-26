@@ -19,7 +19,7 @@ export const MobileSidebar = () => {
         <SheetTrigger>
           <AlignJustify color="white" />
         </SheetTrigger>
-        <SheetContent side="left" className="bg-[#1a1f2c]">
+        <SheetContent side="left" className="bg-[#1a1f2c] overflow-scroll">
           <Sidebar />
         </SheetContent>
       </Sheet>

@@ -1,4 +1,6 @@
 "use client";
+import { DialogComponent } from "@/components/layout/DialogComponent";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -8,6 +10,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Form,
   FormControl,
@@ -22,22 +32,27 @@ import { Servico } from "@/types/servico";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { Scissors } from "lucide-react";
+import { ActivityIcon, Filter, Scissors } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const servicos = () => {
   const [openModal, setOpenModal] = useState(false);
-  const [servicos, setServicos] = useState<Servico[]>([]);
   const [servicoSelecionado, setServicoSelecionado] = useState<Servico>();
+  const [exibirInativos, setExibirInativos] = useState(false);
+  const [openModalDelete, setOpenModalDelete] = useState(false);
 
-  const query = useQuery({
-    queryKey: ["servicos"],
+  const { data: servicos = [] } = useQuery({
+    queryKey: ["servicos", exibirInativos],
     queryFn: async () => {
       const response = await axios.get(`${baseUrl}/servico`);
-      setServicos(response.data);
-      return response.data;
+      const servicosApi = response.data;
+      const servicoFiltrado = exibirInativos
+        ? servicosApi
+        : servicosApi.filter((servico: Servico) => servico.ativo === true);
+
+      return servicoFiltrado;
     },
   });
 
@@ -77,7 +92,7 @@ const servicos = () => {
       preco: 0,
     },
   });
-  const onSubmit = async (value: z.infer<typeof formSchema>) => {
+  const onSubmit = async (value: Servico) => {
     try {
       if (servicoSelecionado) {
         const response = await axios.put(
@@ -87,6 +102,7 @@ const servicos = () => {
             descricao: value.descricao,
             duracao: value.duracao,
             preco: value.preco,
+            ativo: servicoSelecionado.ativo,
           }
         );
       } else {
@@ -110,9 +126,12 @@ const servicos = () => {
     form.reset();
     setOpenModal(false);
   };
-  const deleteServico = async (id: number) => {
+  const deleteServico = async (value: Servico) => {
     try {
-      const response = await axios.delete(`${baseUrl}/servico/${id}`);
+      const response = await axios.put(`${baseUrl}/servico/${value.id}`, {
+        ...value,
+        ativo: false,
+      });
 
       console.log(`Serviço ${servicoSelecionado} foi excluido com sucesso`);
 
@@ -121,8 +140,24 @@ const servicos = () => {
       console.error("Erro ao deletar serviço:", error);
     }
   };
+
+  const reativarServico = async (value: Servico) => {
+    try {
+      const response = await axios.put(`${baseUrl}/servico/${value.id}`, {
+        ...value,
+        ativo: true,
+      });
+
+      console.log(`Serviço ${servicoSelecionado} foi reativado com sucesso`);
+
+      queryClient.invalidateQueries({ queryKey: ["servicos"] });
+    } catch (error) {
+      console.error("Erro ao reativar serviço:", error);
+    }
+  };
+
   return (
-    <div className="w-full">
+    <div className="w-full min-h-screen bg-[#e6f0ff]">
       <div className="w-full flex items-center justify-between px-10 py-5">
         <div className="flex flex-col">
           <p className="text-3xl font-bold">Serviços</p>
@@ -130,18 +165,40 @@ const servicos = () => {
             Gerencie os serviços oferecidos pela barbearia
           </p>
         </div>
-        <Button onClick={abrirModal}>
-          <Scissors />
-          Novo Serviço
-        </Button>
+        <div className="flex gap-3">
+          <Button onClick={abrirModal}>
+            <Scissors />
+            Novo Serviço
+          </Button>
+          {/* filtro de inatividade e talvez outras funcionalidades */}
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Button variant={"outline"}>
+                <Filter />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-40">
+              <DropdownMenuLabel>Exibição</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuCheckboxItem
+                checked={exibirInativos}
+                onCheckedChange={setExibirInativos}
+              >
+                Exibir Inativos
+              </DropdownMenuCheckboxItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 px-5">
         {servicos
-          .sort((a, b) => Number(b.id) - Number(a.id))
-          .map((servico) => (
-            <Card className="p-5" key={servico.id}>
+          .sort((a: { id: any }, b: { id: any }) => Number(b.id) - Number(a.id))
+          .map((servico: Servico) => (
+            <Card className={`p-5`} key={servico.id}>
               <div className="flex items-center justify-between">
-                <p className="text-2xl font-semibold">{servico.nome}</p>
+                <div className="text-2xl font-semibold flex items-center justify-center gap-3">
+                  <p className="flex items-center">{servico.nome}</p>
+                </div>
                 <p className="texto-azul text-2xl font-semibold">
                   {servico.preco.toLocaleString("pt-BR", {
                     style: "currency",
@@ -156,7 +213,12 @@ const servicos = () => {
                   {servico.duracao} minutos
                 </p>
               </div>
-              <div className="flex justify-end">
+              <div className="flex justify-between">
+                <p className="flex items-center">
+                  {servico.ativo === false && (
+                    <Badge className="bg-red-500">Inativo</Badge>
+                  )}
+                </p>
                 <Button
                   onClick={() => {
                     setServicoSelecionado(servico);
@@ -272,11 +334,19 @@ const servicos = () => {
                 <div className="flex gap-3 justify-end pt-5">
                   {servicoSelecionado && (
                     <Button
+                      className={`${
+                        servicoSelecionado.ativo === false
+                          ? "bg-green-600 hover:bg-green-500"
+                          : ""
+                      }`}
                       type="button"
-                      onClick={() => deleteServico(servicoSelecionado.id)}
+                      onClick={() => {
+                        setOpenModalDelete(true);
+                        setOpenModal(false);
+                      }}
                       variant="destructive"
                     >
-                      Excluir
+                      {servicoSelecionado.ativo === true ? "Excluir" : "Ativar"}
                     </Button>
                   )}
                   <Button onClick={fechaModal} variant={"ghost"} type="button">
@@ -290,6 +360,29 @@ const servicos = () => {
             </Form>
           </DialogContent>
         </Dialog>
+
+        <DialogComponent
+          className={`${
+            servicoSelecionado?.ativo === false
+              ? "bg-green-600 hover:bg-green-500"
+              : ""
+          }`}
+          actionLabel={`${
+            servicoSelecionado?.ativo === true ? "Excluir" : "Ativar"
+          }`}
+          open={openModalDelete}
+          setOpen={setOpenModalDelete}
+          title={`Deseja realmente ${
+            servicoSelecionado?.ativo === true
+              ? "apagar o serviço"
+              : "reativar o serviço"
+          } ${servicoSelecionado?.nome}?`}
+          action={
+            servicoSelecionado?.ativo === true
+              ? () => deleteServico(servicoSelecionado!)
+              : () => reativarServico(servicoSelecionado!)
+          }
+        />
       </div>
     </div>
   );

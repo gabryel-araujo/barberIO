@@ -1,3 +1,4 @@
+"use client";
 import { useForm } from "@/contexts/AgendamentoContextProvider";
 
 type StepItemProps = {
