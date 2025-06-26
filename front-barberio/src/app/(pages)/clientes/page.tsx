@@ -270,7 +270,7 @@ const clientes = () => {
         <Table>
           <TableHeader>
             <TableRow className="">
-              <TableHead>ID</TableHead>
+              {/* <TableHead>ID</TableHead> */}
               <TableHead>Nome</TableHead>
               <TableHead className="">Telefone</TableHead>
               <TableHead className="text-center">Data de Cadastro</TableHead>
@@ -283,7 +283,7 @@ const clientes = () => {
               .slice(inicio, fim)
               .map((cliente: Cliente) => (
                 <TableRow key={cliente.id}>
-                  <TableCell>{cliente.id}</TableCell>
+                  {/* <TableCell>{cliente.id}</TableCell> */}
                   <TableCell className="flex gap-3">
                     <p>{cliente.nome}</p>
                     <p>
