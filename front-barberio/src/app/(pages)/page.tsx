@@ -2,10 +2,21 @@
 import { Button } from "../../components/ui/button";
 import { Calendar } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+
+export function PrefetchAgendar() {
+  const router = useRouter();
+  useEffect(() => {
+    router.prefetch("/agendar");
+  }, [router]);
+  return null;
+}
 
 const Home = () => {
   return (
     <div className="w-full flex min-h-screen flex-col items-center justify-center space-y-7 px-7 pt-7 md:pt-0 bg-[#e6f0ff]">
+      <PrefetchAgendar />
       <p className="text-5xl font-bold text-center ">
         Bem-Vindo à <span className="text-primary">Barber</span>iO
       </p>
