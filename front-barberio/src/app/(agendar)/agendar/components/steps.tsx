@@ -1,10 +1,8 @@
 "use client";
-import { useForm } from "@/contexts/AgendamentoContextProvider";
+
 import { StepItem } from "./StepItem";
 
 export const Steps = () => {
-  const { state } = useForm();
-
   const arrSteps = [1, 2, 3, 4];
 
   return (
