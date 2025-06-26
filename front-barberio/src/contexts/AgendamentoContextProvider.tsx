@@ -21,6 +21,7 @@ export const inicialData: State = {
     disponivel: true,
     email: "",
     senha: "",
+    ativo: true,
   },
   servico: {
     duracao: 0,

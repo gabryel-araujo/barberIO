@@ -1,3 +1,4 @@
+"use client";
 import { Calendar } from "@/components/ui/calendar";
 import { useCallback, useState } from "react";
 import { ptBR } from "date-fns/locale";
@@ -6,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useForm } from "@/contexts/AgendamentoContextProvider";
 import { HomeIcon } from "lucide-react";
-import { format } from "date-fns";
+import { toast } from "sonner";
 
 export const Step1 = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -51,15 +52,23 @@ export const Step1 = () => {
           locale={ptBR}
           mode="single"
           selected={date}
-          disabled={(data) => {
-            return data < new Date() || date?.getDay() === 0;
-          }}
           onSelect={(dataSelecionada) => {
+            if (!dataSelecionada) return;
+
             setDate(dataSelecionada);
             dispatch({
               type: AgendamentoAction.setData,
               payload: dataSelecionada,
             });
+            console.log(dataSelecionada);
+          }}
+          disabled={(date) => {
+            const hoje = new Date();
+            hoje.setHours(0, 0, 0, 0);
+            const isBeforeToday = date < hoje;
+            const isSunday = date.getDay() === 0;
+
+            return isBeforeToday || isSunday;
           }}
           className="w-[250px] rounded-md border shadow"
         />

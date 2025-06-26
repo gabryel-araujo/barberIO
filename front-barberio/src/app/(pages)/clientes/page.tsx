@@ -48,6 +48,23 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { ConversaoData } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 const clientes = () => {
   const [openModal, setOpenModal] = useState(false);
   //const [clienteListado, setClienteListado] = useState<Cliente[]>([]);
@@ -64,10 +81,14 @@ const clientes = () => {
   const queryClient = useQueryClient();
 
   const { data: clienteListado = [] } = useQuery({
-    queryKey: ["clientes"],
+    queryKey: ["clientes", exibirInativos],
     queryFn: async () => {
       const response = await axios.get(`${baseUrl}/clientes`);
-      return response.data;
+      const clientes = response.data;
+      const clientesFiltrado = exibirInativos
+        ? clientes
+        : clientes.filter((clientes: Cliente) => clientes.ativo === true);
+      return clientesFiltrado;
     },
     staleTime: 5 * (60 * 1000),
   });
@@ -76,8 +97,22 @@ const clientes = () => {
   const filtroCliente = clienteListado.filter(
     (cliente: Cliente) =>
       cliente.nome.toLowerCase().includes(pesquisaInput.toLowerCase()) ||
-      cliente.telefone.includes(pesquisaInput)
+      cliente.telefone.includes(pesquisaInput) ||
+      cliente.id?.toString().includes(pesquisaInput)
   );
+  // variaveis para controle de paginação
+  const [nomesPorPagina, setNomesPorPagina] = useState(10);
+  const [page, setPage] = useState(1);
+  const range = 1;
+  const totalPages = Math.ceil(filtroCliente.length / nomesPorPagina);
+  const inicio = (page - 1) * nomesPorPagina;
+  const fim = inicio + nomesPorPagina;
+  const inicioPagina = Math.max(1, page - range);
+  const fimPagina = Math.min(totalPages, page + range);
+  const paginasParaMostrar = [];
+  for (let i = inicioPagina; i <= fimPagina; i++) {
+    paginasParaMostrar.push(i);
+  }
 
   //mostrar os dados do cliente selecionado
   const handleClienteDados = (cliente: Cliente) => {
@@ -113,10 +148,11 @@ const clientes = () => {
         id: clienteExistente?.id, // será opcional para tirar.
         nome: values.nome,
         telefone: values.telefone,
+        ativo: clienteExistente?.ativo,
       };
       if (clienteExistente) {
         // se for cliente atualiza o cliente na lista
-        const response = await axios.put(
+        await axios.put(
           `${baseUrl}/clientes/${clienteExistente.id}`,
           clienteAtualizado
         );
@@ -124,10 +160,7 @@ const clientes = () => {
         toast.success("Cliente alterado com sucesso!");
       } else {
         //agora seta o novo cliente nos clientes
-        const response = await axios.post(
-          `${baseUrl}/clientes`,
-          clienteAtualizado
-        );
+        await axios.post(`${baseUrl}/clientes`, clienteAtualizado);
         console.log("Cliente Novo:", clienteAtualizado);
         toast.success("Cliente cadastrado com sucesso!");
       }
@@ -154,10 +187,14 @@ const clientes = () => {
     setOpenModal(!openModal);
   };
 
-  const deleteCliente = async (id: number) => {
+  const deleteCliente = async (value: Cliente) => {
     try {
-      console.log(`Deletando: ${baseUrl}/clientes/${id}`);
-      await axios.delete(`${baseUrl}/clientes/${id}`);
+      console.log(`Deletando: ${baseUrl}/clientes/${value.id}`);
+      await axios.put(`${baseUrl}/clientes/${value.id}`, {
+        nome: value.nome,
+        telefone: value.telefone,
+        ativo: false,
+      });
 
       await queryClient.invalidateQueries({ queryKey: ["clientes"] });
       toast.success("Cliente deletado com sucesso!");
@@ -169,8 +206,27 @@ const clientes = () => {
     setOpenModalDelete(false);
   };
 
+  const reativarCliente = async (value: Cliente) => {
+    try {
+      console.log(`Deletando: ${baseUrl}/clientes/${value.id}`);
+      await axios.put(`${baseUrl}/clientes/${value.id}`, {
+        nome: value.nome,
+        telefone: value.telefone,
+        ativo: true,
+      });
+
+      await queryClient.invalidateQueries({ queryKey: ["clientes"] });
+      toast.success("Cliente Ativado com sucesso!");
+    } catch (error) {
+      console.error("Erro Ativando cliente:", error);
+      toast.error("Ops ocorreu um erro!");
+    }
+
+    setOpenModalDelete(false);
+  };
+
   return (
-    <div className="w-full">
+    <div className="w-full min-h-screen">
       <div className="w-full flex items-center justify-between px-10 py-5">
         <div className="flex flex-col">
           <p className="text-3xl font-bold">Clientes</p>
@@ -214,27 +270,37 @@ const clientes = () => {
         <Table>
           <TableHeader>
             <TableRow className="">
+              {/* <TableHead>ID</TableHead> */}
               <TableHead>Nome</TableHead>
-              <TableHead>Telefone</TableHead>
-              <TableHead>Último Atendimento</TableHead>
-              <TableHead>Data de Cadastro</TableHead>
+              <TableHead className="">Telefone</TableHead>
+              <TableHead className="text-center">Data de Cadastro</TableHead>
               <TableHead className="flex justify-end pl-10">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filtroCliente.map((cliente: Cliente) => (
-              <TableRow key={cliente.id}>
-                <TableCell>{cliente.nome}</TableCell>
-                <TableCell>
-                  {
+            {filtroCliente
+              .sort((a: { id: number }, b: { id: number }) => b.id - a.id)
+              .slice(inicio, fim)
+              .map((cliente: Cliente) => (
+                <TableRow key={cliente.id}>
+                  {/* <TableCell>{cliente.id}</TableCell> */}
+                  <TableCell className="flex gap-3">
+                    <p>{cliente.nome}</p>
+                    <p>
+                      {cliente.ativo === false && (
+                        <Badge className="bg-red-500">Inativo</Badge>
+                      )}
+                    </p>
+                  </TableCell>
+                  <TableCell className="">
                     <Link
-                      className="group"
+                      className="flex gap-3 max-w-[150px]"
                       target="_blank"
                       href={`${whatsapp}${cliente.telefone}`}
                     >
                       <Badge
                         variant="default"
-                        className="items-center justify-center flex min-w-[150px] py-1 hover:bg-green-600 font-semibold hover:font-semibold hover:text-white transition-all duration-400"
+                        className="group items-center justify-center flex min-w-[150px] py-1 hover:bg-green-600 font-semibold hover:font-semibold hover:text-white transition-all duration-400"
                       >
                         {/* <div className="flex items-center justify-center gap-2"> */}
                         <p className="flex items-center justify-center">
@@ -247,29 +313,93 @@ const clientes = () => {
                         {/* </div> */}
                       </Badge>
                     </Link>
-                  }
-                </TableCell>
-                <TableCell>22/05/2025</TableCell>
-                <TableCell>01/01/1990</TableCell>
-                <TableCell className="flex justify-end pl-10">
-                  <Button
-                    onClick={() => {
-                      handleClienteDados(cliente);
-                      form.reset({
-                        // id: cliente.id,
-                        nome: cliente.nome,
-                        telefone: cliente.telefone,
-                      });
-                      setOpenModal(true);
-                    }}
-                  >
-                    <Edit />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
+                  </TableCell>
+
+                  <TableCell className="text-center">
+                    {ConversaoData(cliente.created_at)}
+                  </TableCell>
+                  <TableCell className="flex justify-end pl-10">
+                    <Button
+                      onClick={() => {
+                        handleClienteDados(cliente);
+                        form.reset({
+                          // id: cliente.id,
+                          nome: cliente.nome,
+                          telefone: cliente.telefone,
+                        });
+                        setOpenModal(true);
+                      }}
+                    >
+                      <Edit />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
+        {/* incio de paginação */}
+        <div className="py-3 text-sm flex items-center justify-between px-5 text-slate-600">
+          <div className="flex items-center gap-2">
+            <div>Mostrar:</div>
+            <div>
+              <Select
+                value={nomesPorPagina.toString()}
+                onValueChange={(value) => setNomesPorPagina(Number(value))}
+              >
+                <SelectTrigger>
+                  <SelectValue defaultChecked></SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="25">25</SelectItem>
+                    <SelectItem value="50">50</SelectItem>
+                    <SelectItem value="100">100</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>de registros: {filtroCliente.length}</div>
+          </div>
+          <div>
+            <Pagination className="">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                    className={
+                      page === 1
+                        ? "pointer-events-none opacity-50"
+                        : " cursor-pointer"
+                    }
+                  ></PaginationPrevious>
+                </PaginationItem>
+                {paginasParaMostrar.map((numero) => (
+                  <PaginationItem key={numero} className="cursor-pointer">
+                    <PaginationLink
+                      onClick={() => setPage(numero)}
+                      isActive={numero === page}
+                    >
+                      {numero}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() =>
+                      setPage((prev) => Math.max(prev + 1, totalPages))
+                    }
+                    className={
+                      page === totalPages
+                        ? "pointer-events-none opacity-50"
+                        : "cursor-pointer"
+                    }
+                  ></PaginationNext>
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        </div>
       </div>
       <Dialog open={openModal} onOpenChange={setOpenModal}>
         <DialogContent>
@@ -320,7 +450,22 @@ const clientes = () => {
               />
 
               <div className="pt-5 flex justify-between gap-5">
-                {clienteSelecionado && (
+                {clienteSelecionado && clienteSelecionado.ativo === false && (
+                  <div>
+                    <Button
+                      type="button"
+                      className="bg-green-600 hover:bg-green-500"
+                      variant="default"
+                      onClick={() => {
+                        setOpenModalDelete(true);
+                        setOpenModal(false);
+                      }}
+                    >
+                      Ativar
+                    </Button>
+                  </div>
+                )}
+                {clienteSelecionado && clienteSelecionado.ativo === true && (
                   <div>
                     <Button
                       type="button"
@@ -353,11 +498,24 @@ const clientes = () => {
       </Dialog>
 
       <DialogComponent
-        actionLabel="Excluir"
+        className={`${
+          clienteSelecionado?.ativo === false
+            ? "bg-green-600 hover:bg-green-500"
+            : ""
+        }`}
+        actionLabel={`${
+          clienteSelecionado?.ativo === false ? "Ativar" : "Excluir"
+        }`}
         open={openModalDelete}
         setOpen={setOpenModalDelete}
-        title={`Deseja realmente apagar o cliente ${clienteSelecionado?.nome}?`}
-        action={() => deleteCliente(clienteSelecionado?.id!)}
+        title={`Deseja realmente ${
+          clienteSelecionado?.ativo === false ? "ativar" : "apagar"
+        } o cliente ${clienteSelecionado?.nome}?`}
+        action={
+          clienteSelecionado?.ativo === true
+            ? () => deleteCliente(clienteSelecionado!)
+            : () => reativarCliente(clienteSelecionado!)
+        }
       />
     </div>
   );

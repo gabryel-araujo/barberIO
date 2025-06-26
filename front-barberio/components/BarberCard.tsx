@@ -10,6 +10,7 @@ import { useForm as useFormReducer } from "@/contexts/AgendamentoContextProvider
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 
 type BarberCardProps = {
   barbeiro: Barbeiro;
@@ -20,6 +21,7 @@ type BarberCardProps = {
     senha: string;
     disponivel: boolean;
     data_nascimento?: string | undefined;
+    //ativo: boolean;
   }>;
   setBarbeiroSelecionado: Dispatch<SetStateAction<Barbeiro | undefined>>;
   setOpenModal: Dispatch<SetStateAction<boolean>>;
@@ -42,6 +44,7 @@ export function BarberCard({
       data_nascimento: barbeiro.data_nascimento,
       disponivel: barbeiro.disponivel,
       servico: barbeiro.servicos?.map((s) => String(s.id)) || [],
+      //ativo: barbeiro.ativo,
     });
   };
 
@@ -51,7 +54,8 @@ export function BarberCard({
       barbeiro.nome,
       barbeiro.email,
       barbeiro.senha,
-      !barbeiro.disponivel
+      !barbeiro.disponivel,
+      barbeiro.ativo!
     );
 
     dispatch({
@@ -88,9 +92,16 @@ export function BarberCard({
                             : "text-red-400"
                         }`}
             >
-              {barbeiro.disponivel ? "Disponível" : "Indisponível"}
+              {barbeiro.disponivel && barbeiro.ativo === true
+                ? "Disponível"
+                : !barbeiro.disponivel && barbeiro.ativo === true
+                ? "Indisponivel"
+                : !barbeiro.ativo && (
+                    <Badge className="bg-red-500">Inativo</Badge>
+                  )}
             </p>
           </div>
+
           <div className="flex flex-row gap-1 items-center">
             <p className="text-amber-300 font-bold">{barbeiro.avaliacao}</p>
             <Star fill="yellow" color="#ffd230" />
@@ -124,7 +135,13 @@ export function BarberCard({
         >
           Gerenciar
         </Button>
-        <div className="flex gap-3">
+        <div
+          className={`flex gap-3 ${
+            barbeiro.ativo === false
+              ? "cursor-not-allowed pointer-events-none select-none opacity-60"
+              : ""
+          }`}
+        >
           <Switch
             id="disponivel"
             checked={barbeiro.disponivel}
@@ -132,7 +149,8 @@ export function BarberCard({
               updateStatus(barbeiro);
             }}
           />
-          <Label htmlFor="disponivel" className="font-normal">
+
+          <Label htmlFor="disponivel" className={`"font-normal" `}>
             {barbeiro.disponivel ? "Disponível" : "Indisponível"}
           </Label>
         </div>

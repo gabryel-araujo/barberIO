@@ -12,7 +12,7 @@ const agendar = () => {
   const { state } = useForm();
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center space-y-6 bg-[#e6f0ff]">
+    <div className="w-full min-h-screen flex flex-col items-center justify-center space-y-6 bg-[#e6f0ff] py-3">
       <Steps />
       <div className="w-full h-full flex flex-col items-center justify-center">
         {state.currentStep == 1 && (

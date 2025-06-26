@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { UserPlus } from "lucide-react";
+import { Filter, UserPlus } from "lucide-react";
 // import { servicos } from "@/model/servico";
 import {
   Dialog,
@@ -31,6 +31,7 @@ import {
   DELETEFuncionario,
   addServicoFuncionario,
   removeServicoFuncionario,
+  ReativarFuncionario,
 } from "@/lib/api/funcionarios";
 import { useForm as useFormReducer } from "@/contexts/AgendamentoContextProvider";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
@@ -43,6 +44,14 @@ import { baseUrl } from "@/lib/baseUrl";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Servico } from "@/types/servico";
 import { DialogComponent } from "@/components/layout/DialogComponent";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const barbeiros = () => {
   const { state, dispatch } = useFormReducer();
@@ -52,6 +61,7 @@ const barbeiros = () => {
   const [barbeiroSelecionado, setBarbeiroSelecionado] = useState<Barbeiro>();
   const [servicos, setServicos] = useState<Servico[]>([]);
   const [servicoSelecionado, setServicoSelecionado] = useState<string[]>([]);
+  const [exibirInativos, setExibirInativos] = useState(false);
   const formSchema = z.object({
     nome: z
       .string()
@@ -71,6 +81,7 @@ const barbeiros = () => {
       ),
     servico: z.array(z.any()).nullable(),
     disponivel: z.boolean(),
+    //ativo: z.boolean(),
   });
 
   const editFormSchema = z.object({
@@ -102,6 +113,7 @@ const barbeiros = () => {
       ),
     servico: z.array(z.any()).nullable(),
     disponivel: z.boolean(),
+    //ativo: z.boolean(),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -123,11 +135,17 @@ const barbeiros = () => {
 
   useEffect(() => {
     async function fetchData() {
-      const apiData = await GETFuncionarios();
-      setBabeiroLista(apiData);
+      const response = await GETFuncionarios();
+      const apiData = response;
+      const funcionariosFiltrado = exibirInativos
+        ? apiData
+        : apiData.filter(
+            (funcionarios: Barbeiro) => funcionarios.ativo === true
+          );
+      setBabeiroLista(funcionariosFiltrado);
     }
     fetchData();
-  }, [state.barbeiro]);
+  }, [state.barbeiro, exibirInativos]);
 
   const onSubmit = async (barbeiro: z.infer<typeof formSchema>) => {
     const response = await POSTFuncionario(
@@ -137,6 +155,7 @@ const barbeiros = () => {
       barbeiro.data_nascimento!,
       barbeiro.disponivel,
       servicoSelecionado
+      //barbeiro.ativo
     );
     console.log(servicoSelecionado);
     console.log(response.data);
@@ -180,7 +199,8 @@ const barbeiros = () => {
       newBarber.email,
       newBarber.data_nascimento!,
       newBarber.disponivel,
-      newBarber.senha != "" ? newBarber.senha : barbeiro.senha
+      newBarber.senha != "" ? newBarber.senha : barbeiro.senha,
+      barbeiro.ativo
     );
 
     dispatch({
@@ -200,8 +220,8 @@ const barbeiros = () => {
     setOpenModal(false);
   };
 
-  async function handleDeleteBarbeiro(id: number) {
-    const response = await DELETEFuncionario(id);
+  async function handleDeleteBarbeiro(value: Barbeiro) {
+    const response = await DELETEFuncionario(value);
 
     dispatch({
       type: AgendamentoAction.setBarbeiro,
@@ -210,6 +230,23 @@ const barbeiros = () => {
 
     if (response.status === 200) {
       toast.success("Barbeiro excluído com sucesso!");
+    } else if (response.status >= 400) {
+      toast.error("Erro na requisição! Verifique os dados");
+    } else {
+      toast.error("Oops, ocorreu um erro!");
+      console.log(response);
+      console.error(response.statusText);
+    }
+  }
+  async function handleReativarBarbeiro(value: Barbeiro) {
+    const response = await ReativarFuncionario(value);
+    dispatch({
+      type: AgendamentoAction.setBarbeiro,
+      payload: [response.data],
+    });
+
+    if (response.status === 200) {
+      toast.success("Barbeiro Ativado com sucesso!");
     } else if (response.status >= 400) {
       toast.error("Erro na requisição! Verifique os dados");
     } else {
@@ -259,7 +296,7 @@ const barbeiros = () => {
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full min-h-screen bg-[#e6f0ff]">
       <div className="w-full flex items-center justify-between px-10 py-5">
         <div className="flex flex-col">
           <p className="text-3xl font-bold">Barbeiros</p>
@@ -267,10 +304,30 @@ const barbeiros = () => {
             Gerencie os profissionais da barbearia
           </p>
         </div>
-        <Button onClick={abrirModal}>
-          <UserPlus />
-          Novo Barbeiro
-        </Button>
+        <div className="flex gap-3">
+          <Button onClick={abrirModal}>
+            <UserPlus />
+            Novo Barbeiro
+          </Button>
+          {/* filtro de inatividade e talvez outras funcionalidades */}
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Button variant={"outline"}>
+                <Filter />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-40">
+              <DropdownMenuLabel>Exibição</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuCheckboxItem
+                checked={exibirInativos}
+                onCheckedChange={setExibirInativos}
+              >
+                Exibir Inativos
+              </DropdownMenuCheckboxItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 px-5">
         {barbeiroLista
@@ -444,7 +501,22 @@ const barbeiros = () => {
                 )}
               />
               <div className="flex items-center justify-end gap-3">
-                {barbeiroSelecionado && (
+                {barbeiroSelecionado && barbeiroSelecionado.ativo === false && (
+                  <div>
+                    <Button
+                      type="button"
+                      className="bg-green-600 hover:bg-green-500"
+                      variant="default"
+                      onClick={() => {
+                        setOpenDialog(!openDialog);
+                        setOpenModal(!openModal);
+                      }}
+                    >
+                      Ativar
+                    </Button>
+                  </div>
+                )}
+                {barbeiroSelecionado && barbeiroSelecionado.ativo === true && (
                   <Button
                     onClick={() => {
                       setOpenDialog(!openDialog);
@@ -481,11 +553,24 @@ const barbeiros = () => {
       </Dialog>
 
       <DialogComponent
-        title={`Você deseja excluir o barbeiro ${barbeiroSelecionado?.nome}?`}
-        actionLabel="Excluir"
+        className={`${
+          barbeiroSelecionado?.ativo === false
+            ? "bg-green-600 hover:bg-green-500"
+            : ""
+        }`}
+        title={`Você deseja ${
+          barbeiroSelecionado?.ativo === false ? "Ativar" : "excluir"
+        } o barbeiro ${barbeiroSelecionado?.nome}?`}
+        actionLabel={`${
+          barbeiroSelecionado?.ativo === false ? "Ativar" : "Excluir"
+        }`}
         open={openDialog}
         setOpen={setOpenDialog}
-        action={() => handleDeleteBarbeiro(barbeiroSelecionado!.id)}
+        action={
+          barbeiroSelecionado?.ativo === true
+            ? () => handleDeleteBarbeiro(barbeiroSelecionado!)
+            : () => handleReativarBarbeiro(barbeiroSelecionado!)
+        }
       />
     </div>
   );
