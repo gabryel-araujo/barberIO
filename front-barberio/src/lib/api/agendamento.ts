@@ -1,4 +1,6 @@
+import { cache } from "react";
 import axiosInstance from "../axios";
+import { Agendamento } from "@/types/agendamento";
 
 export const agendar = async (
   barbeiro_id: number,
@@ -19,3 +21,13 @@ export const agendar = async (
     throw error;
   }
 };
+
+export const GETAgendamentos = cache(async (): Promise<Agendamento[]> => {
+  try {
+    const respose = await axiosInstance.get<Agendamento[]>("/agendamentos");
+    return respose.data;
+  } catch (error) {
+    console.error("Erro ao listar agendamentos", error);
+    throw error;
+  }
+});
