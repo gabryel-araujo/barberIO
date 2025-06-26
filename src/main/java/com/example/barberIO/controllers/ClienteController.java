@@ -1,8 +1,10 @@
 package com.example.barberIO.controllers;
 
 import com.example.barberIO.dtos.ClienteRecordDto;
+import com.example.barberIO.exceptions.RecursoNaoEncontradoException;
 import com.example.barberIO.models.ClienteModel;
 import com.example.barberIO.repositories.ClienteRepository;
+import com.example.barberIO.services.ClienteService;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,6 +22,9 @@ import java.util.UUID;
 public class ClienteController {
     @Autowired
     ClienteRepository clienteRepository;
+
+    @Autowired
+    ClienteService clienteService;
 
     @GetMapping("/clientes")
     public ResponseEntity<List<ClienteModel>> getAllClients(){
@@ -34,14 +40,16 @@ public class ClienteController {
         }
 
         ClienteModel clienteModel = new ClienteModel();
+        LocalDateTime now = LocalDateTime.now();
         BeanUtils.copyProperties(clienteRecordDto, clienteModel);
+        clienteModel.setAtivo(true);
+        clienteModel.setCreated_at(now);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(clienteRepository.save(clienteModel));
     }
 
     @PutMapping("/clientes/{id}")
-    public ResponseEntity<Object> editCliente(@PathVariable (value = "id") Long id, @RequestBody @Valid ClienteModel clienteRecordDto){
-        //todo: trocar o cliente model para o dto para não precisar passar o id do usuário na requisição
+    public ResponseEntity<Object> editCliente(@PathVariable (value = "id") Long id, @RequestBody @Valid ClienteRecordDto clienteRecordDto){
 
         Optional<ClienteModel> clienteO = clienteRepository.findById(id);
 
@@ -68,11 +76,8 @@ public class ClienteController {
 
     @GetMapping("/clientes/{id}")
     public ResponseEntity<Object> getOneClient(@PathVariable (value = "id") Long id ){
-        Optional<ClienteModel> clienteO = clienteRepository.findById(id);
-        if(clienteO.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado");
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(clienteO.get());
+        ClienteModel clienteO = clienteService.buscarPorId(id);
+        return ResponseEntity.status(HttpStatus.OK).body(clienteO);
     }
 
 }

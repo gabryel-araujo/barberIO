@@ -3,6 +3,7 @@ package com.example.barberIO.dtos;
 import com.example.barberIO.models.ServiceModel;
 import jakarta.validation.constraints.NotBlank;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record FuncionarioRecordDto(
@@ -14,5 +15,8 @@ public record FuncionarioRecordDto(
         float experiencia,
         int atendimentos,
         boolean disponivel,
-        String[] newServices) {}
+        String[] newServices,
+        boolean ativo,
+        LocalDateTime created_at) {
+}
 

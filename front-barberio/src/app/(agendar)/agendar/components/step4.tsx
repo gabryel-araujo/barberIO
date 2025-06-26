@@ -119,7 +119,9 @@ export const Step4 = () => {
 
     const response = await findByTelefone(data.phone);
     if (response.length == 0) {
-      await POSTCliente(data.name, data.phone);
+      console.log("entrou aqui");
+      const response = await POSTCliente(data.name, data.phone);
+      console.log(response);
     }
 
     setOpenModal(!openModal);

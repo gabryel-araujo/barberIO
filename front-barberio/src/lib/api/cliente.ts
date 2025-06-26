@@ -21,7 +21,7 @@ export const POSTCliente = async (nome: string, telefone: string) => {
     return response;
   } catch (error) {
     console.error("Erro ao cadastrar funcionario", error);
-    throw error;
+    return error;
   }
 };
 
