@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/table";
 import { GETAgendamentos } from "@/lib/api/agendamento";
 import { Agendamento } from "@/types/agendamento";
+import { Calendar } from "@/components/ui/calendar";
 
 const agendamentos = () => {
   const [selected, setSelected] = useState("hoje");
@@ -22,6 +23,10 @@ const agendamentos = () => {
     format(Date.now(), "dd 'de' MMMM, yyyy", { locale: ptBR })
   );
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
+  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [selecionada, setSelecionada] = useState(
+    format(Date.now(), "dd 'de' MMMM, yyyy", { locale: ptBR })
+  );
 
   useEffect(() => {
     async function fetchData() {
@@ -30,8 +35,6 @@ const agendamentos = () => {
     }
     fetchData();
   }, []);
-
-  console.log(agendamentos);
 
   return (
     <div className="w-screen h-screen flex px-10 py-5 bg-[#e6f0ff]">
@@ -69,7 +72,7 @@ const agendamentos = () => {
           <Card className={`${selected != "hoje" && "hidden"}`}>
             <span>
               <h1 className="text-xl font-semibold">Agendamentos de Hoje</h1>
-              <p className="text-gray-500">{dateRef.current}</p>
+              <p className="text-gray-500 text-sm">{dateRef.current}</p>
             </span>
 
             <div>
@@ -101,7 +104,7 @@ const agendamentos = () => {
                       return (
                         <TableRow key={index}>
                           <TableCell>
-                            {format(agendamento.horario, "Pp", {
+                            {format(agendamento.horario, "p", {
                               locale: ptBR,
                             })}
                           </TableCell>
@@ -123,12 +126,121 @@ const agendamentos = () => {
             </div>
           </Card>
           <Card className={`${selected != "prox" && "hidden"}`}>
-            <h1 className="text-xl font-semibold">Próximos agendamentos</h1>
+            <span>
+              <h1 className="text-xl font-semibold">Próximos agendamentos</h1>
+              <p className="text-gray-500 text-sm">
+                Agendamentos dos próximos dias
+              </p>
+            </span>
+            <Table className="text-center">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Horário</TableHead>
+                  <TableHead>Cliente</TableHead>
+                  <TableHead>Barbeiro</TableHead>
+                  <TableHead>Serviço</TableHead>
+                  <TableHead>Valor</TableHead>
+                  <TableHead>Ações</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {agendamentos
+                  .filter(
+                    (data) =>
+                      format(data.horario, "dd 'de' MMMM, yyyy", {
+                        locale: ptBR,
+                      }) > dateRef.current
+                  )
+                  .sort(
+                    (a, b) =>
+                      new Date(a.horario).getTime() -
+                      new Date(b.horario).getTime()
+                  )
+                  .map((agendamento, index) => {
+                    return (
+                      <TableRow key={index}>
+                        <TableCell>
+                          {format(agendamento.horario, "Pp", {
+                            locale: ptBR,
+                          })}
+                        </TableCell>
+                        <TableCell>{agendamento.cliente.nome}</TableCell>
+                        <TableCell>{agendamento.barbeiro.nome}</TableCell>
+                        <TableCell>{agendamento.servico.nome}</TableCell>
+                        <TableCell>
+                          R${agendamento.servico.preco.toFixed(2)}
+                        </TableCell>
+                        <TableCell className="flex gap-2 items-center justify-center">
+                          <Button variant={"ghost"}>Cancelar</Button>
+                          <Button variant={"link"}>Concluir</Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+              </TableBody>
+            </Table>
           </Card>
           <Card className={`${selected != "calen" && "hidden"}`}>
-            <h1 className="text-xl font-semibold">
-              Calendário de agendamentos
-            </h1>
+            <span>
+              <h1 className="text-xl font-semibold">
+                Calendário de agendamentos
+              </h1>
+              <p className="text-gray-500 text-sm">
+                Visualize os agendamentos por data
+              </p>
+
+              <div className="flex w-full gap-3">
+                <div className="">
+                  <Calendar
+                    locale={ptBR}
+                    mode="single"
+                    selected={date}
+                    onSelect={(dataSelecionada) => {
+                      if (!dataSelecionada) return;
+                      const formattedDate = format(
+                        dataSelecionada,
+                        "dd 'de' MMMM, yyyy",
+                        {
+                          locale: ptBR,
+                        }
+                      );
+                      setDate(dataSelecionada);
+                      setSelecionada(formattedDate);
+                    }}
+                    className="w-fit rounded-md border shadow"
+                  />
+                </div>
+                <div className="w-3/4">
+                  <Card className="flex flex-col h-full overflow-scroll">
+                    <p className="text-sm font-semibold">
+                      Agendamentos para {selecionada}
+                    </p>
+                    {agendamentos
+                      .filter(
+                        (data) =>
+                          format(data.horario, "dd 'de' MMMM, yyyy", {
+                            locale: ptBR,
+                          }) == selecionada
+                      )
+                      .sort(
+                        (a, b) =>
+                          new Date(a.horario).getTime() -
+                          new Date(b.horario).getTime()
+                      )
+                      .map((agendamento, index) => {
+                        return (
+                          <Card key={index}>
+                            {format(agendamento.horario, "p", {
+                              locale: ptBR,
+                            })}{" "}
+                            - {agendamento.cliente.nome}
+                          </Card>
+                        );
+                      })}
+                  </Card>
+                </div>
+              </div>
+            </span>
           </Card>
         </section>
       </div>
