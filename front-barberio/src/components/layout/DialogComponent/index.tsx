@@ -16,7 +16,7 @@ type DialogProps = {
   setOpen: Dispatch<SetStateAction<boolean>>;
   title: string;
   actionLabel: string;
-  action?: () => {};
+  action?: () => void;
   className?: string;
 };
 

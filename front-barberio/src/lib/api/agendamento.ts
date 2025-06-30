@@ -1,6 +1,7 @@
 import { cache } from "react";
 import axiosInstance from "../axios";
 import { Agendamento } from "@/types/agendamento";
+import { AxiosResponse } from "axios";
 
 export const agendar = async (
   barbeiro_id: number,
@@ -31,3 +32,15 @@ export const GETAgendamentos = cache(async (): Promise<Agendamento[]> => {
     throw error;
   }
 });
+
+export const DELETEAgendamento = cache(
+  async (id: number): Promise<AxiosResponse<any, any>> => {
+    try {
+      const respose = await axiosInstance.delete(`/agendamentos/${id}`);
+      return respose;
+    } catch (error) {
+      console.error("Erro ao apagar agendamento", error);
+      throw error;
+    }
+  }
+);
