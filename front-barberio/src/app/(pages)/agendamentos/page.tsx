@@ -19,6 +19,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { CalendarX2, Clock, User, Scissors, DollarSign } from "lucide-react";
 import { DialogComponent } from "@/components/layout/DialogComponent";
 import { toast } from "sonner";
+import { normalizarData } from "@/utils/functions";
 
 const agendamentos = () => {
   const [open, setOpen] = useState(false);
@@ -47,9 +48,8 @@ const agendamentos = () => {
   const agendamentosFiltradosProximos = agendamentos
     .filter(
       (data) =>
-        format(data.horario, "dd 'de' MMMM, yyyy", {
-          locale: ptBR,
-        }) > dateRef.current
+        normalizarData(new Date(data.horario)) >
+        normalizarData(new Date(Date.now()))
     )
     .sort(
       (a, b) => new Date(a.horario).getTime() - new Date(b.horario).getTime()

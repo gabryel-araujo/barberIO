@@ -5,3 +5,7 @@ export function formatarTelefone(telefone: string): string {
   // Aplica o padrão (99) 99999-9999
   return numeros.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
 }
+
+export function normalizarData(data: Date): Date {
+  return new Date(data.getFullYear(), data.getMonth(), data.getDate());
+}
