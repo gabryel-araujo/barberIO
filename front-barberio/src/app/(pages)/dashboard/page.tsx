@@ -17,6 +17,7 @@ import { whatsapp } from "@/lib/whstsapp";
 import { Agendamento } from "@/types/agendamento";
 import { Barbeiro } from "@/types/barbeiro";
 import { Servico } from "@/types/servico";
+import { formatarTelefone } from "@/utils/functions";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Calendar, Scissors, Users2 } from "lucide-react";
@@ -55,6 +56,9 @@ const dashboard = () => {
       return { agendamentos, servicos, barbeiroAtivo };
     },
   });
+  function normalizarData(data: Date): Date {
+    return new Date(data.getFullYear(), data.getMonth(), data.getDate());
+  }
 
   const agendamentosDoDia: Agendamento[] = agendamentos
     .filter((age) => ConversaoData(age.horario) === ConversaoData(hoje))
@@ -63,7 +67,9 @@ const dashboard = () => {
     );
 
   const proximosAgendamentos: Agendamento[] = agendamentos
-    .filter((age) => ConversaoData(age.horario) > ConversaoData(hoje))
+    .filter(
+      (age) => normalizarData(new Date(age.horario)) > normalizarData(hoje)
+    )
     .sort(
       (a, b) => new Date(a.horario).getTime() - new Date(b.horario).getTime()
     );
@@ -155,7 +161,7 @@ const dashboard = () => {
                                         <TableHeader>
                                           <TableRow className="font-semibold text-slate-500">
                                             <TableCell>Nome</TableCell>
-                                            <TableCell>Talefone</TableCell>
+                                            <TableCell>Telefone</TableCell>
                                             <TableCell>Cliente Deste</TableCell>
                                           </TableRow>
                                         </TableHeader>
@@ -165,7 +171,9 @@ const dashboard = () => {
                                               {agendamento.cliente.nome}
                                             </TableCell>
                                             <TableCell>
-                                              {agendamento.cliente.telefone}
+                                              {formatarTelefone(
+                                                agendamento.cliente.telefone
+                                              )}
                                             </TableCell>
                                             <TableCell>01/01/1990</TableCell>
                                           </TableRow>
