@@ -17,7 +17,7 @@ import { whatsapp } from "@/lib/whstsapp";
 import { Agendamento } from "@/types/agendamento";
 import { Barbeiro } from "@/types/barbeiro";
 import { Servico } from "@/types/servico";
-import { formatarTelefone } from "@/utils/functions";
+import { formatarTelefone, normalizarData } from "@/utils/functions";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Calendar, Scissors, Users2 } from "lucide-react";
@@ -56,9 +56,6 @@ const dashboard = () => {
       return { agendamentos, servicos, barbeiroAtivo };
     },
   });
-  function normalizarData(data: Date): Date {
-    return new Date(data.getFullYear(), data.getMonth(), data.getDate());
-  }
 
   const agendamentosDoDia: Agendamento[] = agendamentos
     .filter((age) => ConversaoData(age.horario) === ConversaoData(hoje))
