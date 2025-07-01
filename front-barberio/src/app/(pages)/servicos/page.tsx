@@ -75,6 +75,7 @@ const servicos = () => {
   const formSchema = z.object({
     nome: z
       .string()
+      .trim()
       .min(2, {
         message: "Serviço deve conter no mínimo 5 caracteres",
       })
@@ -83,6 +84,7 @@ const servicos = () => {
       }),
     descricao: z
       .string()
+      .trim()
       .min(5, {
         message: "Descrição deve conter no mínimo 5 caracteres",
       })
