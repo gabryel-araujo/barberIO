@@ -7,7 +7,7 @@ export const schema = z.object({
   name: z
     .string()
     .min(2, "O nome deve ter no mínimo 2 caracteres")
-    .regex(/^[a-zA-Z\s]*$/, {
+    .regex(/^[a-zA-ZáàâãäéèêëíìîïóòôõöúùûüçÇ\s]*$/, {
       message: "O campo deve conter apenas letras.",
     }),
   phone: z
