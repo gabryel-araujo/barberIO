@@ -11,9 +11,7 @@ import { HomeIcon } from "lucide-react";
 export const Step1 = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const { state, dispatch } = useForm();
-
   const { push } = useRouter();
-
   const irHome = () => {
     push("/");
   };
