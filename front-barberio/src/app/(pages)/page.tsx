@@ -2,16 +2,8 @@
 import { Button } from "../../components/ui/button";
 import { Calendar } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
-export function PrefetchAgendar() {
-  const router = useRouter();
-  useEffect(() => {
-    router.prefetch("/agendar");
-  }, [router]);
-  return null;
-}
+import { PrefetchAgendar } from "../../../components/PrefetchAgendar";
 
 const Home = () => {
   return (
