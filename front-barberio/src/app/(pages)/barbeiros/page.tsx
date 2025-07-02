@@ -12,7 +12,7 @@ import {
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Form,
   FormControl,
@@ -62,12 +62,20 @@ const barbeiros = () => {
   const [servicos, setServicos] = useState<Servico[]>([]);
   const [servicoSelecionado, setServicoSelecionado] = useState<string[]>([]);
   const [exibirInativos, setExibirInativos] = useState(false);
+
   const formSchema = z.object({
     nome: z
       .string()
-      .min(2, { message: "Nome deve conter no mínimo 2 caracteres" }),
-    email: z.string().email("Email inválido"),
-    senha: z.string().min(7, "A senha precisa conter no mínimo 7 caracteres"),
+      .trim()
+      .min(2, { message: "Nome deve conter no mínimo 2 caracteres" })
+      .regex(/^[a-zA-ZáàâãäéèêëíìîïóòôõöúùûüçÇ\s]*$/, {
+        message: "Digite um nome válido",
+      }),
+    email: z.string().trim().email("Email inválido"),
+    senha: z
+      .string()
+      .trim()
+      .min(7, "A senha precisa conter no mínimo 7 caracteres"),
     data_nascimento: z
       .string()
       .optional()
@@ -87,10 +95,12 @@ const barbeiros = () => {
   const editFormSchema = z.object({
     nome: z
       .string()
+      .trim()
       .min(2, { message: "Nome deve conter no mínimo 2 caracteres" }),
-    email: z.string().email("Email inválido"),
+    email: z.string().trim().email("Email inválido"),
     senha: z
       .string()
+      .trim()
       .optional()
       .refine(
         (val) => {
@@ -113,15 +123,19 @@ const barbeiros = () => {
       ),
     servico: z.array(z.any()).nullable(),
     disponivel: z.boolean(),
-    //ativo: z.boolean(),
   });
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(
-      barbeiroSelecionado ? editFormSchema : formSchema
-    ) as any,
+  const schema = useMemo(() => {
+    return barbeiroSelecionado ? editFormSchema : formSchema;
+  }, [barbeiroSelecionado]);
+
+  type BarbeiroFormData =
+    | z.infer<typeof formSchema>
+    | z.infer<typeof editFormSchema>;
+
+  const form = useForm<BarbeiroFormData>({
+    resolver: zodResolver(schema),
     defaultValues: {
-      //id: barbeiro.length + 1,
       nome: "",
       email: "",
       senha: "",
@@ -147,35 +161,38 @@ const barbeiros = () => {
     fetchData();
   }, [state.barbeiro, exibirInativos]);
 
-  const onSubmit = async (barbeiro: z.infer<typeof formSchema>) => {
-    const response = await POSTFuncionario(
-      barbeiro.nome,
-      barbeiro.email,
-      barbeiro.senha,
-      barbeiro.data_nascimento!,
-      barbeiro.disponivel,
-      servicoSelecionado
-      //barbeiro.ativo
-    );
-    console.log(servicoSelecionado);
-    console.log(response.data);
-    dispatch({
-      type: AgendamentoAction.setBarbeiro,
-      payload: [response.data],
-    });
+  const onSubmit = async (barbeiro: BarbeiroFormData) => {
+    if (!barbeiroSelecionado) {
+      const response = await POSTFuncionario(
+        barbeiro.nome,
+        barbeiro.email,
+        barbeiro.senha!,
+        barbeiro.data_nascimento!,
+        barbeiro.disponivel,
+        servicoSelecionado
+        //barbeiro.ativo
+      );
 
-    if (response.status === 201) {
-      toast.success("Barbeiro cadastrado com sucesso!");
-    } else if (response.status === 400) {
-      toast.error("Erro na requisição! Verifique os dados");
-    } else {
-      toast.error("Oops, ocorreu um erro!");
-      console.error(response.statusText);
+      console.log(servicoSelecionado);
+      console.log(response.data);
+      dispatch({
+        type: AgendamentoAction.setBarbeiro,
+        payload: [response.data],
+      });
+
+      if (response.status === 201) {
+        toast.success("Barbeiro cadastrado com sucesso!");
+      } else if (response.status === 400) {
+        toast.error("Erro na requisição! Verifique os dados");
+      } else {
+        toast.error("Oops, ocorreu um erro!");
+        console.error(response.statusText);
+      }
+
+      queryClient.invalidateQueries({ queryKey: ["servicos"] });
+      setOpenModal(false);
+      form.reset();
     }
-
-    queryClient.invalidateQueries({ queryKey: ["servicos"] });
-    setOpenModal(false);
-    form.reset();
   };
 
   const abrirModal = () => {

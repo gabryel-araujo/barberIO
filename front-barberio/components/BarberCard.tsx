@@ -12,17 +12,18 @@ import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 
+type BarbeiroFormData = {
+  nome: string;
+  email: string;
+  senha?: string;
+  data_nascimento?: string;
+  servico: any[] | null;
+  disponivel: boolean;
+};
+
 type BarberCardProps = {
   barbeiro: Barbeiro;
-  form: UseFormReturn<{
-    servico: any[] | null;
-    nome: string;
-    email: string;
-    senha: string;
-    disponivel: boolean;
-    data_nascimento?: string | undefined;
-    //ativo: boolean;
-  }>;
+  form: UseFormReturn<BarbeiroFormData>;
   setBarbeiroSelecionado: Dispatch<SetStateAction<Barbeiro | undefined>>;
   setOpenModal: Dispatch<SetStateAction<boolean>>;
 };
