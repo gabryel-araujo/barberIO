@@ -1,14 +1,17 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
 import { Clock } from "lucide-react";
 import { useForm } from "@/contexts/AgendamentoContextProvider";
 import { toast } from "sonner";
+import { GETHorarios } from "@/lib/api/agendamento";
+import { format } from "date-fns";
 
 export const Step3 = () => {
   const { state, dispatch } = useForm();
   const [hora, setHora] = useState<string | undefined>(state.horario);
+  const [disponiveis, setDisponiveis] = useState([]);
 
   function proximoPasso() {
     if (state.horario === "") {
@@ -38,29 +41,43 @@ export const Step3 = () => {
       });
     }
   }
-  const horariosDisponiveis = [
-    //todo: trazer isso da API, pois se a barbearia precisar mudar de horário ela vai poder
-    "09:00",
-    "09:30",
-    "10:00",
-    "10:30",
-    "11:00",
-    "11:30",
-    "12:00",
-    "12:30",
-    "13:00",
-    "13:30",
-    "14:00",
-    "14:30",
-    "15:00",
-    "15:30",
-    "16:00",
-    "16:30",
-    "17:00",
-    "17:30",
-    "18:00",
-    "18:30",
-  ];
+
+  async function getHorarios() {
+    const response = await GETHorarios(
+      state.barbeiro.id,
+      format(state.data, "yyyy-MM-dd")
+    );
+    setDisponiveis(response.data);
+    return response.data;
+  }
+
+  useEffect(() => {
+    getHorarios();
+  }, []);
+
+  // const horariosDisponiveis = [
+  //   //todo: trazer isso da API, pois se a barbearia precisar mudar de horário ela vai poder
+  //   "09:00",
+  //   "09:30",
+  //   "10:00",
+  //   "10:30",
+  //   "11:00",
+  //   "11:30",
+  //   "12:00",
+  //   "12:30",
+  //   "13:00",
+  //   "13:30",
+  //   "14:00",
+  //   "14:30",
+  //   "15:00",
+  //   "15:30",
+  //   "16:00",
+  //   "16:30",
+  //   "17:00",
+  //   "17:30",
+  //   "18:00",
+  //   "18:30",
+  // ];
 
   return (
     <div className="border rounded-lg md:mx-50 p-5 shadow bg-white">
@@ -72,27 +89,31 @@ export const Step3 = () => {
       </div>
       <div className="flex flex-col gap-5 items-center justify-center pt-5">
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-5">
-          {horariosDisponiveis.map((horario) => (
-            <Button
-              key={horario}
-              variant={hora === horario ? "default" : "outline"}
-              className={
-                hora === horario
-                  ? "bg-primary hover:bg-barber-accent/90 w-[150px]"
-                  : "w-[150px] cursor-pointer"
-              }
-              onClick={() => {
-                setHora(horario);
-                dispatch({
-                  type: AgendamentoAction.setHorario,
-                  payload: horario,
-                });
-              }}
-            >
-              <Clock className="mr-2 h-4 w-4" />
-              {horario}
-            </Button>
-          ))}
+          {disponiveis.map((horario: string) => {
+            const horarioFormatado = horario.slice(0, 5); // "09:00"
+
+            return (
+              <Button
+                key={horario}
+                variant={hora === horario ? "default" : "outline"}
+                className={
+                  hora === horario
+                    ? "bg-primary hover:bg-barber-accent/90 w-[150px]"
+                    : "w-[150px] cursor-pointer"
+                }
+                onClick={() => {
+                  setHora(horario);
+                  dispatch({
+                    type: AgendamentoAction.setHorario,
+                    payload: horario,
+                  });
+                }}
+              >
+                <Clock className="mr-2 h-4 w-4" />
+                {horarioFormatado}
+              </Button>
+            );
+          })}
         </div>
 
         <div className="flex gap-3 items-center justify-between">
