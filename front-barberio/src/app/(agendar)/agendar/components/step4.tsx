@@ -20,6 +20,7 @@ import { agendar } from "@/lib/api/agendamento";
 import { findByTelefone, POSTCliente } from "@/lib/api/cliente";
 import { LoadingComponent } from "../../../../../components/LoadingComponent";
 import { format } from "date-fns";
+import { nomeCapitalizado } from "@/utils/functions";
 
 export const Step4 = () => {
   const { state, dispatch } = useForm();
@@ -119,7 +120,10 @@ export const Step4 = () => {
     const response = await findByTelefone(data.phone);
     if (response.length == 0) {
       console.log("entrou aqui");
-      const response = await POSTCliente(data.name, data.phone);
+      const response = await POSTCliente(
+        nomeCapitalizado(data.name),
+        data.phone
+      );
       console.log(response);
     }
 

@@ -35,7 +35,7 @@ import axios from "axios";
 import { baseUrl } from "@/lib/baseUrl";
 import { toast } from "sonner";
 import { DialogComponent } from "@/components/layout/DialogComponent";
-import { formatarTelefone } from "@/utils/functions";
+import { formatarTelefone, nomeCapitalizado } from "@/utils/functions";
 import { whatsapp } from "@/lib/whstsapp";
 import Link from "next/link";
 import { Whatsapp } from "../../../../components/Whatsapp";
@@ -145,12 +145,14 @@ const clientes = () => {
       const clienteExistente = clienteSelecionado;
       //primeiro pega os dados do novoCliente
       const clienteAtualizado: Cliente = {
+        ...clienteExistente,
         id: clienteExistente?.id, // será opcional para tirar.
-        nome: values.nome,
+        nome: nomeCapitalizado(values.nome),
         telefone: values.telefone,
         ativo: clienteExistente?.ativo,
       };
       if (clienteExistente) {
+        console.log("Verificando campos:", clienteExistente, clienteAtualizado);
         // se for cliente atualiza o cliente na lista
         await axios.put(
           `${baseUrl}/clientes/${clienteExistente.id}`,
@@ -191,7 +193,8 @@ const clientes = () => {
     try {
       console.log(`Deletando: ${baseUrl}/clientes/${value.id}`);
       await axios.put(`${baseUrl}/clientes/${value.id}`, {
-        nome: value.nome,
+        ...value,
+        nome: nomeCapitalizado(value.nome),
         telefone: value.telefone,
         ativo: false,
       });
@@ -210,7 +213,8 @@ const clientes = () => {
     try {
       console.log(`Deletando: ${baseUrl}/clientes/${value.id}`);
       await axios.put(`${baseUrl}/clientes/${value.id}`, {
-        nome: value.nome,
+        ...value,
+        nome: nomeCapitalizado(value.nome),
         telefone: value.telefone,
         ativo: true,
       });
