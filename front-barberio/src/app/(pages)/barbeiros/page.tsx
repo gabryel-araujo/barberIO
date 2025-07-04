@@ -96,7 +96,10 @@ const barbeiros = () => {
     nome: z
       .string()
       .trim()
-      .min(2, { message: "Nome deve conter no mínimo 2 caracteres" }),
+      .min(2, { message: "Nome deve conter no mínimo 2 caracteres" })
+      .regex(/^[a-zA-ZáàâãäéèêëíìîïóòôõöúùûüçÇ\s]*$/, {
+        message: "Digite um nome válido",
+      }),
     email: z.string().trim().email("Email inválido"),
     senha: z
       .string()
@@ -111,11 +114,13 @@ const barbeiros = () => {
         }
       ),
     data_nascimento: z
-      .string()
+      .union([z.string(), z.null()])
       .optional()
       .refine(
         (val) => {
-          return val === undefined || val === "" || val.length >= 10;
+          return (
+            val === undefined || val === "" || val === null || val.length >= 10
+          );
         },
         {
           message: "A data precisa estar no formato: dd/MM/aaaa",
@@ -163,6 +168,7 @@ const barbeiros = () => {
 
   const onSubmit = async (barbeiro: BarbeiroFormData) => {
     if (!barbeiroSelecionado) {
+      // Cadastro
       const response = await POSTFuncionario(
         barbeiro.nome,
         barbeiro.email,
@@ -170,15 +176,7 @@ const barbeiros = () => {
         barbeiro.data_nascimento!,
         barbeiro.disponivel,
         servicoSelecionado
-        //barbeiro.ativo
       );
-
-      console.log(servicoSelecionado);
-      console.log(response.data);
-      dispatch({
-        type: AgendamentoAction.setBarbeiro,
-        payload: [response.data],
-      });
 
       if (response.status === 201) {
         toast.success("Barbeiro cadastrado com sucesso!");
@@ -186,13 +184,41 @@ const barbeiros = () => {
         toast.error("Erro na requisição! Verifique os dados");
       } else {
         toast.error("Oops, ocorreu um erro!");
-        console.error(response.statusText);
       }
 
-      queryClient.invalidateQueries({ queryKey: ["servicos"] });
-      setOpenModal(false);
-      form.reset();
+      dispatch({
+        type: AgendamentoAction.setBarbeiro,
+        payload: [response.data],
+      });
+    } else {
+      // Edição
+      const response = await PUTFuncionario(
+        barbeiroSelecionado.id,
+        barbeiro.nome,
+        barbeiro.email,
+        barbeiro.data_nascimento!,
+        barbeiro.disponivel,
+        barbeiro.senha ? barbeiro.senha : barbeiroSelecionado.senha,
+        barbeiroSelecionado.ativo
+      );
+
+      if (response.status === 200) {
+        toast.success("Barbeiro atualizado com sucesso!");
+      } else if (response.status >= 400) {
+        toast.error("Erro na requisição! Verifique os dados");
+      } else {
+        toast.error("Oops, ocorreu um erro!");
+      }
+
+      dispatch({
+        type: AgendamentoAction.setBarbeiro,
+        payload: [response.data],
+      });
     }
+
+    queryClient.invalidateQueries({ queryKey: ["servicos"] });
+    setOpenModal(false);
+    form.reset();
   };
 
   const abrirModal = () => {
@@ -205,36 +231,6 @@ const barbeiros = () => {
     });
     setBarbeiroSelecionado(undefined);
     setOpenModal(true);
-  };
-
-  const handleEditBarbeiro = async (barbeiro: Barbeiro) => {
-    const newBarber = form.getValues();
-
-    const response = await PUTFuncionario(
-      barbeiro.id,
-      newBarber.nome,
-      newBarber.email,
-      newBarber.data_nascimento!,
-      newBarber.disponivel,
-      newBarber.senha != "" ? newBarber.senha : barbeiro.senha,
-      barbeiro.ativo
-    );
-
-    dispatch({
-      type: AgendamentoAction.setBarbeiro,
-      payload: [response.data],
-    });
-
-    if (response.status === 200) {
-      toast.success("Barbeiro atualizado com sucesso!");
-    } else if (response.status >= 400) {
-      toast.error("Erro na requisição! Verifique os dados");
-    } else {
-      toast.error("Oops, ocorreu um erro!");
-      console.log(response);
-      console.error(response.statusText);
-    }
-    setOpenModal(false);
   };
 
   async function handleDeleteBarbeiro(value: Barbeiro) {
@@ -425,9 +421,11 @@ const barbeiros = () => {
                         <FormLabel>Data de Nascimento:</FormLabel>
                         <FormControl>
                           <Input
+                            type="date"
                             placeholder="dd/MM/aaaa"
                             {...field}
-                            maxLength={10}
+                            value={field.value ?? ""}
+                            max={new Date().toISOString().split("T")[0]}
                           ></Input>
                         </FormControl>
                         <FormMessage />
@@ -554,12 +552,12 @@ const barbeiros = () => {
                   Cancelar
                 </Button>
                 <Button
-                  type={barbeiroSelecionado ? "button" : "submit"}
-                  onClick={() => {
-                    if (barbeiroSelecionado) {
-                      handleEditBarbeiro(barbeiroSelecionado);
-                    }
-                  }}
+                  type="submit"
+                  // onClick={() => {
+                  //   if (barbeiroSelecionado) {
+                  //     handleEditBarbeiro(barbeiroSelecionado);
+                  //   }
+                  // }}
                 >
                   {barbeiroSelecionado ? "Atualizar" : "Cadastrar"}
                 </Button>
