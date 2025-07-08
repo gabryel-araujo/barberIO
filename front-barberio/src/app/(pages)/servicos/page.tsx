@@ -79,7 +79,7 @@ const servicos = () => {
       .min(2, {
         message: "Serviço deve conter no mínimo 5 caracteres",
       })
-      .regex(/^[a-zA-ZáàâãäéèêëíìîïóòôõöúùûüçÇ\s]*$/, {
+      .regex(/^[a-zA-ZáàâãäéèêëíìîïóòôõöúùûüçÇ+-/&\s]*$/, {
         message: "O nome do serviço deve conter apenas letras.",
       }),
     descricao: z

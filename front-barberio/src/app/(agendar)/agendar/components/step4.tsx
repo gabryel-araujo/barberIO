@@ -48,6 +48,8 @@ export const Step4 = () => {
     },
   });
 
+  const urlApi = "/api/send-email";
+
   // const queryClient = useQueryClient();
 
   const review = [
@@ -127,6 +129,20 @@ export const Step4 = () => {
     setOpenModalRevisao(!openModalRevisao);
   };
 
+  async function handleSendEmail() {
+    try {
+      const response = await fetch(urlApi, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(state),
+      });
+    } catch (error) {
+      toast.error("Erro ao enviar o email");
+    }
+  }
+
   const confirmarAgendamento = async () => {
     try {
       const data = format(state.data, "yyyy-MM-dd'T'");
@@ -140,9 +156,11 @@ export const Step4 = () => {
         horario
       );
 
+      setIsLoading(true);
+      await handleSendEmail();
+
       if (response.status === 201) {
         toast.success("Agendamento realizado com sucesso!");
-        setIsLoading(true);
         setTimeout(() => {
           push("/");
         }, 2000);
