@@ -135,7 +135,7 @@ export const Step4 = () => {
 
   async function handleSendEmail() {
     try {
-      const response = await fetch(urlApi, {
+      await fetch(urlApi, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
