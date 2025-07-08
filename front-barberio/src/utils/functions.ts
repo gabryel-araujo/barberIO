@@ -9,3 +9,12 @@ export function formatarTelefone(telefone: string): string {
 export function normalizarData(data: Date): Date {
   return new Date(data.getFullYear(), data.getMonth(), data.getDate());
 }
+
+export function nomeCapitalizado(nome: string): string {
+  return nome
+    .toLowerCase()
+    .split(" ")
+    .filter((palavra) => palavra.trim() !== "")
+    .map((palavra) => palavra.charAt(0).toUpperCase() + palavra.slice(1))
+    .join(" ");
+}

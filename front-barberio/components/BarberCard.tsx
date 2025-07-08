@@ -16,7 +16,7 @@ type BarbeiroFormData = {
   nome: string;
   email: string;
   senha?: string;
-  data_nascimento?: string;
+  data_nascimento?: string | null;
   servico: any[] | null;
   disponivel: boolean;
 };
