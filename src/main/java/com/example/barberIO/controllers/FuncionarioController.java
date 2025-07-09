@@ -30,6 +30,17 @@ public class FuncionarioController {
         return ResponseEntity.status(HttpStatus.OK).body(funcionarioRepository.findAll());
     }
 
+    @GetMapping("funcionarios/{id}")
+    public ResponseEntity<Object> getById(@PathVariable(value = "id") Long id){
+        Optional<FuncionarioModel> funcionarioO = funcionarioRepository.findById(id);
+
+        if(funcionarioO.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário não encontrado na base de dados");
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(funcionarioO.get());
+    }
+
     @PostMapping("/funcionarios")
     public ResponseEntity<Object> addFuncionario(@RequestBody @Valid FuncionarioRecordDto funcionarioRecordDto) {
         try {

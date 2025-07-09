@@ -13,17 +13,18 @@ import com.example.barberIO.repositories.FuncionarioRepository;
 import com.example.barberIO.repositories.ServiceRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.sql.Timestamp;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AgendamentoService {
@@ -102,6 +103,50 @@ public class AgendamentoService {
         return ResponseEntity.status(HttpStatus.CONFLICT).body("O barbeiro está ocupado nesse horário");
     }
         return ResponseEntity.status(HttpStatus.OK).body("barbeiro disponível");
+    }
+
+    public List<LocalTime> horariosDisponiveis(Long barbeiroId, LocalDate dia) {
+        LocalTime inicio = LocalTime.of(9, 0);
+        LocalTime fim = LocalTime.of(18, 30);
+        Duration intervalo = Duration.ofMinutes(15);
+        ZoneId zone = ZoneId.of("America/Sao_Paulo");
+        LocalDate hoje = LocalDate.now(zone);
+        LocalTime agora = LocalTime.now(zone);
+
+        List<Object[]> resultadosBrutos = agendamentoRepository.findAgendamentosComDuracao(barbeiroId, dia);
+
+        // Converte resultados para LocalTime de forma segura
+        List<LocalTime[]> periodosOcupados = resultadosBrutos.stream()
+                .map(obj -> {
+                    LocalDateTime inicioAg = ((Timestamp) obj[0]).toLocalDateTime();
+                    int duracao = ((Number) obj[1]).intValue();
+                    LocalTime inicioLocal = inicioAg.toLocalTime();
+                    LocalTime fimLocal = inicioLocal.plusMinutes(duracao);
+                    return new LocalTime[]{inicioLocal, fimLocal};
+                })
+                .collect(Collectors.toList());
+
+        // Lista final de horários disponíveis
+        List<LocalTime> horariosDisponiveis = new ArrayList<>();
+
+        for (LocalTime horario = inicio; horario.isBefore(fim); horario = horario.plus(intervalo)) {
+            // Se for hoje, ignora horários no passado
+            if (dia.isEqual(hoje) && horario.isBefore(agora)) {
+                continue;
+            }
+
+            // Verifica se o horário colide com algum agendamento
+            LocalTime finalHorario = horario;
+            boolean ocupado = periodosOcupados.stream().anyMatch(periodo ->
+                    !finalHorario.isBefore(periodo[0]) && finalHorario.isBefore(periodo[1])
+            );
+
+            if (!ocupado) {
+                horariosDisponiveis.add(horario);
+            }
+        }
+
+        return horariosDisponiveis;
     }
 
 

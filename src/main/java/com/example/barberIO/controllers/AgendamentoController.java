@@ -12,9 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.swing.text.html.Option;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,6 +60,17 @@ public class AgendamentoController{
             @RequestParam(defaultValue = "15") int intervalo) {
 
         return agendamentoService.horarioDisponivel(data, barbeiroId, intervalo);
+    }
+
+    @GetMapping("/agendamentos/horarios/{barbeiroId}")
+    public ResponseEntity<List<LocalTime>> getHorariosDisponiveis(
+            @PathVariable Long barbeiroId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data) {
+
+        List<LocalTime> horariosDisponiveis = agendamentoService
+                .horariosDisponiveis(barbeiroId, data);
+
+        return ResponseEntity.ok(horariosDisponiveis);
     }
 
 }
