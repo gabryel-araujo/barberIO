@@ -64,8 +64,8 @@ public class AgendamentoController{
 
     @GetMapping("/agendamentos/horarios/{barbeiroId}")
     public ResponseEntity<List<LocalTime>> getHorariosDisponiveis(
-            @PathVariable Long barbeiroId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data) {
+            @PathVariable("barbeiroId") Long barbeiroId,
+            @RequestParam("data") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data) {
 
         List<LocalTime> horariosDisponiveis = agendamentoService
                 .horariosDisponiveis(barbeiroId, data);

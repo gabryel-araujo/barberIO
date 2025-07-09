@@ -29,125 +29,119 @@ import java.util.stream.Collectors;
 @Service
 public class AgendamentoService {
 
-    @Autowired
-    private AgendamentoRepository agendamentoRepository;
+	@Autowired
+	private AgendamentoRepository agendamentoRepository;
 
-    @Autowired
-    private FuncionarioRepository funcionarioRepository;
+	@Autowired
+	private FuncionarioRepository funcionarioRepository;
 
-    @Autowired
-    private ClienteRepository clienteRepository;
+	@Autowired
+	private ClienteRepository clienteRepository;
 
-    @Autowired
-    private ServiceRepository serviceRepository;
+	@Autowired
+	private ServiceRepository serviceRepository;
 
+	public ResponseEntity<Object> agendarHorario(AgendamentoRecordDto agendamentoRecordDto) {
+		Optional<FuncionarioModel> funcionarioO = funcionarioRepository
+				.findById(agendamentoRecordDto.barbeiro().getId());
+		Optional<ClienteModel> clienteO = clienteRepository.findById(agendamentoRecordDto.cliente().getId());
+		Optional<ServiceModel> servicoO = serviceRepository.findById(agendamentoRecordDto.servico().getId());
 
-    public ResponseEntity<Object> agendarHorario(AgendamentoRecordDto agendamentoRecordDto){
-        Optional<FuncionarioModel> funcionarioO = funcionarioRepository.findById(agendamentoRecordDto.barbeiro().getId());
-        Optional<ClienteModel> clienteO = clienteRepository.findById(agendamentoRecordDto.cliente().getId());
-        Optional<ServiceModel> servicoO = serviceRepository.findById(agendamentoRecordDto.servico().getId());
+		if (funcionarioO.isEmpty() || clienteO.isEmpty() || servicoO.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+					.body("Dados inválidos para a requisição. Cliente, Serviço ou Barbeiro inválidos");
+		}
 
-        if(funcionarioO.isEmpty() || clienteO.isEmpty() || servicoO.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Dados inválidos para a requisição. Cliente, Serviço ou Barbeiro inválidos");
-        }
+		FuncionarioModel barbeiro = funcionarioO.get();
+		ServiceModel servico = servicoO.get();
+		ClienteModel cliente = clienteO.get();
 
-        FuncionarioModel barbeiro = funcionarioO.get();
-        ServiceModel servico = servicoO.get();
-        ClienteModel cliente = clienteO.get();
+		LocalDateTime horarioAgendamento = agendamentoRecordDto.horario();
+		LocalDateTime fimAgendamento = horarioAgendamento.plusMinutes(servico.getDuracao());
 
-        LocalDateTime horarioAgendamento = agendamentoRecordDto.horario();
-        LocalDateTime fimAgendamento = horarioAgendamento.plusMinutes(servico.getDuracao());
+		boolean barbeiroOcupado = agendamentoRepository.barbeiroOcupado(barbeiro.getId(), horarioAgendamento,
+				fimAgendamento);
 
-        boolean barbeiroOcupado = agendamentoRepository.barbeiroOcupado(barbeiro.getId(),horarioAgendamento, fimAgendamento);
+		if (barbeiroOcupado) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("O barbeiro está ocupado no horário solicitado");
+		} else {
+			AgendamentoModel agendamentoModel = new AgendamentoModel();
+			BeanUtils.copyProperties(agendamentoRecordDto, agendamentoModel);
 
-        if(barbeiroOcupado){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("O barbeiro está ocupado no horário solicitado");
-        }
-        else {
-            AgendamentoModel agendamentoModel = new AgendamentoModel();
-            BeanUtils.copyProperties(agendamentoRecordDto, agendamentoModel);
+			agendamentoModel.setBarbeiro(barbeiro);
+			agendamentoModel.setCliente(cliente);
+			agendamentoModel.setServico(servico);
+			agendamentoModel.setHorario(horarioAgendamento);
+			agendamentoModel.setFim(fimAgendamento);
+			agendamentoModel.setFim(agendamentoModel.getFim());
 
-            agendamentoModel.setBarbeiro(barbeiro);
-            agendamentoModel.setCliente(cliente);
-            agendamentoModel.setServico(servico);
-            agendamentoModel.setHorario(horarioAgendamento);
-            agendamentoModel.setFim(fimAgendamento);
-            agendamentoModel.setFim(agendamentoModel.getFim());
+			return ResponseEntity.status(HttpStatus.CREATED).body(agendamentoRepository.save(agendamentoModel));
+		}
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(agendamentoRepository.save(agendamentoModel));
-        }
+	}
 
-    }
+	public ResponseEntity<Object> cancelarHorario(Long id) {
+		Optional<AgendamentoModel> agendamentoO = agendamentoRepository.findById(id);
 
-    public ResponseEntity<Object> cancelarHorario(Long id) {
-        Optional<AgendamentoModel> agendamentoO = agendamentoRepository.findById(id);
+		if (agendamentoO.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Agendamento não localizado! Verifique os dados");
+		}
 
-        if(agendamentoO.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Agendamento não localizado! Verifique os dados");
-        }
+		agendamentoRepository.deleteById(id);
+		return ResponseEntity.status(HttpStatus.OK).body("Agendamento removido com sucesso!");
+	}
 
-        agendamentoRepository.deleteById(id);
-        return ResponseEntity.status(HttpStatus.OK).body("Agendamento removido com sucesso!");
-    }
+	public ResponseEntity<Object> editarAgendamento(AgendamentoRecordDto agendamentoRecordDto, Long id) {
+		this.cancelarHorario(id);
 
-    public ResponseEntity<Object> editarAgendamento(AgendamentoRecordDto agendamentoRecordDto, Long id){
-       this.cancelarHorario(id);
+		return this.agendarHorario(agendamentoRecordDto);
+	}
 
-       return this.agendarHorario(agendamentoRecordDto);
-    }
+	public ResponseEntity<Object> horarioDisponivel(LocalDateTime data, Long barbeiroId, int intervalo) {
+		boolean barbeiroOcupado = agendamentoRepository.barbeiroOcupado(barbeiroId, data, data.plusMinutes(intervalo));
 
-    public ResponseEntity<Object> horarioDisponivel(LocalDateTime data, Long barbeiroId, int intervalo){
-    boolean barbeiroOcupado = agendamentoRepository.barbeiroOcupado(barbeiroId,data,data.plusMinutes(intervalo));
+		if (barbeiroOcupado) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("O barbeiro está ocupado nesse horário");
+		}
+		return ResponseEntity.status(HttpStatus.OK).body("barbeiro disponível");
+	}
 
-    if(barbeiroOcupado){
-        return ResponseEntity.status(HttpStatus.CONFLICT).body("O barbeiro está ocupado nesse horário");
-    }
-        return ResponseEntity.status(HttpStatus.OK).body("barbeiro disponível");
-    }
+	public List<LocalTime> horariosDisponiveis(Long barbeiroId, LocalDate dia) {
+		LocalTime inicio = LocalTime.of(9, 0);
+		LocalTime fim = LocalTime.of(18, 30);
+		Duration intervalo = Duration.ofMinutes(15);
+		ZoneId zone = ZoneId.of("America/Sao_Paulo");
+		LocalDate hoje = LocalDate.now(zone);
+		LocalTime agora = LocalTime.now(zone);
 
-    public List<LocalTime> horariosDisponiveis(Long barbeiroId, LocalDate dia) {
-        LocalTime inicio = LocalTime.of(9, 0);
-        LocalTime fim = LocalTime.of(18, 30);
-        Duration intervalo = Duration.ofMinutes(15);
-        ZoneId zone = ZoneId.of("America/Sao_Paulo");
-        LocalDate hoje = LocalDate.now(zone);
-        LocalTime agora = LocalTime.now(zone);
+		List<Object[]> agendamentosBrutos = agendamentoRepository.findAgendamentosComDuracao(barbeiroId, dia);
 
-        List<Object[]> resultadosBrutos = agendamentoRepository.findAgendamentosComDuracao(barbeiroId, dia);
+		List<LocalTime[]> periodosOcupados = agendamentosBrutos.stream().map(obj -> {
+			LocalDateTime inicioAg = ((Timestamp) obj[0]).toLocalDateTime();
+			int duracao = ((Number) obj[1]).intValue();
+			LocalTime inicioLocal = inicioAg.toLocalTime();
+			LocalTime fimLocal = inicioLocal.plusMinutes(duracao);
+			return new LocalTime[] { inicioLocal, fimLocal };
+		}).collect(Collectors.toList());
 
-        // Converte resultados para LocalTime de forma segura
-        List<LocalTime[]> periodosOcupados = resultadosBrutos.stream()
-                .map(obj -> {
-                    LocalDateTime inicioAg = ((Timestamp) obj[0]).toLocalDateTime();
-                    int duracao = ((Number) obj[1]).intValue();
-                    LocalTime inicioLocal = inicioAg.toLocalTime();
-                    LocalTime fimLocal = inicioLocal.plusMinutes(duracao);
-                    return new LocalTime[]{inicioLocal, fimLocal};
-                })
-                .collect(Collectors.toList());
+		List<LocalTime> horariosDisponiveis = new ArrayList<>();
 
-        // Lista final de horários disponíveis
-        List<LocalTime> horariosDisponiveis = new ArrayList<>();
+		for (LocalTime h = inicio; h.isBefore(fim); h = h.plus(intervalo)) {
+			final LocalTime horario = h;
 
-        for (LocalTime horario = inicio; horario.isBefore(fim); horario = horario.plus(intervalo)) {
-            // Se for hoje, ignora horários no passado
-            if (dia.isEqual(hoje) && horario.isBefore(agora)) {
-                continue;
-            }
+			if (dia.isEqual(hoje) && horario.isBefore(agora)) {
+				continue;
+			}
 
-            // Verifica se o horário colide com algum agendamento
-            LocalTime finalHorario = horario;
-            boolean ocupado = periodosOcupados.stream().anyMatch(periodo ->
-                    !finalHorario.isBefore(periodo[0]) && finalHorario.isBefore(periodo[1])
-            );
+			boolean ocupado = periodosOcupados.stream()
+					.anyMatch(periodo -> !horario.isBefore(periodo[0]) && horario.isBefore(periodo[1]));
 
-            if (!ocupado) {
-                horariosDisponiveis.add(horario);
-            }
-        }
+			if (!ocupado) {
+				horariosDisponiveis.add(horario);
+			}
+		}
 
-        return horariosDisponiveis;
-    }
-
+		return horariosDisponiveis;
+	}
 
 }
