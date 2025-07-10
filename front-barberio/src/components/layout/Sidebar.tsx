@@ -19,8 +19,8 @@ export const Sidebar = ({ onClick }: SideBarProps) => {
           onClick={onClick}
           className={
             pathname === menu.path
-              ? "flex gap-3 bg-[#3f88c5]/40 py-3 px-5 border-l-4 border-[#3f88c5] hover:bg-[#3f88c5]/40"
-              : "flex gap-3  py-3 px-5 hover:bg-[#3f88c5]/40"
+              ? "flex items-center gap-3 bg-[#3f88c5]/40 py-3 px-5 border-l-4 border-[#3f88c5] hover:bg-[#3f88c5]/40"
+              : "flex items-center gap-3  py-3 px-5 hover:bg-[#3f88c5]/40"
           }
           key={menu.path}
           href={menu.path}

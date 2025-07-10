@@ -64,8 +64,9 @@ export const Step1 = () => {
             hoje.setHours(0, 0, 0, 0);
             const isBeforeToday = date < hoje;
             const isSunday = date.getDay() === 0;
-
-            return isBeforeToday || isSunday;
+            // const feriados = new Date(2025, 11, 25);
+            // const isFeriados = date.getTime() === feriados.getTime();
+            return isBeforeToday || isSunday; // || isFeriados;
           }}
           className="w-[250px] rounded-md border shadow"
         />
