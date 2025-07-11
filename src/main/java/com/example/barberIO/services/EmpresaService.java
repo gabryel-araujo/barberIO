@@ -32,7 +32,7 @@ public class EmpresaService {
 			return ResponseEntity.status(HttpStatus.CREATED).body(empresaRepository.save(empresa));
 		}
 
-		return ResponseEntity.status(HttpStatus.CONFLICT).body("Empresa já cadastrada no sistema");
+		return ResponseEntity.status(HttpStatus.CONFLICT).body("Email já cadastrado no sistema");
 
 	}
 	
@@ -44,11 +44,32 @@ public class EmpresaService {
 		}
 		
 		EmpresaModel empresa = empresaO.get();
-		BeanUtils.copyProperties(empresaRecordDto, empresa);
+		BeanUtils.copyProperties(empresaRecordDto, empresa,"created_at");
 		
 		return ResponseEntity.status(HttpStatus.OK).body(empresaRepository.save(empresa));
 	}
 	
+	public ResponseEntity<Object> removerEmpresa(Long id){
+		Optional<EmpresaModel> empresaO = empresaRepository.findById(id);
+		
+		if(empresaO.isEmpty()) {
+			throw new RecursoNaoEncontradoException("Empresa não cadastrada na base de dados!");
+		}
+		
+		EmpresaModel empresa = empresaO.get();
+		empresaRepository.delete(empresa);
+		return ResponseEntity.status(HttpStatus.OK).body("Empresa removida com sucesso!");
+	}
 	
+	public ResponseEntity<EmpresaModel> listarEmpresaPorId(Long id){
+		Optional<EmpresaModel> empresaO = empresaRepository.findById(id);
+		
+		if(empresaO.isEmpty()) {
+			throw new RecursoNaoEncontradoException("Empresa não cadastrada na base de dados!");
+		}
+		
+		EmpresaModel empresa = empresaO.get();
+		return ResponseEntity.status(HttpStatus.OK).body(empresa);
+	}
 
 }

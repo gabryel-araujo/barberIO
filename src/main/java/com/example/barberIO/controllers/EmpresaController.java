@@ -1,14 +1,16 @@
 package com.example.barberIO.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.barberIO.dtos.EmpresaRecordDto;
@@ -28,8 +30,13 @@ public class EmpresaController {
 	private EmpresaService empresaService;
 
 	@GetMapping("/empresas")
-	public ResponseEntity<Object> listarEmpresas() {
+	public ResponseEntity<List<EmpresaModel>> listarEmpresas() {
 		return ResponseEntity.status(HttpStatus.OK).body(empresaRepository.findAll());
+	}
+	
+	@GetMapping("/empresas/{id}")
+	public ResponseEntity<EmpresaModel> listarEmpresa(@PathVariable(value = "id") Long id){
+		return empresaService.listarEmpresaPorId(id);
 	}
 
 	@PostMapping("/empresas")
@@ -41,6 +48,11 @@ public class EmpresaController {
 	public ResponseEntity<EmpresaModel> editarEmpresa(@PathVariable(value = "id") Long id,
 			@RequestBody @Valid EmpresaRecordDto empresaRecordDto) {
 		return empresaService.editarEmpresa(empresaRecordDto, id);
+	}
+	
+	@DeleteMapping("/empresas/{id}")
+	public ResponseEntity<Object> removerEmpresa(@PathVariable(value = "id")Long id){
+		return empresaService.removerEmpresa(id);
 	}
 
 }

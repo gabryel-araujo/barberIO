@@ -14,7 +14,7 @@ import static java.time.LocalDateTime.now;
 public class EmpresaModel implements Serializable {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
 	@Column(nullable = false)
@@ -25,7 +25,7 @@ public class EmpresaModel implements Serializable {
 
 	@Column(nullable = false, unique = true)
 	private String email;
-
+	
 	private String nacional_id;
 
 	private Long org_id;
@@ -65,12 +65,13 @@ public class EmpresaModel implements Serializable {
 		this.email = email;
 	}
 
+
 	public String getNacional_id() {
 		return nacional_id;
 	}
 
-	public void setNaional_id(String naional_id) {
-		this.nacional_id = naional_id;
+	public void setNacional_id(String nacional_id) {
+		this.nacional_id = nacional_id;
 	}
 
 	public Long getOrg_id() {
