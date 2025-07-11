@@ -15,23 +15,32 @@ export const formSchemaEndereco = z.object({
   numero: z.string(),
   bairro: z.string(),
   cidade: z.string(),
-  cep: z.number(),
+  cep: z.string(),
   complemento: z.string().optional(),
   empresa_id: z.number().optional(),
 });
 
 export const formSchemaConfigEmpresa = z.object({
   id: z.number().optional(),
-  empresa_id: z.number(),
+  empresa_id: z.number().optional(),
   aberto: z.boolean(),
-  intervalo: z.number(),
-  horario_func_id: z.number(),
+  intervalo: z.coerce.number().optional(),
+  horario_func_id: z.number().optional(),
 });
 
-export const formSchemaHorario_funcionamento = z.object({
+export const formSchemaHorarioFuncionamento = z.object({
   id: z.number().optional(),
   status: z.boolean(),
   nome: z.string(),
-  abertura: z.date(),
-  fechamento: z.date(),
+  abertura: z.string(),
+  fechamento: z.string(),
+  // abertura: z.date(),
+  // fechamento: z.date(),
+});
+
+export const formSchemaConfiguracao = z.object({
+  empresa: formSchemaEmpresa.optional(),
+  endereco: formSchemaEndereco.optional(),
+  config: formSchemaConfigEmpresa.optional(),
+  horario: formSchemaHorarioFuncionamento.optional(),
 });
