@@ -9,6 +9,7 @@ import com.example.barberIO.models.FuncionarioModel;
 import com.example.barberIO.models.ServiceModel;
 import com.example.barberIO.repositories.AgendamentoRepository;
 import com.example.barberIO.repositories.ClienteRepository;
+import com.example.barberIO.repositories.EmpresaRepository;
 import com.example.barberIO.repositories.FuncionarioRepository;
 import com.example.barberIO.repositories.ServiceRepository;
 import org.springframework.beans.BeanUtils;
@@ -40,6 +41,7 @@ public class AgendamentoService {
 
 	@Autowired
 	private ServiceRepository serviceRepository;
+	
 
 	public ResponseEntity<Object> agendarHorario(AgendamentoRecordDto agendamentoRecordDto) {
 		Optional<FuncionarioModel> funcionarioO = funcionarioRepository

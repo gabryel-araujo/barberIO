@@ -18,7 +18,7 @@ import com.example.barberIO.repositories.EmpresaRepository;
 public class EmpresaService {
 
 	@Autowired
-	EmpresaRepository empresaRepository;
+	private EmpresaRepository empresaRepository;
 
 	public ResponseEntity<Object> cadastrarEmpresa(EmpresaRecordDto empresaRecordDto) {
 		Optional<EmpresaModel> empresaO = empresaRepository.findByEmail(empresaRecordDto.email());

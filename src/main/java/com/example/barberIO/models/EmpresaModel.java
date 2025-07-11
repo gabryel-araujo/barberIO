@@ -6,6 +6,8 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.time.LocalDateTime.now;
 
@@ -32,6 +34,9 @@ public class EmpresaModel implements Serializable {
 
 	@Column(nullable = false)
 	private LocalDateTime created_at;
+	
+	@OneToMany(mappedBy = "empresa", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<EnderecoModel> enderecos = new ArrayList<>();
 
 	public Long getId() {
 		return id;
