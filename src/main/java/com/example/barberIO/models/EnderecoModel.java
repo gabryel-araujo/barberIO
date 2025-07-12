@@ -3,6 +3,7 @@ package com.example.barberIO.models;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -37,13 +38,14 @@ public class EnderecoModel implements Serializable{
 	private String cidade;
 	
 	@Column(length = 8, nullable = true)
-	private Long cep;
+	private String cep;
 	
 	@Column(nullable = false)
 	private LocalDateTime created_at;
 	
 	@ManyToOne
 	@JoinColumn(name = "empresa_id", nullable = false)
+	@JsonIgnore
 	private EmpresaModel empresa;
 
 	public Long getId() {
@@ -94,11 +96,11 @@ public class EnderecoModel implements Serializable{
 		this.cidade = cidade;
 	}
 
-	public Long getCep() {
+	public String getCep() {
 		return cep;
 	}
 
-	public void setCep(Long cep) {
+	public void setCep(String cep) {
 		this.cep = cep;
 	}
 

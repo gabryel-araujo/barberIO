@@ -94,4 +94,12 @@ public class EmpresaModel implements Serializable {
 	public void setCreated_at(LocalDateTime created_at) {
 		this.created_at = created_at;
 	}
+
+	public List<EnderecoModel> getEnderecos() {
+		return enderecos;
+	}
+
+	public void setEnderecos(List<EnderecoModel> enderecos) {
+		this.enderecos = enderecos;
+	}
 }

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.barberIO.exceptions.DadosVioladosException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,18 +42,18 @@ public class EnderecoService {
 		return ResponseEntity.status(HttpStatus.OK).body(enderecoO);
 	}
 	
-	public ResponseEntity<EnderecoModel> cadastrarEndereco(EnderecoRecordDto dto) {
+	public ResponseEntity<EnderecoModel> cadastrarEndereco(EnderecoRecordDto enderecoRecordDto) {
 	    EnderecoModel endereco = new EnderecoModel();
-	    BeanUtils.copyProperties(dto, endereco);
-	    
-	    EmpresaModel empresa = empresaRepository.findById(dto.empresaId())
+	    BeanUtils.copyProperties(enderecoRecordDto, endereco);
+
+		//Primeiramente validar a empresa
+	    EmpresaModel empresa = empresaRepository.findById(enderecoRecordDto.empresaId())
 	            .orElseThrow(() -> new RecursoNaoEncontradoException("Empresa não encontrada."));
 
-	    // Se tiver empresaId no DTO, relacionar com a empresa
-//	    Optional<EmpresaModel> empresaOpt = empresaRepository.findById(dto.empresa_id());
-//	    if (empresaOpt.isEmpty()) {
-//	        throw new RecursoNaoEncontradoException("Empresa não encontrada com ID: " + dto.empresa_id());
-//	    }
+		//Em seguida, validar o campo cep
+		if(enderecoRecordDto.cep().length()!= 8){
+			throw new DadosVioladosException("O campo cep deve possuir 8 caracteres");
+		}
 
 	    endereco.setEmpresa(empresa);
 	    endereco.setCreated_at(LocalDateTime.now());
@@ -63,13 +64,19 @@ public class EnderecoService {
 	
 	public ResponseEntity<EnderecoModel> editarEndereco(EnderecoRecordDto enderecoRecordDto,Long id){
 		Optional<EnderecoModel> enderecoO = enderecoRepository.findById(id);
-		
+
+		//Verificando se a empresa existe
 		if(enderecoO.isEmpty()) {
-			throw new RecursoNaoEncontradoException("Nenhum endereço localizado!");
+			throw new RecursoNaoEncontradoException("Endereço inválido! Verifique os dados");
+		}
+		//Verificando se o cep está com a quantidade correta de caracteres
+		if(enderecoRecordDto.cep().length()!= 8){
+			throw new DadosVioladosException("O campo cep deve possuir 8 caracteres");
 		}
 		
 		EnderecoModel endereco = enderecoO.get();
 		BeanUtils.copyProperties(enderecoRecordDto, endereco);
+		enderecoRepository.save(endereco);
 		
 		return ResponseEntity.status(HttpStatus.OK).body(endereco);
 	}
@@ -80,6 +87,7 @@ public class EnderecoService {
 		if(enderecoO.isEmpty()) {
 			throw new RecursoNaoEncontradoException("Endereço não localizado!");
 		}
+		
 		EnderecoModel endereco = enderecoO.get();
 		enderecoRepository.delete(endereco);
 		
