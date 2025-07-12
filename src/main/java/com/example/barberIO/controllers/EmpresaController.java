@@ -40,7 +40,7 @@ public class EmpresaController {
 	}
 
 	@PostMapping("/empresas")
-	public ResponseEntity<Object> cadastrarEmpresa(@RequestBody @Valid EmpresaRecordDto empresaRecordDto) {
+	public ResponseEntity<EmpresaModel> cadastrarEmpresa(@RequestBody @Valid EmpresaRecordDto empresaRecordDto) {
 		return empresaService.cadastrarEmpresa(empresaRecordDto);
 	}
 

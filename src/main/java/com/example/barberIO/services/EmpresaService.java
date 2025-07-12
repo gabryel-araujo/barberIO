@@ -3,6 +3,8 @@ package com.example.barberIO.services;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import com.example.barberIO.exceptions.DadosVioladosException;
+import com.example.barberIO.exceptions.RecursoDuplicadoException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,7 +22,7 @@ public class EmpresaService {
 	@Autowired
 	private EmpresaRepository empresaRepository;
 
-	public ResponseEntity<Object> cadastrarEmpresa(EmpresaRecordDto empresaRecordDto) {
+	public ResponseEntity<EmpresaModel> cadastrarEmpresa(EmpresaRecordDto empresaRecordDto) {
 		Optional<EmpresaModel> empresaO = empresaRepository.findByEmail(empresaRecordDto.email());
 
 		if (empresaO.isEmpty()) {
@@ -32,7 +34,7 @@ public class EmpresaService {
 			return ResponseEntity.status(HttpStatus.CREATED).body(empresaRepository.save(empresa));
 		}
 
-		return ResponseEntity.status(HttpStatus.CONFLICT).body("Email já cadastrado no sistema");
+		throw new RecursoDuplicadoException("Email já cadastrado!");
 
 	}
 	
