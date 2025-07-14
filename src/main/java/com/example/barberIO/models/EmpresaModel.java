@@ -38,6 +38,9 @@ public class EmpresaModel implements Serializable {
 	@OneToMany(mappedBy = "empresa", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<EnderecoModel> enderecos = new ArrayList<>();
 
+	@OneToOne(mappedBy = "config_empresa")
+	private ConfigEmpresaModel config_empresa;
+
 	public Long getId() {
 		return id;
 	}
@@ -101,5 +104,13 @@ public class EmpresaModel implements Serializable {
 
 	public void setEnderecos(List<EnderecoModel> enderecos) {
 		this.enderecos = enderecos;
+	}
+
+	public ConfigEmpresaModel getConfig_empresa() {
+		return config_empresa;
+	}
+
+	public void setConfig_empresa(ConfigEmpresaModel config_empresa) {
+		this.config_empresa = config_empresa;
 	}
 }
