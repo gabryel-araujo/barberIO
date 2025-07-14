@@ -12,5 +12,5 @@ public record EnderecoRecordDto(
 		String cidade,
 		String complemento,
 		@NotNull(message = "O endereço precisa estar associado a uma empresa")
-		Long empresaId
+		Long empresa_id
 		) {}

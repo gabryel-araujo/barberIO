@@ -1,4 +1,6 @@
-package com.example.barberIO.models;
+ package com.example.barberIO.models;
+
+import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
 
@@ -19,8 +21,20 @@ public class ConfigEmpresaModel {
 
     @Column(nullable = false)
     private int intervalo;
+    
+    @Column(nullable = false)
+    private LocalDateTime ultima_alteracao;
+    
 
-    public Long getId() {
+    public LocalDateTime getUltima_alteracao() {
+		return ultima_alteracao;
+	}
+
+	public void setUltima_alteracao(LocalDateTime ultima_alteracao) {
+		this.ultima_alteracao = ultima_alteracao;
+	}
+
+	public Long getId() {
         return id;
     }
 

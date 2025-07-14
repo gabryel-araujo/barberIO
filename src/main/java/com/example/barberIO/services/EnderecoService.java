@@ -47,7 +47,7 @@ public class EnderecoService {
 	    BeanUtils.copyProperties(enderecoRecordDto, endereco);
 
 		//Primeiramente validar a empresa
-	    EmpresaModel empresa = empresaRepository.findById(enderecoRecordDto.empresaId())
+	    EmpresaModel empresa = empresaRepository.findById(enderecoRecordDto.empresa_id())
 	            .orElseThrow(() -> new RecursoNaoEncontradoException("Empresa não encontrada."));
 
 		//Em seguida, validar o campo cep
