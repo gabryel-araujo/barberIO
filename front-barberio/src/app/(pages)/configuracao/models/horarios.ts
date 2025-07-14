@@ -45,8 +45,8 @@ export const Horarios: z.infer<typeof formSchemaHorarioFuncionamento>[] = [
     fechamento: "18:00",
   },
   {
-    id: 2,
-    status: true,
+    id: 7,
+    status: false,
     nome: "Domingo",
     abertura: "08:00",
     fechamento: "18:00",

@@ -14,7 +14,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Building2, Calendar, Clock } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { formSchemaConfiguracao } from "./schemas/schemas";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
@@ -281,77 +281,82 @@ const configuracao = () => {
                     Titulos="Horários de Funcionamento"
                     subtitulo="Configure os horários de funcionamento para cada dia da semana"
                   />
-                  {Horarios.map((horario, index) => (
-                    <Card key={horario.id} className="p-3">
-                      {/* Campo invisível para manter o ID */}
-                      {/* <input
-                        type="hidden"
-                        {...form.register(`horario.${index}.id`)}
-                        value={horario.id}
-                      /> */}
-                      {/* Campo invisível para manter o nome do dia */}
-                      {/* <input
-                        type="hidden"
-                        {...form.register(`horario.${index}.nome`)}
-                        value={horario.nome}
-                      /> */}
-                      <div className="flex gap-4 items-center">
-                        <div className="min-w-[150px] flex items-center">
-                          <FormField
-                            key={horario.id}
-                            control={form.control}
-                            name={`horario.${index}.status`}
-                            render={({ field }) => (
-                              <FormItem className="flex items-center">
-                                <FormControl>
-                                  <Switch
-                                    className=""
-                                    checked={field.value}
-                                    onCheckedChange={field.onChange}
-                                  />
-                                </FormControl>
-                                <FormLabel>{horario.nome}</FormLabel>
-                              </FormItem>
-                            )}
-                          />
+                  {Horarios.map((horario, index) => {
+                    const status = useWatch({
+                      control: form.control,
+                      name: `horario.${index}.status`,
+                    });
+                    return (
+                      <Card
+                        key={horario.id}
+                        className="p-3 min-h-24 justify-center"
+                      >
+                        <div className="flex gap-4 items-center">
+                          <div className="min-w-[150px] flex items-center">
+                            <FormField
+                              key={horario.id}
+                              control={form.control}
+                              name={`horario.${index}.status`}
+                              render={({ field }) => (
+                                <FormItem className="flex items-center">
+                                  <FormControl>
+                                    <Switch
+                                      className=""
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                    />
+                                  </FormControl>
+                                  <FormLabel>{horario.nome}</FormLabel>
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          {status === true ? (
+                            <>
+                              <FormField
+                                control={form.control}
+                                name={`horario.${index}.abertura`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Abertura</FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        placeholder=""
+                                        type="time"
+                                        ///step={2}
+                                        {...field}
+                                      />
+                                    </FormControl>
+                                  </FormItem>
+                                )}
+                              />
+                              <FormField
+                                control={form.control}
+                                name={`horario.${index}.fechamento`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Fechamento</FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        placeholder=""
+                                        type="time"
+                                        ///step={2}
+                                        {...field}
+                                      />
+                                    </FormControl>
+                                  </FormItem>
+                                )}
+                              />
+                            </>
+                          ) : (
+                            <p className="font-semibold text-xl text-slate-700">
+                              Fechado
+                            </p>
+                          )}
                         </div>
-                        <FormField
-                          control={form.control}
-                          name={`horario.${index}.abertura`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Abertura</FormLabel>
-                              <FormControl>
-                                <Input
-                                  placeholder=""
-                                  type="time"
-                                  ///step={2}
-                                  {...field}
-                                />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name={`horario.${index}.fechamento`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Fechamento</FormLabel>
-                              <FormControl>
-                                <Input
-                                  placeholder=""
-                                  type="time"
-                                  ///step={2}
-                                  {...field}
-                                />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                    </Card>
-                  ))}
+                      </Card>
+                    );
+                  })}
                 </Card>
               </TabsContent>
               <TabsContent value="feriado">
