@@ -26,14 +26,15 @@ export const formSchemaConfigEmpresa = z.object({
   aberto: z.boolean(),
   intervalo: z.coerce.number().optional(),
   horario_func_id: z.number().optional(),
+  ultima_alteracao: z.date().optional(),
 });
 
 export const formSchemaHorarioFuncionamento = z.object({
   id: z.number().optional(),
-  status: z.boolean(),
-  nome: z.string(),
-  abertura: z.string(),
-  fechamento: z.string(),
+  status: z.boolean().optional(),
+  nome: z.string().optional(),
+  abertura: z.string().optional(),
+  fechamento: z.string().optional(),
   // abertura: z.date(),
   // fechamento: z.date(),
 });
@@ -42,5 +43,5 @@ export const formSchemaConfiguracao = z.object({
   empresa: formSchemaEmpresa.optional(),
   endereco: formSchemaEndereco.optional(),
   config: formSchemaConfigEmpresa.optional(),
-  horario: formSchemaHorarioFuncionamento.optional(),
+  horario: z.array(formSchemaHorarioFuncionamento).optional(),
 });

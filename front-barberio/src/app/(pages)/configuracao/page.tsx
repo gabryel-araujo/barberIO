@@ -32,6 +32,9 @@ import { Horarios } from "./models/horarios";
 const configuracao = () => {
   const form = useForm<z.infer<typeof formSchemaConfiguracao>>({
     resolver: zodResolver(formSchemaConfiguracao),
+    defaultValues: {
+      horario: Horarios,
+    },
   });
 
   const onSubmitConfiguracao = (
@@ -278,14 +281,26 @@ const configuracao = () => {
                     Titulos="Horários de Funcionamento"
                     subtitulo="Configure os horários de funcionamento para cada dia da semana"
                   />
-                  {Horarios.map((horario) => (
+                  {Horarios.map((horario, index) => (
                     <Card key={horario.id} className="p-3">
+                      {/* Campo invisível para manter o ID */}
+                      {/* <input
+                        type="hidden"
+                        {...form.register(`horario.${index}.id`)}
+                        value={horario.id}
+                      /> */}
+                      {/* Campo invisível para manter o nome do dia */}
+                      {/* <input
+                        type="hidden"
+                        {...form.register(`horario.${index}.nome`)}
+                        value={horario.nome}
+                      /> */}
                       <div className="flex gap-4 items-center">
                         <div className="min-w-[150px] flex items-center">
                           <FormField
                             key={horario.id}
                             control={form.control}
-                            name={`horario.status`}
+                            name={`horario.${index}.status`}
                             render={({ field }) => (
                               <FormItem className="flex items-center">
                                 <FormControl>
@@ -302,7 +317,7 @@ const configuracao = () => {
                         </div>
                         <FormField
                           control={form.control}
-                          name="horario.abertura"
+                          name={`horario.${index}.abertura`}
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Abertura</FormLabel>
@@ -319,7 +334,7 @@ const configuracao = () => {
                         />
                         <FormField
                           control={form.control}
-                          name="horario.fechamento"
+                          name={`horario.${index}.fechamento`}
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Fechamento</FormLabel>
