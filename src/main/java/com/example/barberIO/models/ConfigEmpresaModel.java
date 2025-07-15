@@ -2,6 +2,9 @@
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -12,9 +15,10 @@ public class ConfigEmpresaModel {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "empresa_id",nullable = false)
-    private EmpresaModel empresa;
+    @JsonIgnore
+    private EmpresaModel config_empresa;
 
     @Column(nullable = false)
     private boolean aberto;
@@ -42,14 +46,14 @@ public class ConfigEmpresaModel {
     }
 
     public EmpresaModel getConfig_empresa() {
-        return empresa;
-    }
+		return config_empresa;
+	}
 
-    public void setConfig_empresa(EmpresaModel empresa) {
-        this.empresa = empresa;
-    }
+	public void setConfig_empresa(EmpresaModel config_empresa) {
+		this.config_empresa = config_empresa;
+	}
 
-    public boolean isAberto() {
+	public boolean isAberto() {
         return aberto;
     }
 

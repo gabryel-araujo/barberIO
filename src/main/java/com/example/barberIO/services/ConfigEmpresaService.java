@@ -94,12 +94,20 @@ public class ConfigEmpresaService {
 	public ResponseEntity<Object> removerConfiguracao(Long config_id){
 		Optional<ConfigEmpresaModel> configO = configEmpresaRepository.findById(config_id);
 
-		if(configO.isEmpty()){
-			throw new RecursoNaoEncontradoException("Configuração não localizada. Verifique os dados");
-		}
+	    if (configO.isEmpty()) {
+	        throw new RecursoNaoEncontradoException("Configuração não localizada. Verifique os dados");
+	    }
 
-		ConfigEmpresaModel configEmpresaModel = configO.get();
-		configEmpresaRepository.delete(configEmpresaModel);
-		return ResponseEntity.status(HttpStatus.OK).body("Configuração removida com sucesso");
+	    ConfigEmpresaModel configEmpresaModel = configO.get();
+
+	    // Desvincular da empresa antes de remover
+	    EmpresaModel empresa = configEmpresaModel.getConfig_empresa();
+	    if (empresa != null) {
+	        empresa.setConfig_empresa(null); // zera a referência da empresa para a config
+	        empresaRepository.save(empresa); // salva a mudança
+	    }
+
+	    configEmpresaRepository.delete(configEmpresaModel);
+	    return ResponseEntity.status(HttpStatus.OK).body("Configuração removida com sucesso");
 	}
 }

@@ -4,6 +4,8 @@ import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -36,10 +38,11 @@ public class EmpresaModel implements Serializable {
 	private LocalDateTime created_at;
 	
 	@OneToMany(mappedBy = "empresa", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference
 	private List<EnderecoModel> enderecos = new ArrayList<>();
 
-	@OneToMany(mappedBy = "empresa", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<ConfigEmpresaModel> config_empresa;
+	@OneToOne(mappedBy = "config_empresa", cascade = CascadeType.ALL, orphanRemoval = true)
+	private ConfigEmpresaModel config_empresa;
 
 	public Long getId() {
 		return id;
@@ -106,11 +109,12 @@ public class EmpresaModel implements Serializable {
 		this.enderecos = enderecos;
 	}
 
-	public List<ConfigEmpresaModel> getConfig_empresa() {
+	public ConfigEmpresaModel getConfig_empresa() {
 		return config_empresa;
 	}
 
-	public void setConfig_empresa(List<ConfigEmpresaModel> config_empresa) {
+	public void setConfig_empresa(ConfigEmpresaModel config_empresa) {
 		this.config_empresa = config_empresa;
 	}
+
 }

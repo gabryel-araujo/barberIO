@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface ConfigEmpresaRepository extends JpaRepository<ConfigEmpresaModel, Long>{
 
-    @Query("SELECT c FROM ConfigEmpresaModel c where c.empresa.id = :empresa_id")
+    @Query("SELECT c FROM ConfigEmpresaModel c where c.config_empresa.id = :empresa_id")
     List<ConfigEmpresaModel> listarConfigsPorEmpresa(@Param("empresa_id") Long empresa_id);
 
 }
