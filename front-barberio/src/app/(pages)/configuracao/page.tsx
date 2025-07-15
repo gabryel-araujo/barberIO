@@ -13,9 +13,9 @@ import {
 } from "@/components/ui/form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Building2, Calendar, Clock } from "lucide-react";
+import { Building2, Calendar, Clock, Edit, Plus, Trash2 } from "lucide-react";
 import { useForm, useWatch } from "react-hook-form";
-import { formSchemaConfiguracao } from "./schemas/schemas";
+import { formSchemaConfiguracao, formSchemaFeriado } from "./schemas/schemas";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -28,8 +28,40 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Horarios } from "./models/horarios";
+import { Feriados } from "./models/feriados";
+import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const configuracao = () => {
+  const [feriadosGeral, setFeriadosGeral] =
+    useState<z.infer<typeof formSchemaFeriado>[]>(Feriados);
+
+  const checkCEP = (e: { target: { value: any } }) => {
+    const cep = e.target.value.replace(/\D/g, "");
+    console.log(cep);
+
+    if (cep.length === 8) {
+      fetch(`https://viacep.com.br/ws/${cep}/json/`)
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          if (!data.erro) {
+            form.setValue("endereco.rua", data.logradouro || "");
+            form.setValue("endereco.bairro", data.bairro || "");
+            form.setValue("endereco.cidade", data.localidade || "");
+            form.setFocus("endereco.numero");
+            //form.setValue("complemento", data.complemento || "");
+            //form.setValue("uf", data.uf.toLowerCase() || "");
+          } else {
+            toast.info("CEP Inválido!");
+          }
+        });
+    } else {
+      toast.info("CEP Inválido!");
+    }
+  };
+
   const form = useForm<z.infer<typeof formSchemaConfiguracao>>({
     resolver: zodResolver(formSchemaConfiguracao),
     defaultValues: {
@@ -37,12 +69,31 @@ const configuracao = () => {
     },
   });
 
+  const formFeriado = useForm<z.infer<typeof formSchemaFeriado>>({
+    resolver: zodResolver(formSchemaFeriado),
+  });
+
   const onSubmitConfiguracao = (
     values: z.infer<typeof formSchemaConfiguracao>
   ) => {
+    toast.info("verifique o console log!");
     console.log(values);
   };
 
+  const adicionarFeriado = (values: z.infer<typeof formSchemaFeriado>) => {
+    toast.info("verifique o console log!");
+    console.log(values);
+  };
+
+  const deleteFeriado = (feriado: z.infer<typeof formSchemaFeriado>) => {
+    toast.info("verifique o console log!");
+    console.log("Deletando Feriado: ", feriado);
+  };
+
+  const editFeriado = (feriado: z.infer<typeof formSchemaFeriado>) => {
+    toast.info("verifique o console log!");
+    console.log("Deletando Feriado: ", feriado);
+  };
   return (
     <div className="w-screen min-h-screen bg-[#e6f0ff]">
       <div className="w-full flex justify-between items-center md:px-10 px-3 py-5">
@@ -89,7 +140,11 @@ const configuracao = () => {
                         <FormItem>
                           <FormLabel>Nome da Barbearia</FormLabel>
                           <FormControl>
-                            <Input placeholder="BarberIO" {...field} />
+                            <Input
+                              placeholder="BarberIO"
+                              {...field}
+                              value={field.value ?? ""}
+                            />
                           </FormControl>
                         </FormItem>
                       )}
@@ -148,6 +203,26 @@ const configuracao = () => {
                   />
                   {/* inicio de form Endereço */}
                   <div className="grid grid-cols-3 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="endereco.cep"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>CEP</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="01234-567"
+                              {...field}
+                              value={field.value ?? ""}
+                              onBlur={(e) => {
+                                field.onBlur();
+                                checkCEP(e);
+                              }}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
                     <div className="col-span-2">
                       <FormField
                         control={form.control}
@@ -198,18 +273,6 @@ const configuracao = () => {
                         </FormItem>
                       )}
                     />
-                    <FormField
-                      control={form.control}
-                      name="endereco.cep"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>CEP</FormLabel>
-                          <FormControl>
-                            <Input placeholder="01234-567" {...field} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
                   </div>
                 </Card>
                 <Card className="p-4">
@@ -225,7 +288,7 @@ const configuracao = () => {
                         <FormControl>
                           <Switch
                             className=""
-                            checked={field.value}
+                            checked={field.value ?? true}
                             onCheckedChange={field.onChange}
                           />
                         </FormControl>
@@ -284,7 +347,7 @@ const configuracao = () => {
                   {Horarios.map((horario, index) => {
                     const status = useWatch({
                       control: form.control,
-                      name: `horario.${index}.status`,
+                      name: `horario.${index}.aberto`,
                     });
                     return (
                       <Card
@@ -296,7 +359,7 @@ const configuracao = () => {
                             <FormField
                               key={horario.id}
                               control={form.control}
-                              name={`horario.${index}.status`}
+                              name={`horario.${index}.aberto`}
                               render={({ field }) => (
                                 <FormItem className="flex items-center">
                                   <FormControl>
@@ -359,12 +422,109 @@ const configuracao = () => {
                   })}
                 </Card>
               </TabsContent>
-              <TabsContent value="feriado">
-                {/* Aqui será colocado o conteudo da tab Feriado */}
-                <Card className="min-h-[250px] p-4">Feriado</Card>
-              </TabsContent>
             </form>
           </Form>
+          <TabsContent value="feriado">
+            {/* Aqui será colocado o conteudo da tab Feriado */}
+            <Card className="min-h-[250px] p-4">
+              <TitulosCards
+                Titulos="Feriados"
+                subtitulo="Configure feriado em que a barbearia não funcionará"
+              />
+              <Card className="p-4 w-full gap-4">
+                <Form {...formFeriado}>
+                  <form
+                    id="formFeriado"
+                    onSubmit={formFeriado.handleSubmit(adicionarFeriado)}
+                    className="gap-5 flex justify-between items-center"
+                  >
+                    <div className="flex items-center gap-5">
+                      <FormField
+                        control={formFeriado.control}
+                        name="nome"
+                        render={({ field }) => (
+                          <FormItem className="">
+                            <FormLabel>Nome do Feriado</FormLabel>
+                            <FormControl>
+                              <Input
+                                className="w-[250px]"
+                                placeholder="Feriado de Natal"
+                                {...field}
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={formFeriado.control}
+                        name="data"
+                        render={({ field }) => (
+                          <FormItem className="min-w-20">
+                            <FormLabel>Data</FormLabel>
+                            <FormControl>
+                              <Input
+                                className="w-[250px]"
+                                type="date"
+                                {...field}
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={formFeriado.control}
+                        name="recorrente"
+                        render={({ field }) => (
+                          <FormItem className="flex gap-4">
+                            <FormControl>
+                              <Switch
+                                className=""
+                                checked={field.value ?? false}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                            <FormLabel>Recorrente</FormLabel>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <Button form="formFeriado">
+                      <Plus /> Adicionar
+                    </Button>
+                  </form>
+                </Form>
+              </Card>
+              <p className="font-semibold text-sm pt-4">Feriados Cadastrado</p>
+              {feriadosGeral.map((feriado) => (
+                <Card
+                  key={feriado.id}
+                  className="min-h-16 flex-row justify-between items-center p-4"
+                >
+                  <div className="flex gap-4">
+                    <p className="font-bold">{feriado.nome}</p>
+                    <p className="text-slate-500">{feriado.data}</p>
+                    <Badge className="bg-primary/20 text-primary">
+                      {feriado.recorrente ? "Recorrente" : ""}
+                    </Badge>
+                  </div>
+                  <div className="flex gap-2">
+                    <div
+                      onClick={() => deleteFeriado(feriado)}
+                      className="hover:bg-red-600 flex items-center justify-center w-8 h-8 rounded-sm text-red-100 bg-red-400 cursor-pointer transition-all duration-300"
+                    >
+                      <Trash2 size={18} />
+                    </div>
+                    <div
+                      onClick={() => editFeriado(feriado)}
+                      className="hover:bg-slate-800 flex items-center justify-center w-8 h-8 rounded-sm text-slate-100 bg-slate-600 cursor-pointer transition-all duration-300"
+                    >
+                      <Edit size={18} />
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </Card>
+          </TabsContent>
         </Tabs>
       </div>
     </div>

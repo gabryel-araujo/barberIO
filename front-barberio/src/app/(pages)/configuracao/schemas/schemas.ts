@@ -25,18 +25,25 @@ export const formSchemaConfigEmpresa = z.object({
   empresa_id: z.number().optional(),
   aberto: z.boolean(),
   intervalo: z.coerce.number().optional(),
-  horario_func_id: z.number().optional(),
   ultima_alteracao: z.date().optional(),
 });
 
 export const formSchemaHorarioFuncionamento = z.object({
   id: z.number().optional(),
-  status: z.boolean().optional(),
+  aberto: z.boolean().optional(),
   nome: z.string().optional(),
   abertura: z.string().optional(),
   fechamento: z.string().optional(),
+  configEmpresaId: z.number().optional(),
   // abertura: z.date(),
   // fechamento: z.date(),
+});
+
+export const formSchemaFeriado = z.object({
+  id: z.number().optional(),
+  nome: z.string().optional(),
+  data: z.string().optional(),
+  recorrente: z.boolean().optional(),
 });
 
 export const formSchemaConfiguracao = z.object({
@@ -44,4 +51,5 @@ export const formSchemaConfiguracao = z.object({
   endereco: formSchemaEndereco.optional(),
   config: formSchemaConfigEmpresa.optional(),
   horario: z.array(formSchemaHorarioFuncionamento).optional(),
+  feriado: formSchemaFeriado.optional(),
 });
