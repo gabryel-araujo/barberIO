@@ -12,9 +12,9 @@ public class ConfigEmpresaModel {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "empresa_id",nullable = false)
-    private EmpresaModel config_empresa;
+    private EmpresaModel empresa;
 
     @Column(nullable = false)
     private boolean aberto;
@@ -24,7 +24,6 @@ public class ConfigEmpresaModel {
     
     @Column(nullable = false)
     private LocalDateTime ultima_alteracao;
-    
 
     public LocalDateTime getUltima_alteracao() {
 		return ultima_alteracao;
@@ -43,11 +42,11 @@ public class ConfigEmpresaModel {
     }
 
     public EmpresaModel getConfig_empresa() {
-        return config_empresa;
+        return empresa;
     }
 
-    public void setConfig_empresa(EmpresaModel config_empresa) {
-        this.config_empresa = config_empresa;
+    public void setConfig_empresa(EmpresaModel empresa) {
+        this.empresa = empresa;
     }
 
     public boolean isAberto() {
