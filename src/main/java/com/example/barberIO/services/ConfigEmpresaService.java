@@ -54,12 +54,6 @@ public class ConfigEmpresaService {
 		if(empresaO.isEmpty()) {
 			throw new RecursoNaoEncontradoException("Empresa não localizada na base de dados");
 		}
-
-		List<ConfigEmpresaModel> configs = configEmpresaRepository.listarConfigsPorEmpresa(empresa_id);
-
-		if(configs.size() == 7){
-			throw new DadosVioladosException("O número máximo de configurações por empresa é de 7 configurações");
-		}
 		
 		ConfigEmpresaModel configEmpresa = new ConfigEmpresaModel();
 		BeanUtils.copyProperties(configDto, configEmpresa);

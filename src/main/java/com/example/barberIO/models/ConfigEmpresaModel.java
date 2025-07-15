@@ -1,5 +1,6 @@
  package com.example.barberIO.models;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -9,7 +10,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "config_empresa")
-public class ConfigEmpresaModel {
+public class ConfigEmpresaModel implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -28,6 +29,9 @@ public class ConfigEmpresaModel {
     
     @Column(nullable = false)
     private LocalDateTime ultima_alteracao;
+    
+    @OneToMany(mappedBy = "config_empresa", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ConfigEmpresaModel configs;
 
     public LocalDateTime getUltima_alteracao() {
 		return ultima_alteracao;
@@ -68,4 +72,13 @@ public class ConfigEmpresaModel {
     public void setIntervalo(int intervalo) {
         this.intervalo = intervalo;
     }
+
+	public ConfigEmpresaModel getConfigs() {
+		return configs;
+	}
+
+	public void setConfigs(ConfigEmpresaModel configs) {
+		this.configs = configs;
+	}
+    
 }
