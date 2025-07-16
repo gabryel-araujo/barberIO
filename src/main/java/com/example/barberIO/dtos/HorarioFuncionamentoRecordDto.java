@@ -2,8 +2,6 @@ package com.example.barberIO.dtos;
 
 import java.time.LocalTime;
 
-import org.checkerframework.checker.index.qual.NonNegative;
-
 import jakarta.validation.constraints.NotNull;
 
 public record HorarioFuncionamentoRecordDto(

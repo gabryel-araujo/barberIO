@@ -2,6 +2,8 @@
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -31,7 +33,7 @@ public class ConfigEmpresaModel implements Serializable{
     private LocalDateTime ultima_alteracao;
     
     @OneToMany(mappedBy = "config_empresa", cascade = CascadeType.ALL, orphanRemoval = true)
-    private ConfigEmpresaModel configs;
+    private List<HorarioFuncionamentoModel> horarios = new ArrayList<>();
 
     public LocalDateTime getUltima_alteracao() {
 		return ultima_alteracao;
@@ -73,12 +75,7 @@ public class ConfigEmpresaModel implements Serializable{
         this.intervalo = intervalo;
     }
 
-	public ConfigEmpresaModel getConfigs() {
-		return configs;
-	}
+    public List<HorarioFuncionamentoModel> getHorarios() {return horarios;}
 
-	public void setConfigs(ConfigEmpresaModel configs) {
-		this.configs = configs;
-	}
-    
+    public void setHorarios(List<HorarioFuncionamentoModel> horarios) {this.horarios = horarios;}
 }

@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -19,14 +20,13 @@ import com.example.barberIO.models.HorarioFuncionamentoModel;
 import com.example.barberIO.repositories.ConfigEmpresaRepository;
 import com.example.barberIO.repositories.EmpresaRepository;
 import com.example.barberIO.repositories.HorarioFuncionamentoRepository;
+import org.springframework.stereotype.Service;
 
+@Service
 public class HorarioFuncionamentoService {
 
 	@Autowired
 	private HorarioFuncionamentoRepository horarioFuncionamentoRepository;
-
-//	@Autowired
-//	private EmpresaRepository empresaRepository;
 
 	@Autowired
 	private ConfigEmpresaRepository configEmpresaRepository;
@@ -35,7 +35,7 @@ public class HorarioFuncionamentoService {
 		List<HorarioFuncionamentoModel> horarios = horarioFuncionamentoRepository.findAll();
 
 		if (horarios.isEmpty()) {
-			throw new RecursoNaoEncontradoException("Nenhum horário cadastrado na base de dados");
+			throw new RecursoNaoEncontradoException("Esta organização ainda não possui horários cadastrados. Por favor, configure os horários de atendimento.");
 		}
 
 		return ResponseEntity.status(HttpStatus.OK).body(horarios);
@@ -45,7 +45,7 @@ public class HorarioFuncionamentoService {
 		List<HorarioFuncionamentoModel> horarios = horarioFuncionamentoRepository.findAllByEmpresa(config_empresa_id);
 
 		if (horarios.isEmpty()) {
-			throw new RecursoNaoEncontradoException("Nenhum horário cadastrado na base de dados");
+			throw new RecursoNaoEncontradoException("Esta empresa ainda não possui horários cadastrados. Por favor, configure os horários de atendimento.");
 		}
 
 		return ResponseEntity.status(HttpStatus.OK).body(horarios);
@@ -56,13 +56,13 @@ public class HorarioFuncionamentoService {
 		Optional<ConfigEmpresaModel> configO = configEmpresaRepository.findById(config_empresa_id);
 
 		if (configO.isEmpty()) {
-			throw new RecursoNaoEncontradoException("Dados de configuração não localizados! Verifique informações");
+			throw new RecursoNaoEncontradoException("Parâmetros de configuração não localizados! Verifique informações");
 		}
 
 		List<HorarioFuncionamentoModel> horarios = horarioFuncionamentoRepository.findAllByEmpresa(config_empresa_id);
 
 		if (horarios.size() == 7) {
-			throw new DadosVioladosException("Não é possível cadastrar mais um horário para os dias da semana");
+			throw new DadosVioladosException("Não é possível cadastrar outro horário de funcionamento. O limite de dias da semana já foi atingido.");
 		}
 
 		HorarioFuncionamentoModel horarioNew = new HorarioFuncionamentoModel();
@@ -72,8 +72,28 @@ public class HorarioFuncionamentoService {
 		return ResponseEntity.status(HttpStatus.CREATED).body(horarioFuncionamentoRepository.save(horarioNew));
 	}
 
-	public ReponseEntity<HorarioFuncionamentoModel> editarHorario(HorarioFuncionamentoRecordDto horarioFuncionamento,
-			Long config_empresa_id) {
+	public ResponseEntity<HorarioFuncionamentoModel> editarHorario(HorarioFuncionamentoRecordDto horarioFuncionamentoDto, Long horario_func_id) {
+		Optional<HorarioFuncionamentoModel> horarioFuncO = horarioFuncionamentoRepository.findById(horario_func_id);
 
+		if(horarioFuncO.isEmpty()){
+			throw new RecursoNaoEncontradoException("Parâmetro de horário inválido. Verifique os dados");
+		}
+
+		HorarioFuncionamentoModel newHorario = horarioFuncO.get();
+		BeanUtils.copyProperties(horarioFuncionamentoDto,newHorario);
+		newHorario.setUltima_alteracao(LocalDateTime.now());
+		horarioFuncionamentoRepository.save(newHorario);
+		return ResponseEntity.status(HttpStatus.OK).body(newHorario);
+	}
+
+	public ResponseEntity<Object> excluirHorario(Long horario_func_id){
+		Optional<HorarioFuncionamentoModel> horarioFuncO = horarioFuncionamentoRepository.findById(horario_func_id);
+
+		if(horarioFuncO.isEmpty()){
+			throw new RecursoNaoEncontradoException("Parâmetro de horário inválido. Verifique os dados");
+		}
+
+		horarioFuncionamentoRepository.delete(horarioFuncO.get());
+		return ResponseEntity.status(HttpStatus.OK).body("Horário removido com sucesso!");
 	}
 }
