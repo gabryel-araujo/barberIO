@@ -1,14 +1,5 @@
 import { z } from "zod";
 
-export const formSchemaEmpresa = z.object({
-  id: z.number().optional(),
-  nome: z.string(),
-  telefone: z.string(),
-  email: z.string(),
-  nacional_id: z.string().optional(),
-  org_id: z.number().optional(),
-});
-
 export const formSchemaEndereco = z.object({
   id: z.number().optional(),
   rua: z.string(),
@@ -19,15 +10,6 @@ export const formSchemaEndereco = z.object({
   complemento: z.string().optional(),
   empresa_id: z.number().optional(),
 });
-
-export const formSchemaConfigEmpresa = z.object({
-  id: z.number().optional(),
-  empresa_id: z.number().optional(),
-  aberto: z.boolean(),
-  intervalo: z.coerce.number().optional(),
-  ultima_alteracao: z.date().optional(),
-});
-
 export const formSchemaHorarioFuncionamento = z.object({
   id: z.number().optional(),
   aberto: z.boolean().optional(),
@@ -39,6 +21,27 @@ export const formSchemaHorarioFuncionamento = z.object({
   // fechamento: z.date(),
 });
 
+export const formSchemaConfigEmpresa = z.object({
+  id: z.number().optional(),
+  empresa_id: z.number().optional(),
+  aberto: z.boolean(),
+  intervalo: z.coerce.number().optional(),
+  ultima_alteracao: z.date().optional(),
+  horarios: z.array(formSchemaHorarioFuncionamento).optional(),
+});
+
+export const formSchemaEmpresa = z.object({
+  id: z.number().optional(),
+  nome: z.string(),
+  telefone: z.string(),
+  email: z.string(),
+  nacional_id: z.string().optional(),
+  org_id: z.number().optional(),
+  created_at: z.date().optional(),
+  enderecos: formSchemaEndereco.optional(),
+  config_empresa: formSchemaConfigEmpresa.optional(),
+});
+
 export const formSchemaFeriado = z.object({
   id: z.number().optional(),
   nome: z.string().optional(),
@@ -48,7 +51,7 @@ export const formSchemaFeriado = z.object({
 
 export const formSchemaConfiguracao = z.object({
   empresa: formSchemaEmpresa.optional(),
-  endereco: formSchemaEndereco.optional(),
+  enderecos: formSchemaEndereco.optional(),
   config: formSchemaConfigEmpresa.optional(),
   horario: z.array(formSchemaHorarioFuncionamento).optional(),
   feriado: formSchemaFeriado.optional(),
