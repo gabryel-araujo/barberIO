@@ -33,9 +33,11 @@ public class ConfigEmpresaModel implements Serializable {
 	private LocalDateTime ultima_alteracao;
 
 	@OneToMany(mappedBy = "config_empresa", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OrderBy("id ASC")
 	private List<HorarioFuncionamentoModel> horarios = new ArrayList<>();
 
 	@OneToMany(mappedBy = "config_empresa", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OrderBy("id ASC")
 	private List<FeriadoModel> feriados = new ArrayList<>();
 
 	public LocalDateTime getUltima_alteracao() {

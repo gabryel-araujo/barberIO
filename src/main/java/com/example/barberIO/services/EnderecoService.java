@@ -32,8 +32,8 @@ public class EnderecoService {
 		return ResponseEntity.status(HttpStatus.OK).body(enderecoRepository.findAll());
 	}
 	
-	public ResponseEntity<List<Object>> listarEnderecoPorEmpresa(Long empresa_id){
-		List<Object> enderecoO = enderecoRepository.findByEmpresa(empresa_id);
+	public ResponseEntity<Object> listarEnderecoPorEmpresa(Long empresa_id){
+		Optional<EnderecoModel> enderecoO = enderecoRepository.findByEmpresa(empresa_id);
 		
 		if(enderecoO.isEmpty()) {
 			throw new RecursoNaoEncontradoException("Não existe nenhum endereço vinculado a essa empresa!");
@@ -49,7 +49,13 @@ public class EnderecoService {
 		//Primeiramente validar a empresa
 	    EmpresaModel empresa = empresaRepository.findById(enderecoRecordDto.empresa_id())
 	            .orElseThrow(() -> new RecursoNaoEncontradoException("Empresa não encontrada."));
-
+	    
+	    //Validar se já tem empresa cadastrada
+	    Optional<EnderecoModel> enderecoO = enderecoRepository.findByEmpresa(enderecoRecordDto.empresa_id());
+	    if(!enderecoO.isEmpty()) {
+			throw new DadosVioladosException("Já existe um endereço vinculado a essa empresa!");
+		}
+	    
 		//Em seguida, validar o campo cep
 		if(enderecoRecordDto.cep().length()!= 8){
 			throw new DadosVioladosException("O campo cep deve possuir 8 caracteres");
@@ -89,9 +95,15 @@ public class EnderecoService {
 		}
 		
 		EnderecoModel endereco = enderecoO.get();
+		
+		EmpresaModel empresa = endereco.getEmpresa();
+	    if (empresa != null) {
+	        empresa.setEndereco(null); 
+	    }
+		
 		enderecoRepository.delete(endereco);
 		
-		return ResponseEntity.status(HttpStatus.OK).body("Empresa removida com sucesso!");
+		return ResponseEntity.status(HttpStatus.OK).body("Endereco removida com sucesso!");
 	}
 
 }

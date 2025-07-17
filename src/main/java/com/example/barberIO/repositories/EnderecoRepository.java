@@ -14,6 +14,6 @@ import com.example.barberIO.models.EnderecoModel;
 public interface EnderecoRepository extends JpaRepository<EnderecoModel, Long>{
 	
 	@Query("SELECT e FROM EnderecoModel e WHERE e.empresa.id = :empresa_id")
-	List<Object> findByEmpresa(@Param("empresa_id") Long empresa_id);
+	Optional<EnderecoModel> findByEmpresa(@Param("empresa_id") Long empresa_id);
 
 }

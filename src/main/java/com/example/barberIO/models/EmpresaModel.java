@@ -2,17 +2,11 @@ package com.example.barberIO.models;
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.time.LocalDateTime.now;
-
 @Entity
 @Table(name = "empresa")
 public class EmpresaModel implements Serializable {
@@ -37,9 +31,9 @@ public class EmpresaModel implements Serializable {
 	@Column(nullable = false)
 	private LocalDateTime created_at;
 	
-	@OneToMany(mappedBy = "empresa", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToOne(mappedBy = "empresa", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	private List<EnderecoModel> enderecos = new ArrayList<>();
+	private EnderecoModel endereco;
 
 	@OneToOne(mappedBy = "config_empresa", cascade = CascadeType.ALL, orphanRemoval = true)
 	private ConfigEmpresaModel config_empresa;
@@ -101,12 +95,12 @@ public class EmpresaModel implements Serializable {
 		this.created_at = created_at;
 	}
 
-	public List<EnderecoModel> getEnderecos() {
-		return enderecos;
+	public EnderecoModel getEndereco() {
+		return endereco;
 	}
 
-	public void setEnderecos(List<EnderecoModel> enderecos) {
-		this.enderecos = enderecos;
+	public void setEndereco(EnderecoModel endereco) {
+		this.endereco = endereco;
 	}
 
 	public ConfigEmpresaModel getConfig_empresa() {

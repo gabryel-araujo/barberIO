@@ -30,7 +30,7 @@ public class EnderecoController {
 	}
 	
 	@GetMapping("/enderecos/empresa/{id}")
-	public ResponseEntity<List<Object>> listarEnderecosPorEmpresa(@PathVariable(name = "id")Long id){
+	public ResponseEntity<Object> listarEnderecosPorEmpresa(@PathVariable(name = "id")Long id){
 		return enderecoService.listarEnderecoPorEmpresa(id);
 	}
 	

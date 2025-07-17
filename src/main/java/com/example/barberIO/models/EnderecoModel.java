@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -43,7 +44,7 @@ public class EnderecoModel implements Serializable{
 	@Column(nullable = false)
 	private LocalDateTime created_at;
 	
-	@ManyToOne
+	@OneToOne
 	@JoinColumn(name = "empresa_id", nullable = false)
 	@JsonIgnore
 	private EmpresaModel empresa;
