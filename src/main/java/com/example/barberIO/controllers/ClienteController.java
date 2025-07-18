@@ -59,6 +59,7 @@ public class ClienteController {
 
         ClienteModel clienteModel = clienteO.get();
         BeanUtils.copyProperties(clienteRecordDto, clienteModel);
+        clienteModel.setCreated_at(LocalDateTime.now());
         return  ResponseEntity.status(HttpStatus.OK).body(clienteRepository.save(clienteModel));
     }
 
