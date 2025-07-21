@@ -1,9 +1,7 @@
 package com.example.barberIO.models;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -39,7 +37,7 @@ public class HorarioFuncionamentoModel implements Serializable{
 	@JsonIgnore
 	private ConfigEmpresaModel config_empresa;
 
-	@Column(nullable = false)
+	@Column(nullable = true)
 	private int codigo_dia;
 	
 	@Column(nullable = false)

@@ -5,18 +5,14 @@ import com.example.barberIO.exceptions.RecursoDuplicadoException;
 import com.example.barberIO.exceptions.RecursoNaoEncontradoException;
 import com.example.barberIO.models.FuncionarioModel;
 import com.example.barberIO.models.ServiceModel;
-import com.example.barberIO.repositories.ClienteRepository;
 import com.example.barberIO.repositories.FuncionarioRepository;
 import com.example.barberIO.repositories.ServiceRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 

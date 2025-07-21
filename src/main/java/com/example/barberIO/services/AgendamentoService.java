@@ -1,13 +1,17 @@
 package com.example.barberIO.services;
 
 import com.example.barberIO.dtos.AgendamentoRecordDto;
+import com.example.barberIO.exceptions.RecursoNaoEncontradoException;
 import com.example.barberIO.models.AgendamentoModel;
 import com.example.barberIO.models.ClienteModel;
+import com.example.barberIO.models.EmpresaModel;
 import com.example.barberIO.models.FuncionarioModel;
 import com.example.barberIO.models.ServiceModel;
 import com.example.barberIO.repositories.AgendamentoRepository;
 import com.example.barberIO.repositories.ClienteRepository;
+import com.example.barberIO.repositories.EmpresaRepository;
 import com.example.barberIO.repositories.FuncionarioRepository;
+import com.example.barberIO.repositories.HorarioFuncionamentoRepository;
 import com.example.barberIO.repositories.ServiceRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +40,12 @@ public class AgendamentoService {
 
 	@Autowired
 	private ServiceRepository serviceRepository;
+	
+	@Autowired
+	private EmpresaRepository empresaRepository;
+	
+	@Autowired
+	private HorarioFuncionamentoRepository horarioFuncionamentoRepository;
 	
 
 	public ResponseEntity<Object> agendarHorario(AgendamentoRecordDto agendamentoRecordDto) {
@@ -103,13 +113,25 @@ public class AgendamentoService {
 		return ResponseEntity.status(HttpStatus.OK).body("barbeiro disponível");
 	}
 
-	public List<LocalTime> horariosDisponiveis(Long barbeiroId, LocalDate dia) {
-		LocalTime inicio = LocalTime.of(9, 0);
-		LocalTime fim = LocalTime.of(18, 30);
-		Duration intervalo = Duration.ofMinutes(15);
+	public List<LocalTime> horariosDisponiveis(Long barbeiroId, LocalDate dia, Long empresa_id) {
+		Optional<EmpresaModel> empresaO = empresaRepository.findById(empresa_id);
+		
+		if(empresaO.isEmpty()) {
+			throw new RecursoNaoEncontradoException("Empresa não localizada! Verifique os dados");
+		}
+		
+		EmpresaModel empresa = empresaO.get();
+		
 		ZoneId zone = ZoneId.of("America/Sao_Paulo");
 		LocalDate hoje = LocalDate.now(zone);
 		LocalTime agora = LocalTime.now(zone);
+		Duration intervalo = Duration.ofMinutes(empresa.getConfig_empresa().getIntervalo());
+		LocalTime abertura = horarioFuncionamentoRepository.verificarAbertura(dia.getDayOfWeek().getValue());
+		LocalTime fechamento = horarioFuncionamentoRepository.verificarFechamento(dia.getDayOfWeek().getValue());
+		
+		if (abertura == null || fechamento == null) {
+		    throw new RuntimeException("Não é possível agendar: a empresa está fechada no dia e horário selecionado.");
+		}
 
 		List<Object[]> agendamentosBrutos = agendamentoRepository.findAgendamentosComDuracao(barbeiroId, dia);
 
@@ -123,7 +145,7 @@ public class AgendamentoService {
 
 		List<LocalTime> horariosDisponiveis = new ArrayList<>();
 
-		for (LocalTime h = inicio; h.isBefore(fim); h = h.plus(intervalo)) {
+		for (LocalTime h = abertura; h.isBefore(fechamento); h = h.plus(intervalo)) {
 			final LocalTime horario = h;
 
 			if (dia.isEqual(hoje) && horario.isBefore(agora)) {

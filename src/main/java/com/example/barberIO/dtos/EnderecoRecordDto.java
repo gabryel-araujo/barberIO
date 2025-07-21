@@ -1,7 +1,5 @@
 package com.example.barberIO.dtos;
 
-import com.example.barberIO.models.EmpresaModel;
-
 import jakarta.validation.constraints.NotNull;
 
 public record EnderecoRecordDto(
@@ -11,6 +9,4 @@ public record EnderecoRecordDto(
 		String cep,
 		String cidade,
 		String complemento
-//		@NotNull(message = "O endereço precisa estar associado a uma empresa")
-//		Long empresa_id
 		) {}

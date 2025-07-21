@@ -2,7 +2,6 @@ package com.example.barberIO.controllers;
 import com.example.barberIO.dtos.AgendamentoRecordDto;
 import com.example.barberIO.exceptions.RecursoNaoEncontradoException;
 import com.example.barberIO.models.AgendamentoModel;
-import com.example.barberIO.models.FuncionarioModel;
 import com.example.barberIO.repositories.AgendamentoRepository;
 import com.example.barberIO.repositories.FuncionarioRepository;
 import com.example.barberIO.services.AgendamentoService;
@@ -12,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.text.html.Option;
 import java.time.*;
 import java.util.List;
 import java.util.Optional;
@@ -74,13 +72,14 @@ public class AgendamentoController{
         return agendamentoService.horarioDisponivel(data, barbeiroId, intervalo);
     }
 
-    @GetMapping("/agendamentos/horarios/{barbeiroId}")
+    @GetMapping("/agendamentos/horarios/{barbeiro_id}")
     public ResponseEntity<List<LocalTime>> getHorariosDisponiveis(
-            @PathVariable("barbeiroId") Long barbeiroId,
-            @RequestParam("data") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data) {
+            @PathVariable("barbeiro_id") Long barbeiro_id,
+            @RequestParam("data") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data,
+            @RequestParam("empresa_id")Long empresa_id) {
 
         List<LocalTime> horariosDisponiveis = agendamentoService
-                .horariosDisponiveis(barbeiroId, data);
+                .horariosDisponiveis(barbeiro_id, data,barbeiro_id);
 
         return ResponseEntity.ok(horariosDisponiveis);
     }

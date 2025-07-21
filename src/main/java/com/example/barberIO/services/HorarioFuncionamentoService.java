@@ -6,19 +6,16 @@ import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 
 import com.example.barberIO.dtos.HorarioFuncionamentoRecordDto;
 import com.example.barberIO.exceptions.DadosVioladosException;
 import com.example.barberIO.exceptions.RecursoNaoEncontradoException;
 import com.example.barberIO.models.ConfigEmpresaModel;
-import com.example.barberIO.models.EmpresaModel;
 import com.example.barberIO.models.HorarioFuncionamentoModel;
 import com.example.barberIO.repositories.ConfigEmpresaRepository;
-import com.example.barberIO.repositories.EmpresaRepository;
 import com.example.barberIO.repositories.HorarioFuncionamentoRepository;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +29,7 @@ public class HorarioFuncionamentoService {
 	private ConfigEmpresaRepository configEmpresaRepository;
 
 	public ResponseEntity<List<HorarioFuncionamentoModel>> listarHorariosFunc() {
-		List<HorarioFuncionamentoModel> horarios = horarioFuncionamentoRepository.findAll();
+		List<HorarioFuncionamentoModel> horarios = horarioFuncionamentoRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
 
 		if (horarios.isEmpty()) {
 			throw new RecursoNaoEncontradoException("Esta organização ainda não possui horários cadastrados. Por favor, configure os horários de atendimento.");
