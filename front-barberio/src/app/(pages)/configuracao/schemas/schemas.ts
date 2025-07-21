@@ -38,7 +38,7 @@ export const formSchemaEmpresa = z.object({
   nacional_id: z.string().optional(),
   org_id: z.number().optional(),
   created_at: z.date().optional(),
-  enderecos: formSchemaEndereco.optional(),
+  endereco: formSchemaEndereco.optional(),
   config_empresa: formSchemaConfigEmpresa.optional(),
 });
 
@@ -51,7 +51,7 @@ export const formSchemaFeriado = z.object({
 
 export const formSchemaConfiguracao = z.object({
   empresa: formSchemaEmpresa.optional(),
-  enderecos: formSchemaEndereco.optional(),
+  endereco: formSchemaEndereco.optional(),
   config: formSchemaConfigEmpresa.optional(),
   horario: z.array(formSchemaHorarioFuncionamento).optional(),
   feriado: formSchemaFeriado.optional(),

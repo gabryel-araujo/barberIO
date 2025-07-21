@@ -38,6 +38,8 @@ import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { baseUrl } from "@/lib/baseUrl";
+import { AtualizarEmpresa } from "./controllers/configuracoes";
+import { atualizarEmpresaMutation } from "./mutations/configuracoes";
 
 const configuracao = () => {
   const [feriadosGeral, _setFeriadosGeral] =
@@ -65,10 +67,10 @@ const configuracao = () => {
         .then((data) => {
           console.log(data);
           if (!data.erro) {
-            form.setValue("enderecos.rua", data.logradouro || "");
-            form.setValue("enderecos.bairro", data.bairro || "");
-            form.setValue("enderecos.cidade", data.localidade || "");
-            form.setFocus("enderecos.numero");
+            form.setValue("endereco.rua", data.logradouro || "");
+            form.setValue("endereco.bairro", data.bairro || "");
+            form.setValue("endereco.cidade", data.localidade || "");
+            form.setFocus("endereco.numero");
             //form.setValue("complemento", data.complemento || "");
             //form.setValue("uf", data.uf.toLowerCase() || "");
           } else {
@@ -94,9 +96,9 @@ const configuracao = () => {
     if (dadosEmpresa) {
       form.reset({
         ...dadosEmpresa,
-        enderecos: Array.isArray(dadosEmpresa.enderecos)
-          ? dadosEmpresa.enderecos[0]
-          : dadosEmpresa.enderecos,
+        endereco: dadosEmpresa.endereco,
+        //? dadosEmpresa.endereco[0]
+        //: dadosEmpresa.endereco,
         config_empresa: dadosEmpresa.config_empresa,
       });
     }
@@ -106,9 +108,21 @@ const configuracao = () => {
     resolver: zodResolver(formSchemaFeriado),
   });
 
+  //const atualizarEmpresa = atualizarEmpresaMutation();
+
   const onSubmitConfiguracao = (
     values: z.infer<typeof formSchemaConfiguracao>
   ) => {
+    console.log(values);
+    //  const empresa = values.empresa;
+
+    // if (!empresa || typeof empresa.id !== "number") {
+    //   toast.error("Empresa Invalida ou sem ID.");
+    //   return;
+    // }
+
+    //    atualizarEmpresa(empresa.id, empresa);
+
     toast.info("verifique o console log!");
     console.log(values);
   };
@@ -238,7 +252,7 @@ const configuracao = () => {
                   <div className="grid grid-cols-3 gap-4">
                     <FormField
                       control={form.control}
-                      name="enderecos.cep"
+                      name="endereco.cep"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>CEP</FormLabel>
@@ -259,7 +273,7 @@ const configuracao = () => {
                     <div className="col-span-2">
                       <FormField
                         control={form.control}
-                        name="enderecos.rua"
+                        name="endereco.rua"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Rua</FormLabel>
@@ -272,7 +286,7 @@ const configuracao = () => {
                     </div>
                     <FormField
                       control={form.control}
-                      name="enderecos.numero"
+                      name="endereco.numero"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Número</FormLabel>
@@ -284,7 +298,7 @@ const configuracao = () => {
                     />
                     <FormField
                       control={form.control}
-                      name="enderecos.bairro"
+                      name="endereco.bairro"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Bairro</FormLabel>
@@ -296,7 +310,7 @@ const configuracao = () => {
                     />
                     <FormField
                       control={form.control}
-                      name="enderecos.cidade"
+                      name="endereco.cidade"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Cidade</FormLabel>

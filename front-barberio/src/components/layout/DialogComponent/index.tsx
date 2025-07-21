@@ -40,9 +40,9 @@ export function DialogComponent({
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
           <AlertDialogAction
-            className={`${buttonVariants({ variant: "destructive" })} ${
-              className ?? ""
-            }`}
+            className={`min-w-24 ${buttonVariants({
+              variant: "destructive",
+            })} ${className ?? ""}`}
             onClick={action}
             color="red"
           >
