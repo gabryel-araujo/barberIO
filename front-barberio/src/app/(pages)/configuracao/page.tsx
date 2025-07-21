@@ -15,11 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Building2, Calendar, Clock, Edit, Plus, Trash2 } from "lucide-react";
 import { useForm, useWatch } from "react-hook-form";
-import {
-  formSchemaConfiguracao,
-  formSchemaEmpresa,
-  formSchemaFeriado,
-} from "./schemas/schemas";
+import { formSchemaConfiguracao, formSchemaFeriado } from "./schemas/schemas";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -38,20 +34,19 @@ import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { baseUrl } from "@/lib/baseUrl";
-import { AtualizarEmpresa } from "./controllers/configuracoes";
-import { atualizarEmpresaMutation } from "./mutations/configuracoes";
 
 const configuracao = () => {
   const [feriadosGeral, _setFeriadosGeral] =
     useState<z.infer<typeof formSchemaFeriado>[]>(Feriados);
   const [dadosEmpresa, setDadosEmpresa] =
-    useState<z.infer<typeof formSchemaEmpresa>>();
+    useState<z.infer<typeof formSchemaConfiguracao>>();
 
-  useQuery<z.infer<typeof formSchemaEmpresa>>({
+  useQuery<z.infer<typeof formSchemaConfiguracao>>({
     queryKey: ["empresas"],
     queryFn: async () => {
       const response = await axios.get(`${baseUrl}/empresas/1`);
       setDadosEmpresa(response.data);
+      console.log(response.data);
       return response.data;
     },
     staleTime: 5 * (60 * 1000),
@@ -82,14 +77,14 @@ const configuracao = () => {
     }
   };
 
-  const form = useForm<z.infer<typeof formSchemaEmpresa>>({
-    resolver: zodResolver(formSchemaEmpresa),
+  const form = useForm<z.infer<typeof formSchemaConfiguracao>>({
+    resolver: zodResolver(formSchemaConfiguracao),
     defaultValues: {},
   });
 
   const statusHorarios = useWatch({
     control: form.control,
-    name: "config_empresa.horarios",
+    name: "config.horarios",
   });
 
   useEffect(() => {
@@ -97,9 +92,7 @@ const configuracao = () => {
       form.reset({
         ...dadosEmpresa,
         endereco: dadosEmpresa.endereco,
-        //? dadosEmpresa.endereco[0]
-        //: dadosEmpresa.endereco,
-        config_empresa: dadosEmpresa.config_empresa,
+        config: dadosEmpresa.config,
       });
     }
   }, [dadosEmpresa]);
@@ -182,7 +175,7 @@ const configuracao = () => {
                   <div className=" grid grid-cols-2 gap-4 items-center">
                     <FormField
                       control={form.control}
-                      name="nome"
+                      name="empresa.nome"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Nome da Barbearia</FormLabel>
@@ -199,7 +192,7 @@ const configuracao = () => {
 
                     <FormField
                       control={form.control}
-                      name="telefone"
+                      name="empresa.telefone"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Telefone</FormLabel>
@@ -212,7 +205,7 @@ const configuracao = () => {
 
                     <FormField
                       control={form.control}
-                      name="nacional_id"
+                      name="empresa.nacional_id"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>CNPJ</FormLabel>
@@ -228,7 +221,7 @@ const configuracao = () => {
 
                     <FormField
                       control={form.control}
-                      name="email"
+                      name="empresa.email"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>E-mail</FormLabel>
@@ -329,7 +322,7 @@ const configuracao = () => {
                   />
                   <FormField
                     control={form.control}
-                    name="config_empresa.aberto"
+                    name="config.aberto"
                     render={({ field }) => (
                       <FormItem className="flex gap-4">
                         <FormControl>
@@ -356,7 +349,7 @@ const configuracao = () => {
                   />
                   <FormField
                     control={form.control}
-                    name="config_empresa.intervalo"
+                    name="config.intervalo"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Selecione o intervalo</FormLabel>
@@ -391,7 +384,7 @@ const configuracao = () => {
                     Titulos="Horários de Funcionamento"
                     subtitulo="Configure os horários de funcionamento para cada dia da semana"
                   />
-                  {dadosEmpresa?.config_empresa?.horarios
+                  {dadosEmpresa?.config?.horarios
                     ?.sort((a, b) => a.id! - b.id!)
                     .map((horario, index) => {
                       const status = statusHorarios?.[index]?.aberto;
@@ -406,7 +399,7 @@ const configuracao = () => {
                               <FormField
                                 key={horario.id}
                                 control={form.control}
-                                name={`config_empresa.horarios.${index}.aberto`}
+                                name={`config.horarios.${index}.aberto`}
                                 render={({ field }) => (
                                   <FormItem className="flex items-center">
                                     <FormControl>
@@ -425,7 +418,7 @@ const configuracao = () => {
                               <>
                                 <FormField
                                   control={form.control}
-                                  name={`config_empresa.horarios.${index}.abertura`}
+                                  name={`config.horarios.${index}.abertura`}
                                   render={({ field }) => (
                                     <FormItem>
                                       <FormLabel>Abertura</FormLabel>
@@ -442,7 +435,7 @@ const configuracao = () => {
                                 />
                                 <FormField
                                   control={form.control}
-                                  name={`config_empresa.horarios.${index}.fechamento`}
+                                  name={`config.horarios.${index}.fechamento`}
                                   render={({ field }) => (
                                     <FormItem>
                                       <FormLabel>Fechamento</FormLabel>
