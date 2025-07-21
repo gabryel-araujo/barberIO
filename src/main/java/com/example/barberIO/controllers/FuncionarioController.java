@@ -1,6 +1,8 @@
 package com.example.barberIO.controllers;
 
 import com.example.barberIO.dtos.FuncionarioRecordDto;
+import com.example.barberIO.exceptions.RecursoDuplicadoException;
+import com.example.barberIO.exceptions.RecursoNaoEncontradoException;
 import com.example.barberIO.models.FuncionarioModel;
 import com.example.barberIO.models.ServiceModel;
 import com.example.barberIO.repositories.ClienteRepository;
@@ -42,11 +44,11 @@ public class FuncionarioController {
     }
 
     @PostMapping("/funcionarios")
-    public ResponseEntity<Object> addFuncionario(@RequestBody @Valid FuncionarioRecordDto funcionarioRecordDto) {
+    public ResponseEntity<FuncionarioModel> addFuncionario(@RequestBody @Valid FuncionarioRecordDto funcionarioRecordDto) {
         try {
             Optional<FuncionarioModel> funcionario = funcionarioRepository.findByEmail(funcionarioRecordDto.email());
             if (funcionario.isPresent()) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Email já cadastrado!");
+                throw new RecursoDuplicadoException("Já existe um usuário cadastrado com o e-mail informado");
             }
 
             FuncionarioModel funcionarioModel = new FuncionarioModel();
@@ -73,16 +75,16 @@ public class FuncionarioController {
         } catch (Exception e) {
             System.err.println("Erro no processamento: " + e.getMessage());
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao processar: " + e.getMessage());
+            throw new RuntimeException("Erro ao processar os dados. Verifique informações");
         }
     }
 
     @PutMapping("/funcionarios/{id}")
-    public ResponseEntity<Object> updateFuncionario(@PathVariable(value = "id") Long id, @RequestBody @Valid FuncionarioRecordDto funcionarioRecordDto) {
+    public ResponseEntity<FuncionarioModel> updateFuncionario(@PathVariable(value = "id") Long id, @RequestBody @Valid FuncionarioRecordDto funcionarioRecordDto) {
         Optional<FuncionarioModel> funcionarioO = funcionarioRepository.findById(id);
 
         if (funcionarioO.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário não encontrado!");
+            throw new RecursoNaoEncontradoException("Funcionário não encontrado na base de dados. Verifique os dados.");
         }
 
         FuncionarioModel funcionarioModel = funcionarioO.get();

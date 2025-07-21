@@ -10,7 +10,7 @@ public record EnderecoRecordDto(
 		String bairro,
 		String cep,
 		String cidade,
-		String complemento,
-		@NotNull(message = "O endereço precisa estar associado a uma empresa")
-		Long empresa_id
+		String complemento
+//		@NotNull(message = "O endereço precisa estar associado a uma empresa")
+//		Long empresa_id
 		) {}

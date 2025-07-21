@@ -31,6 +31,7 @@ public class EmpresaService {
 			BeanUtils.copyProperties(empresaRecordDto, empresa);
 			LocalDateTime now = LocalDateTime.now();
 			empresa.setCreated_at(now);
+			empresa.setUltima_alteracao(now);
 			return ResponseEntity.status(HttpStatus.CREATED).body(empresaRepository.save(empresa));
 		}
 
@@ -47,6 +48,7 @@ public class EmpresaService {
 		
 		EmpresaModel empresa = empresaO.get();
 		BeanUtils.copyProperties(empresaRecordDto, empresa,"created_at");
+		empresa.setUltima_alteracao(LocalDateTime.now());
 		
 		return ResponseEntity.status(HttpStatus.OK).body(empresaRepository.save(empresa));
 	}

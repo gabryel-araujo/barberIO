@@ -4,13 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.barberIO.dtos.EnderecoRecordDto;
 import com.example.barberIO.models.EnderecoModel;
@@ -35,8 +29,8 @@ public class EnderecoController {
 	}
 	
 	@PostMapping("/enderecos")
-	public ResponseEntity<EnderecoModel> cadastrarEndereco(@RequestBody @Valid EnderecoRecordDto enderecoRecordDto){
-		return enderecoService.cadastrarEndereco(enderecoRecordDto);
+	public ResponseEntity<EnderecoModel> cadastrarEndereco(@RequestBody @Valid EnderecoRecordDto enderecoRecordDto, @RequestParam(name = "empresa_id")Long empresa_id){
+		return enderecoService.cadastrarEndereco(enderecoRecordDto,empresa_id);
 	}
 	
 	@PutMapping("/enderecos/{id}")

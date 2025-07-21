@@ -16,7 +16,6 @@ public record FuncionarioRecordDto(
         int atendimentos,
         boolean disponivel,
         String[] newServices,
-        boolean ativo,
-        LocalDateTime created_at) {
+        boolean ativo) {
 }
 

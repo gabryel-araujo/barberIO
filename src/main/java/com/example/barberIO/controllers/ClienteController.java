@@ -49,17 +49,16 @@ public class ClienteController {
     }
 
     @PutMapping("/clientes/{id}")
-    public ResponseEntity<Object> editCliente(@PathVariable (value = "id") Long id, @RequestBody @Valid ClienteRecordDto clienteRecordDto){
+    public ResponseEntity<ClienteModel> editCliente(@PathVariable (value = "id") Long id, @RequestBody @Valid ClienteRecordDto clienteRecordDto){
 
         Optional<ClienteModel> clienteO = clienteRepository.findById(id);
 
         if(clienteO.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado.");
+            throw new RecursoNaoEncontradoException("Cliente não encontrado. Verifique os dados!");
         }
 
         ClienteModel clienteModel = clienteO.get();
         BeanUtils.copyProperties(clienteRecordDto, clienteModel);
-        clienteModel.setCreated_at(LocalDateTime.now());
         return  ResponseEntity.status(HttpStatus.OK).body(clienteRepository.save(clienteModel));
     }
 

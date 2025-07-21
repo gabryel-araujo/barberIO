@@ -65,10 +65,13 @@ public class HorarioFuncionamentoService {
 			throw new DadosVioladosException("Não é possível cadastrar outro horário de funcionamento. O limite de dias da semana já foi atingido.");
 		}
 
+		int codigo_dia = horarios.size() + 1;
+
 		HorarioFuncionamentoModel horarioNew = new HorarioFuncionamentoModel();
 		BeanUtils.copyProperties(horarioFuncionamento, horarioNew);
 		horarioNew.setUltima_alteracao(LocalDateTime.now());
 		horarioNew.setConfig_empresa(configO.get());
+		horarioNew.setCodigo_dia(codigo_dia);
 		return ResponseEntity.status(HttpStatus.CREATED).body(horarioFuncionamentoRepository.save(horarioNew));
 	}
 

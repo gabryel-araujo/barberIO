@@ -1,7 +1,5 @@
 package com.example.barberIO.services;
 
-import com.example.barberIO.controllers.AgendamentoController;
-import com.example.barberIO.controllers.ServiceController;
 import com.example.barberIO.dtos.AgendamentoRecordDto;
 import com.example.barberIO.models.AgendamentoModel;
 import com.example.barberIO.models.ClienteModel;
@@ -9,17 +7,14 @@ import com.example.barberIO.models.FuncionarioModel;
 import com.example.barberIO.models.ServiceModel;
 import com.example.barberIO.repositories.AgendamentoRepository;
 import com.example.barberIO.repositories.ClienteRepository;
-import com.example.barberIO.repositories.EmpresaRepository;
 import com.example.barberIO.repositories.FuncionarioRepository;
 import com.example.barberIO.repositories.ServiceRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.sql.Timestamp;
 import java.time.*;
 import java.util.ArrayList;

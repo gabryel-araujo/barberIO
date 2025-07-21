@@ -1,5 +1,6 @@
 package com.example.barberIO.controllers;
 import com.example.barberIO.dtos.AgendamentoRecordDto;
+import com.example.barberIO.exceptions.RecursoNaoEncontradoException;
 import com.example.barberIO.models.AgendamentoModel;
 import com.example.barberIO.models.FuncionarioModel;
 import com.example.barberIO.repositories.AgendamentoRepository;
@@ -28,8 +29,19 @@ public class AgendamentoController{
     private AgendamentoService agendamentoService;
 
     @GetMapping("/agendamentos")
-    public ResponseEntity<Object> listarAgendamentos(){
+    public ResponseEntity<List<AgendamentoModel>> listarAgendamentos(){
         return ResponseEntity.status(HttpStatus.OK).body(agendamentoRepository.findAll());
+    }
+
+    @GetMapping("/agendamentos/{id}")
+    public ResponseEntity<AgendamentoModel> listarAgendamentosPorId(@PathVariable(name = "id")Long id){
+        Optional<AgendamentoModel> agendamentoO = agendamentoRepository.findById(id);
+
+        if(agendamentoO.isEmpty()){
+            throw new RecursoNaoEncontradoException("Agendamento não localizado! Verifique os dados");
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(agendamentoO.get());
     }
 
     @PostMapping("/agendamentos")

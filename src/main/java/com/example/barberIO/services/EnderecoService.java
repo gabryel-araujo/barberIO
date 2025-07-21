@@ -42,16 +42,16 @@ public class EnderecoService {
 		return ResponseEntity.status(HttpStatus.OK).body(enderecoO);
 	}
 	
-	public ResponseEntity<EnderecoModel> cadastrarEndereco(EnderecoRecordDto enderecoRecordDto) {
+	public ResponseEntity<EnderecoModel> cadastrarEndereco(EnderecoRecordDto enderecoRecordDto,Long empresa_id) {
 	    EnderecoModel endereco = new EnderecoModel();
 	    BeanUtils.copyProperties(enderecoRecordDto, endereco);
 
 		//Primeiramente validar a empresa
-	    EmpresaModel empresa = empresaRepository.findById(enderecoRecordDto.empresa_id())
+	    EmpresaModel empresa = empresaRepository.findById(empresa_id)
 	            .orElseThrow(() -> new RecursoNaoEncontradoException("Empresa não encontrada."));
 	    
 	    //Validar se já tem empresa cadastrada
-	    Optional<EnderecoModel> enderecoO = enderecoRepository.findByEmpresa(enderecoRecordDto.empresa_id());
+	    Optional<EnderecoModel> enderecoO = enderecoRepository.findByEmpresa(empresa_id);
 	    if(!enderecoO.isEmpty()) {
 			throw new DadosVioladosException("Já existe um endereço vinculado a essa empresa!");
 		}
@@ -71,7 +71,7 @@ public class EnderecoService {
 	public ResponseEntity<EnderecoModel> editarEndereco(EnderecoRecordDto enderecoRecordDto,Long id){
 		Optional<EnderecoModel> enderecoO = enderecoRepository.findById(id);
 
-		//Verificando se a empresa existe
+		//Verificando se o endereco existe
 		if(enderecoO.isEmpty()) {
 			throw new RecursoNaoEncontradoException("Endereço inválido! Verifique os dados");
 		}
@@ -81,7 +81,7 @@ public class EnderecoService {
 		}
 		
 		EnderecoModel endereco = enderecoO.get();
-		BeanUtils.copyProperties(enderecoRecordDto, endereco);
+		BeanUtils.copyProperties(enderecoRecordDto, endereco,"created_at");
 		enderecoRepository.save(endereco);
 		
 		return ResponseEntity.status(HttpStatus.OK).body(endereco);

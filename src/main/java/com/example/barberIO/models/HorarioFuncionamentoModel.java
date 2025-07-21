@@ -38,6 +38,9 @@ public class HorarioFuncionamentoModel implements Serializable{
 	@JoinColumn(name = "config_empresa_id", nullable = false)
 	@JsonIgnore
 	private ConfigEmpresaModel config_empresa;
+
+	@Column(nullable = false)
+	private int codigo_dia;
 	
 	@Column(nullable = false)
 	private LocalDateTime ultima_alteracao;
@@ -92,6 +95,14 @@ public class HorarioFuncionamentoModel implements Serializable{
 
 	public LocalDateTime getUltima_alteracao() {
 		return ultima_alteracao;
+	}
+
+	public int getCodigo_dia() {
+		return codigo_dia;
+	}
+
+	public void setCodigo_dia(int codigo_dia) {
+		this.codigo_dia = codigo_dia;
 	}
 
 	public void setUltima_alteracao(LocalDateTime ultima_alteracao) {

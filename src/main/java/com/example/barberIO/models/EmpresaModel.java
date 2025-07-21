@@ -38,6 +38,9 @@ public class EmpresaModel implements Serializable {
 	@OneToOne(mappedBy = "config_empresa", cascade = CascadeType.ALL, orphanRemoval = true)
 	private ConfigEmpresaModel config_empresa;
 
+	@Column(nullable = true)
+	private LocalDateTime ultima_alteracao;
+
 	public Long getId() {
 		return id;
 	}
@@ -111,4 +114,11 @@ public class EmpresaModel implements Serializable {
 		this.config_empresa = config_empresa;
 	}
 
+	public LocalDateTime getUltima_alteracao() {
+		return ultima_alteracao;
+	}
+
+	public void setUltima_alteracao(LocalDateTime ultima_alteracao) {
+		this.ultima_alteracao = ultima_alteracao;
+	}
 }
