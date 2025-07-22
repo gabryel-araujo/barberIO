@@ -1,18 +1,26 @@
+// src/lib/mutations.ts
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { AtualizarEmpresa } from "../controllers/configuracoes";
 import { z } from "zod";
-import { formSchemaEmpresa } from "../schemas/schemas";
+import { AtualizarEmpresa } from "../controllers/configuracoes";
+import { empresaSchema } from "../schemas/schemas";
 
-type Empresa = z.infer<typeof formSchemaEmpresa>;
+type Empresa = z.infer<typeof empresaSchema>;
 
-export const atualizarEmpresaMutation = () => {
+export const useMutations = () => {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
+  const mutationAtualizarEmpresa = useMutation({
     mutationFn: ({ id, empresa }: { id: number; empresa: Empresa }) =>
       AtualizarEmpresa(id, empresa),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["empresas"] }),
-    onError: (error) => console.error("Erro ao atualizar empresa", error),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["empresas"] });
+    },
+    onError: (error) => {
+      console.error("Erro ao atualizar empresa", error);
+    },
   });
-  return (id: number, empresa: Empresa) => mutation.mutate({ id, empresa });
+
+  return {
+    mutationAtualizarEmpresa,
+  };
 };

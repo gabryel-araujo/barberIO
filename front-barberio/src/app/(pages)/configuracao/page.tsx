@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Building2, Calendar, Clock, Edit, Plus, Trash2 } from "lucide-react";
 import { useForm, useWatch } from "react-hook-form";
-import { formSchemaConfiguracao, formSchemaFeriado } from "./schemas/schemas";
+import { empresaSchema, formSchemaFeriado } from "./schemas/schemas";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -34,23 +34,33 @@ import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { baseUrl } from "@/lib/baseUrl";
+import { useMutations } from "./mutations/configuracoes";
 
 const configuracao = () => {
   const [feriadosGeral, _setFeriadosGeral] =
     useState<z.infer<typeof formSchemaFeriado>[]>(Feriados);
   const [dadosEmpresa, setDadosEmpresa] =
-    useState<z.infer<typeof formSchemaConfiguracao>>();
+    useState<z.infer<typeof empresaSchema>>();
 
-  useQuery<z.infer<typeof formSchemaConfiguracao>>({
+  const { data } = useQuery<z.infer<typeof empresaSchema>>({
     queryKey: ["empresas"],
     queryFn: async () => {
       const response = await axios.get(`${baseUrl}/empresas/1`);
-      setDadosEmpresa(response.data);
-      console.log(response.data);
       return response.data;
     },
     staleTime: 5 * (60 * 1000),
   });
+
+  useEffect(() => {
+    if (data) {
+      setDadosEmpresa(data);
+      form.reset({
+        ...data,
+        endereco: data.endereco,
+        config_empresa: data.config_empresa,
+      });
+    }
+  }, [data]);
 
   const checkCEP = (e: { target: { value: any } }) => {
     const cep = e.target.value.replace(/\D/g, "");
@@ -66,8 +76,6 @@ const configuracao = () => {
             form.setValue("endereco.bairro", data.bairro || "");
             form.setValue("endereco.cidade", data.localidade || "");
             form.setFocus("endereco.numero");
-            //form.setValue("complemento", data.complemento || "");
-            //form.setValue("uf", data.uf.toLowerCase() || "");
           } else {
             toast.info("CEP Inválido!");
           }
@@ -77,46 +85,42 @@ const configuracao = () => {
     }
   };
 
-  const form = useForm<z.infer<typeof formSchemaConfiguracao>>({
-    resolver: zodResolver(formSchemaConfiguracao),
+  const form = useForm<z.infer<typeof empresaSchema>>({
+    resolver: zodResolver(empresaSchema),
     defaultValues: {},
+    mode: "onSubmit",
   });
 
   const statusHorarios = useWatch({
     control: form.control,
-    name: "config.horarios",
+    name: "config_empresa.horarios",
   });
-
-  useEffect(() => {
-    if (dadosEmpresa) {
-      form.reset({
-        ...dadosEmpresa,
-        endereco: dadosEmpresa.endereco,
-        config: dadosEmpresa.config,
-      });
-    }
-  }, [dadosEmpresa]);
 
   const formFeriado = useForm<z.infer<typeof formSchemaFeriado>>({
     resolver: zodResolver(formSchemaFeriado),
   });
 
-  //const atualizarEmpresa = atualizarEmpresaMutation();
+  const { mutationAtualizarEmpresa } = useMutations();
 
-  const onSubmitConfiguracao = (
-    values: z.infer<typeof formSchemaConfiguracao>
-  ) => {
-    console.log(values);
-    //  const empresa = values.empresa;
+  const onSubmitConfiguracao = (values: z.infer<typeof empresaSchema>) => {
+    if (values.id === undefined) {
+      toast.error("ID da empresa é obrigatório para atualizar");
+    }
+    //unificando os dados da empresa a ser alterados
+    const empresa = {
+      id: values.id,
+      nome: values.nome,
+      telefone: values.telefone,
+      email: values.email,
+      nacional_id: values.nacional_id,
+    };
+    //função mutation para atualizar os dados da empresa
+    mutationAtualizarEmpresa.mutate({
+      id: empresa.id!,
+      empresa,
+    });
 
-    // if (!empresa || typeof empresa.id !== "number") {
-    //   toast.error("Empresa Invalida ou sem ID.");
-    //   return;
-    // }
-
-    //    atualizarEmpresa(empresa.id, empresa);
-
-    toast.info("verifique o console log!");
+    toast.success("Dados alterados com sucesso!");
     console.log(values);
   };
 
@@ -142,7 +146,9 @@ const configuracao = () => {
           subtitulo="Gerencie as configurações da sua barbearia"
         />
 
-        <Button form="formConfiguracao">Salvar Alterações</Button>
+        <Button form="formConfiguracao" type="submit">
+          Salvar Alterações
+        </Button>
       </div>
       {/* tabs de configurações */}
       <div className="md:px-10">
@@ -162,7 +168,9 @@ const configuracao = () => {
           <Form {...form}>
             <form
               id="formConfiguracao"
-              onSubmit={form.handleSubmit(onSubmitConfiguracao)}
+              onSubmit={form.handleSubmit(onSubmitConfiguracao, (erros) => {
+                console.log("Erro de validação", erros);
+              })}
               className="gap-5"
             >
               <TabsContent value="geral" className="space-y-4 pb-4">
@@ -175,7 +183,7 @@ const configuracao = () => {
                   <div className=" grid grid-cols-2 gap-4 items-center">
                     <FormField
                       control={form.control}
-                      name="empresa.nome"
+                      name="nome"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Nome da Barbearia</FormLabel>
@@ -192,7 +200,7 @@ const configuracao = () => {
 
                     <FormField
                       control={form.control}
-                      name="empresa.telefone"
+                      name="telefone"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Telefone</FormLabel>
@@ -205,7 +213,7 @@ const configuracao = () => {
 
                     <FormField
                       control={form.control}
-                      name="empresa.nacional_id"
+                      name="nacional_id"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>CNPJ</FormLabel>
@@ -221,7 +229,7 @@ const configuracao = () => {
 
                     <FormField
                       control={form.control}
-                      name="empresa.email"
+                      name="email"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>E-mail</FormLabel>
@@ -322,7 +330,7 @@ const configuracao = () => {
                   />
                   <FormField
                     control={form.control}
-                    name="config.aberto"
+                    name="config_empresa.aberto"
                     render={({ field }) => (
                       <FormItem className="flex gap-4">
                         <FormControl>
@@ -349,7 +357,7 @@ const configuracao = () => {
                   />
                   <FormField
                     control={form.control}
-                    name="config.intervalo"
+                    name="config_empresa.intervalo"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Selecione o intervalo</FormLabel>
@@ -384,7 +392,7 @@ const configuracao = () => {
                     Titulos="Horários de Funcionamento"
                     subtitulo="Configure os horários de funcionamento para cada dia da semana"
                   />
-                  {dadosEmpresa?.config?.horarios
+                  {dadosEmpresa?.config_empresa?.horarios
                     ?.sort((a, b) => a.id! - b.id!)
                     .map((horario, index) => {
                       const status = statusHorarios?.[index]?.aberto;
@@ -399,7 +407,7 @@ const configuracao = () => {
                               <FormField
                                 key={horario.id}
                                 control={form.control}
-                                name={`config.horarios.${index}.aberto`}
+                                name={`config_empresa.horarios.${index}.aberto`}
                                 render={({ field }) => (
                                   <FormItem className="flex items-center">
                                     <FormControl>
@@ -418,7 +426,7 @@ const configuracao = () => {
                               <>
                                 <FormField
                                   control={form.control}
-                                  name={`config.horarios.${index}.abertura`}
+                                  name={`config_empresa.horarios.${index}.abertura`}
                                   render={({ field }) => (
                                     <FormItem>
                                       <FormLabel>Abertura</FormLabel>
@@ -435,7 +443,7 @@ const configuracao = () => {
                                 />
                                 <FormField
                                   control={form.control}
-                                  name={`config.horarios.${index}.fechamento`}
+                                  name={`config_empresa.horarios.${index}.fechamento`}
                                   render={({ field }) => (
                                     <FormItem>
                                       <FormLabel>Fechamento</FormLabel>
