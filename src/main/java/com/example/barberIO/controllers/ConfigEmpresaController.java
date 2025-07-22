@@ -2,6 +2,7 @@ package com.example.barberIO.controllers;
 
 import com.example.barberIO.dtos.ConfigEmpresaRecordDto;
 import com.example.barberIO.models.ConfigEmpresaModel;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,14 +30,14 @@ public class ConfigEmpresaController {
 
 	@PostMapping("/configEmpresa/{empresa_id}")
 	public ResponseEntity<ConfigEmpresaModel> cadastrarConfig(
-			@RequestBody ConfigEmpresaRecordDto configEmpresaRecordDto,
+			@RequestBody @Valid ConfigEmpresaRecordDto configEmpresaRecordDto,
 			@PathVariable("empresa_id") Long empresa_id) {
 		return configEmpresaService.cadastrarConfiguracao(configEmpresaRecordDto, empresa_id);
 	}
 
 	@PutMapping("/configEmpresa")
 	public ResponseEntity<ConfigEmpresaModel> editarConfig(
-			@RequestBody ConfigEmpresaRecordDto configEmpresaRecordDto,
+			@RequestBody @Valid ConfigEmpresaRecordDto configEmpresaRecordDto,
 			@RequestParam("config_id") Long config_id,
 			@RequestParam("empresa_id") Long empresa_id) {
 		return configEmpresaService.editarConfiguracao(configEmpresaRecordDto, empresa_id, config_id);

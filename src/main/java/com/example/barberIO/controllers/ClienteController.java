@@ -25,15 +25,15 @@ public class ClienteController {
     ClienteService clienteService;
 
     @GetMapping("/clientes")
-    public ResponseEntity<List<ClienteModel>> getAllClients(){
+    public ResponseEntity<List<ClienteModel>> getAllClients() {
         return ResponseEntity.status(HttpStatus.OK).body(clienteRepository.findAll());
     }
 
     @PostMapping("/clientes")
-    public ResponseEntity<Object> addCliente(@RequestBody @Valid ClienteRecordDto clienteRecordDto){
+    public ResponseEntity<Object> addCliente(@RequestBody @Valid ClienteRecordDto clienteRecordDto) {
         Optional<ClienteModel> clienteO = clienteRepository.findByTelefone(clienteRecordDto.telefone());
 
-        if(clienteO.isPresent()){
+        if (clienteO.isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Cliente já cadastrado");
         }
 
@@ -47,24 +47,24 @@ public class ClienteController {
     }
 
     @PutMapping("/clientes/{id}")
-    public ResponseEntity<ClienteModel> editCliente(@PathVariable (value = "id") Long id, @RequestBody @Valid ClienteRecordDto clienteRecordDto){
+    public ResponseEntity<ClienteModel> editCliente(@PathVariable(value = "id") Long id, @RequestBody @Valid ClienteRecordDto clienteRecordDto) {
 
         Optional<ClienteModel> clienteO = clienteRepository.findById(id);
 
-        if(clienteO.isEmpty()){
+        if (clienteO.isEmpty()) {
             throw new RecursoNaoEncontradoException("Cliente não encontrado. Verifique os dados!");
         }
 
         ClienteModel clienteModel = clienteO.get();
         BeanUtils.copyProperties(clienteRecordDto, clienteModel);
-        return  ResponseEntity.status(HttpStatus.OK).body(clienteRepository.save(clienteModel));
+        return ResponseEntity.status(HttpStatus.OK).body(clienteRepository.save(clienteModel));
     }
 
     @DeleteMapping("/clientes/{id}")
-    public ResponseEntity<Object> deleteCliente(@PathVariable (value = "id") Long id){
+    public ResponseEntity<Object> deleteCliente(@PathVariable(value = "id") Long id) {
         Optional<ClienteModel> clienteO = clienteRepository.findById(id);
 
-        if(clienteO.isEmpty()){
+        if (clienteO.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado.");
         }
 
@@ -73,7 +73,7 @@ public class ClienteController {
     }
 
     @GetMapping("/clientes/{id}")
-    public ResponseEntity<Object> getOneClient(@PathVariable (value = "id") Long id ){
+    public ResponseEntity<Object> getOneClient(@PathVariable(value = "id") Long id) {
         ClienteModel clienteO = clienteService.buscarPorId(id);
         return ResponseEntity.status(HttpStatus.OK).body(clienteO);
     }

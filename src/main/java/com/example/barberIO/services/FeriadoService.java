@@ -28,11 +28,6 @@ public class FeriadoService {
 
     public ResponseEntity<List<FeriadoModel>> listarFeriados() {
         List<FeriadoModel> feriados = feriadoRepository.findAll();
-
-        if (feriados.isEmpty()) {
-            throw new RecursoNaoEncontradoException("Nenhum feriado cadastrado.");
-        }
-
         return ResponseEntity.status(HttpStatus.OK).body(feriados);
     }
 

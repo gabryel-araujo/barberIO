@@ -31,6 +31,11 @@ public class HorarioFuncionamentoController {
         return horarioFuncionamentoService.cadastrarHorario(horarioFuncionamentoRecordDto,config_empresa_id);
     }
 
+    @PostMapping("/horarioFuncionamento/semana/{config_empresa_id}")
+    public ResponseEntity<List<HorarioFuncionamentoModel>> cadastrarVariosHorarios(@RequestBody @Valid List<HorarioFuncionamentoRecordDto> horarioFuncionamentoRecordDto, @PathVariable(name = "config_empresa_id")Long config_empresa_id){
+        return horarioFuncionamentoService.cadastrarVariosHorarios(horarioFuncionamentoRecordDto,config_empresa_id);
+    }
+
     @PutMapping("/horarioFuncionamento/{id}")
     public ResponseEntity<HorarioFuncionamentoModel> editarHorario(@RequestBody @Valid HorarioFuncionamentoRecordDto horarioFuncionamentoRecordDto, @PathVariable(name = "id")Long id){
         return horarioFuncionamentoService.editarHorario(horarioFuncionamentoRecordDto,id);

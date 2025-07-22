@@ -21,87 +21,82 @@ import com.example.barberIO.repositories.EmpresaRepository;
 
 @Service
 public class ConfigEmpresaService {
-	
-	@Autowired 
-	private ConfigEmpresaRepository configEmpresaRepository;
-	
-	@Autowired 
-	private EmpresaRepository empresaRepository;
 
-	public ResponseEntity<List<ConfigEmpresaModel>> listarConfiguracoes(){
-		List<ConfigEmpresaModel> configuracoes = configEmpresaRepository.findAll();
+    @Autowired
+    private ConfigEmpresaRepository configEmpresaRepository;
 
-		if(configuracoes.isEmpty()){
-			throw new RecursoNaoEncontradoException("Nenhuma configuração localizada");
-		}
+    @Autowired
+    private EmpresaRepository empresaRepository;
 
-		return ResponseEntity.status(HttpStatus.OK).body(configuracoes);
-	}
+    public ResponseEntity<List<ConfigEmpresaModel>> listarConfiguracoes() {
+        List<ConfigEmpresaModel> configuracoes = configEmpresaRepository.findAll();
+        return ResponseEntity.status(HttpStatus.OK).body(configuracoes);
+    }
 
-	public ResponseEntity<List<ConfigEmpresaModel>> listarConfiguracoesPorEmpresa(Long empresa_id){
-		List<ConfigEmpresaModel> configuracoes = configEmpresaRepository.listarConfigsPorEmpresa(empresa_id);
+    public ResponseEntity<List<ConfigEmpresaModel>> listarConfiguracoesPorEmpresa(Long empresa_id) {
+        List<ConfigEmpresaModel> configuracoes = configEmpresaRepository.listarConfigsPorEmpresa(empresa_id);
 
-		if(configuracoes.isEmpty()){
-			throw new RecursoNaoEncontradoException("Nenhuma configuração localizada para essa empresa");
-		}
+        if (configuracoes.isEmpty()) {
+            throw new RecursoNaoEncontradoException("Nenhuma configuração localizada para essa empresa");
+        }
 
-		return ResponseEntity.status(HttpStatus.OK).body(configuracoes);
-	}
-	
-	public ResponseEntity<ConfigEmpresaModel> cadastrarConfiguracao(ConfigEmpresaRecordDto configDto, Long empresa_id){
-		Optional<EmpresaModel> empresaO = empresaRepository.findById(empresa_id);
-		
-		if(empresaO.isEmpty()) {
-			throw new RecursoNaoEncontradoException("Empresa não localizada na base de dados");
-		}
-		
-		ConfigEmpresaModel configEmpresa = new ConfigEmpresaModel();
-		BeanUtils.copyProperties(configDto, configEmpresa);
-		LocalDateTime now = LocalDateTime.now();
-		configEmpresa.setConfig_empresa(empresaO.get());
-		configEmpresa.setUltima_alteracao(now);
-		
-		return ResponseEntity.status(HttpStatus.CREATED).body(configEmpresaRepository.save(configEmpresa));
-	}
+        return ResponseEntity.status(HttpStatus.OK).body(configuracoes);
+    }
 
-	public ResponseEntity<ConfigEmpresaModel> editarConfiguracao(ConfigEmpresaRecordDto configDto, Long empresa_id,Long config_id){
-		Optional<EmpresaModel> empresaO = empresaRepository.findById(empresa_id);
+    public ResponseEntity<ConfigEmpresaModel> cadastrarConfiguracao(ConfigEmpresaRecordDto configDto, Long empresa_id) {
+        Optional<EmpresaModel> empresaO = empresaRepository.findById(empresa_id);
 
-		if(empresaO.isEmpty()){
-			throw new RecursoNaoEncontradoException("Empresa não localizada na base de dados");
-		}
+        if (empresaO.isEmpty()) {
+            throw new RecursoNaoEncontradoException("Empresa não localizada na base de dados");
+        }
 
-		Optional<ConfigEmpresaModel> configEmpresaO = configEmpresaRepository.findById(config_id);
+        ConfigEmpresaModel configEmpresa = new ConfigEmpresaModel();
+        BeanUtils.copyProperties(configDto, configEmpresa);
+        LocalDateTime now = LocalDateTime.now();
+        configEmpresa.setConfig_empresa(empresaO.get());
+        configEmpresa.setUltima_alteracao(now);
 
-		if(configEmpresaO.isEmpty()){
-			throw new RecursoNaoEncontradoException("Configuração não localizada. Verifique os dados");
-		}
+        return ResponseEntity.status(HttpStatus.CREATED).body(configEmpresaRepository.save(configEmpresa));
+    }
 
-		ConfigEmpresaModel configEmpresaModel = configEmpresaO.get();
-		BeanUtils.copyProperties(configDto,configEmpresaModel);
-		configEmpresaModel.setUltima_alteracao(LocalDateTime.now());
-		configEmpresaRepository.save(configEmpresaModel);
+    public ResponseEntity<ConfigEmpresaModel> editarConfiguracao(ConfigEmpresaRecordDto configDto, Long empresa_id, Long config_id) {
+        Optional<EmpresaModel> empresaO = empresaRepository.findById(empresa_id);
 
-		return ResponseEntity.status(HttpStatus.OK).body(configEmpresaModel);
-	}
+        if (empresaO.isEmpty()) {
+            throw new RecursoNaoEncontradoException("Empresa não localizada na base de dados");
+        }
 
-	public ResponseEntity<Object> removerConfiguracao(Long config_id){
-		Optional<ConfigEmpresaModel> configO = configEmpresaRepository.findById(config_id);
+        Optional<ConfigEmpresaModel> configEmpresaO = configEmpresaRepository.findById(config_id);
 
-	    if (configO.isEmpty()) {
-	        throw new RecursoNaoEncontradoException("Configuração não localizada. Verifique os dados");
-	    }
+        if (configEmpresaO.isEmpty()) {
+            throw new RecursoNaoEncontradoException("Configuração não localizada. Verifique os dados");
+        }
 
-	    ConfigEmpresaModel configEmpresaModel = configO.get();
+        ConfigEmpresaModel configEmpresaModel = configEmpresaO.get();
+        BeanUtils.copyProperties(configDto, configEmpresaModel);
+        configEmpresaModel.setUltima_alteracao(LocalDateTime.now());
+        configEmpresaRepository.save(configEmpresaModel);
 
-	    // Desvincular da empresa antes de remover
-	    EmpresaModel empresa = configEmpresaModel.getConfig_empresa();
-	    if (empresa != null) {
-	        empresa.setConfig_empresa(null); // zera a referência da empresa para a config
-	        empresaRepository.save(empresa); // salva a mudança
-	    }
+        return ResponseEntity.status(HttpStatus.OK).body(configEmpresaModel);
+    }
 
-	    configEmpresaRepository.delete(configEmpresaModel);
-	    return ResponseEntity.status(HttpStatus.OK).body("Configuração removida com sucesso");
-	}
+    public ResponseEntity<Object> removerConfiguracao(Long config_id) {
+        Optional<ConfigEmpresaModel> configO = configEmpresaRepository.findById(config_id);
+
+        if (configO.isEmpty()) {
+            throw new RecursoNaoEncontradoException("Configuração não localizada. Verifique os dados");
+        }
+
+        ConfigEmpresaModel configEmpresaModel = configO.get();
+
+        // Desvincular da empresa antes de remover
+        EmpresaModel empresa = configEmpresaModel.getConfig_empresa();
+        if (empresa != null) {
+            empresa.setConfig_empresa(null); // zera a referência da empresa para a config
+            empresaRepository.save(empresa); // salva a mudança
+        }
+
+        configEmpresaRepository.delete(configEmpresaModel);
+        return ResponseEntity.status(HttpStatus.OK).body("Configuração removida com sucesso");
+    }
 }
