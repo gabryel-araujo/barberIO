@@ -24,12 +24,11 @@ const configEmpresaSchema = z.object({
   feriados: z.array(formSchemaFeriado), // Pode ser ajustado se tiver estrutura
 });
 
-const enderecoSchema = z.object({
+export const enderecoSchema = z.object({
   id: z.number().optional(),
   rua: z.string(),
   numero: z.string(),
   bairro: z.string(),
-  complemento: z.string().optional(),
   cidade: z.string(),
   cep: z.string(),
 });

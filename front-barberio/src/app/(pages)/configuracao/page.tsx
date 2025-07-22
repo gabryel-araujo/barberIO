@@ -35,6 +35,15 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { baseUrl } from "@/lib/baseUrl";
 import { useMutations } from "./mutations/configuracoes";
+import { AxiosError } from "axios";
+
+type ErrorResponse = {
+  error: string;
+  message: string;
+  path: string;
+  status: number;
+  timestamp: string;
+};
 
 const configuracao = () => {
   const [feriadosGeral, _setFeriadosGeral] =
@@ -42,7 +51,10 @@ const configuracao = () => {
   const [dadosEmpresa, setDadosEmpresa] =
     useState<z.infer<typeof empresaSchema>>();
 
-  const { data } = useQuery<z.infer<typeof empresaSchema>>({
+  const { data, error } = useQuery<
+    z.infer<typeof empresaSchema>,
+    AxiosError<ErrorResponse>
+  >({
     queryKey: ["empresas"],
     queryFn: async () => {
       const response = await axios.get(`${baseUrl}/empresas/1`);
@@ -50,6 +62,11 @@ const configuracao = () => {
     },
     staleTime: 5 * (60 * 1000),
   });
+
+  if (error) {
+    console.log(error);
+    toast.error(error.response!.data!.message || "ops ocorreu um erro!");
+  }
 
   useEffect(() => {
     if (data) {
@@ -100,25 +117,44 @@ const configuracao = () => {
     resolver: zodResolver(formSchemaFeriado),
   });
 
-  const { mutationAtualizarEmpresa } = useMutations();
+  const { mutationAtualizarEmpresa, mutationAtualizaEndereco } = useMutations();
 
   const onSubmitConfiguracao = (values: z.infer<typeof empresaSchema>) => {
-    if (values.id === undefined) {
-      toast.error("ID da empresa é obrigatório para atualizar");
+    try {
+      if (values.id === undefined) {
+        toast.error("ID da empresa é obrigatório para atualizar");
+        return;
+      }
+      //unificando os dados da empresa a ser alterados
+      const empresa = {
+        id: values.id,
+        nome: values.nome,
+        telefone: values.telefone,
+        email: values.email,
+        nacional_id: values.nacional_id,
+      };
+      //função mutation para atualizar os dados da empresa
+      mutationAtualizarEmpresa.mutate({
+        id: empresa.id!,
+        empresa,
+      });
+      //unificando os dados da empresa a ser alterados
+      const endereco = {
+        id: values.endereco?.id!,
+        rua: values.endereco?.rua!,
+        numero: values.endereco?.numero!,
+        bairro: values.endereco?.bairro!,
+        cidade: values.endereco?.cidade!,
+        cep: values.endereco?.cep!,
+      };
+      //função mutation para atualizar os dados do endereço
+      mutationAtualizaEndereco.mutate({
+        id: endereco.id!,
+        endereco,
+      });
+    } catch (error) {
+      console.error("Erro: ", error);
     }
-    //unificando os dados da empresa a ser alterados
-    const empresa = {
-      id: values.id,
-      nome: values.nome,
-      telefone: values.telefone,
-      email: values.email,
-      nacional_id: values.nacional_id,
-    };
-    //função mutation para atualizar os dados da empresa
-    mutationAtualizarEmpresa.mutate({
-      id: empresa.id!,
-      empresa,
-    });
 
     toast.success("Dados alterados com sucesso!");
     console.log(values);
