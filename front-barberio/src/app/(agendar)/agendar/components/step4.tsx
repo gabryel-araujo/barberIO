@@ -20,7 +20,11 @@ import { agendar } from "@/lib/api/agendamento";
 import { findByTelefone, POSTCliente } from "@/lib/api/cliente";
 import { LoadingComponent } from "../../../../../components/LoadingComponent";
 import { format } from "date-fns";
-import { nomeCapitalizado } from "@/utils/functions";
+import {
+  dataFormatada,
+  nomeCapitalizado,
+  normalizarData,
+} from "@/utils/functions";
 
 export const Step4 = () => {
   const { state, dispatch } = useForm();
@@ -151,7 +155,9 @@ export const Step4 = () => {
 
         // axios.post(`http://10.10.0.160:3000/api/sendText`, {
         //   chatId: `5583${state.telefone.slice(3)}@c.us`,
-        //   text: `${state.nome}, Você tem um agendamento marcado com o Barbeiro ${state.barbeiro} às ${state.horario} de ${state.data}`,
+        //   text: `${state.nome}, Você tem um agendamento marcado com o Barbeiro ${
+        //     state.barbeiro.nome
+        //   } às ${state.horario} de ${dataFormatada(state.data)}`,
         //   session: "default",
         // });
 
