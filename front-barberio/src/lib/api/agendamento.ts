@@ -48,7 +48,7 @@ export const DELETEAgendamento = cache(
 export const GETHorarios = cache(async (id_barbeiro: number, data: string) => {
   try {
     const respose = await axiosInstance.get(
-      `/agendamentos/horarios/${id_barbeiro}?data=${data}`
+      `/agendamentos/horarios/${id_barbeiro}?data=${data}&empresa_id=1`
     );
     return respose;
   } catch (error) {
