@@ -146,6 +146,15 @@ export const Step4 = () => {
 
       if (response.status === 201) {
         toast.success("Agendamento realizado com sucesso!");
+
+        //IMPLEMENTAÇÃO WHATSAPP PARA ENVIO APÓS O AGENDAMENTO
+
+        // axios.post(`http://10.10.0.160:3000/api/sendText`, {
+        //   chatId: `5583${state.telefone.slice(3)}@c.us`,
+        //   text: `${state.nome}, Você tem um agendamento marcado com o Barbeiro ${state.barbeiro} às ${state.horario} de ${state.data}`,
+        //   session: "default",
+        // });
+
         setIsLoading(true);
         setTimeout(() => {
           push("/");
