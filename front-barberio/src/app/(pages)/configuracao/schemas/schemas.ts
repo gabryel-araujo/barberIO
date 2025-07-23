@@ -16,12 +16,12 @@ const horarioSchema = z.object({
   codigo_dia: z.number().optional(),
 });
 
-const configEmpresaSchema = z.object({
+export const configEmpresaSchema = z.object({
   id: z.number().optional(),
   aberto: z.boolean(),
   intervalo: z.number(),
-  horarios: z.array(horarioSchema),
-  feriados: z.array(formSchemaFeriado), // Pode ser ajustado se tiver estrutura
+  horarios: z.array(horarioSchema).optional(),
+  feriados: z.array(formSchemaFeriado).optional(), // Pode ser ajustado se tiver estrutura
 });
 
 export const enderecoSchema = z.object({

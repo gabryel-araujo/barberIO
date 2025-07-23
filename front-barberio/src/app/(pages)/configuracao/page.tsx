@@ -117,7 +117,11 @@ const configuracao = () => {
     resolver: zodResolver(formSchemaFeriado),
   });
 
-  const { mutationAtualizarEmpresa, mutationAtualizaEndereco } = useMutations();
+  const {
+    mutationAtualizarEmpresa,
+    mutationAtualizaEndereco,
+    mutationAtualizaConfigEmpresa,
+  } = useMutations();
 
   const onSubmitConfiguracao = (values: z.infer<typeof empresaSchema>) => {
     try {
@@ -151,6 +155,18 @@ const configuracao = () => {
       mutationAtualizaEndereco.mutate({
         id: endereco.id!,
         endereco,
+      });
+
+      //unificando dados da configEmpresa a ser alterados
+      const config_empresa = {
+        aberto: values.config_empresa?.aberto!,
+        intervalo: values.config_empresa?.intervalo!,
+      };
+      //função mutation para atualizar os dados do configEmpresa
+      mutationAtualizaConfigEmpresa.mutate({
+        config_id: values.config_empresa?.id!,
+        empresa_id: empresa.id,
+        config_empresa,
       });
     } catch (error) {
       console.error("Erro: ", error);
@@ -399,7 +415,9 @@ const configuracao = () => {
                         <FormLabel>Selecione o intervalo</FormLabel>
                         <FormControl>
                           <Select
-                            onValueChange={field.onChange}
+                            onValueChange={(value) =>
+                              field.onChange(Number(value))
+                            }
                             value={String(field.value)}
                             defaultValue={String(field.value)}
                           >

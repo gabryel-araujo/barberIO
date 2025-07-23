@@ -2,12 +2,18 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import {
   AtualizaEndereco,
+  AtualizarConfigEmpresa,
   AtualizarEmpresa,
 } from "../controllers/configuracoes";
-import { empresaSchema, enderecoSchema } from "../schemas/schemas";
+import {
+  configEmpresaSchema,
+  empresaSchema,
+  enderecoSchema,
+} from "../schemas/schemas";
 
 type Empresa = z.infer<typeof empresaSchema>;
 type Endereco = z.infer<typeof enderecoSchema>;
+type ConfigEMpresa = z.infer<typeof configEmpresaSchema>;
 
 export const useMutations = () => {
   const queryClient = useQueryClient();
@@ -34,8 +40,26 @@ export const useMutations = () => {
     },
   });
 
+  const mutationAtualizaConfigEmpresa = useMutation({
+    mutationFn: ({
+      config_id,
+      empresa_id,
+      config_empresa,
+    }: {
+      config_id: number;
+      empresa_id: number;
+      config_empresa: ConfigEMpresa;
+    }) => AtualizarConfigEmpresa(config_id, empresa_id, config_empresa),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["empresas"] });
+    },
+    onError: (error) => {
+      console.error("Erro ao atualizar ConfigEmpresa", error);
+    },
+  });
   return {
     mutationAtualizarEmpresa,
     mutationAtualizaEndereco,
+    mutationAtualizaConfigEmpresa,
   };
 };
