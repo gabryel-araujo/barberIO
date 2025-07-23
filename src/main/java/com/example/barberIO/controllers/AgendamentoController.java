@@ -81,7 +81,7 @@ public class AgendamentoController {
             @RequestParam("empresa_id") Long empresa_id) {
 
         List<LocalTime> horariosDisponiveis = agendamentoService
-                .horariosDisponiveis(barbeiro_id, data, barbeiro_id);
+                .horariosDisponiveis(barbeiro_id, data, empresa_id);
 
         return ResponseEntity.ok(horariosDisponiveis);
     }
