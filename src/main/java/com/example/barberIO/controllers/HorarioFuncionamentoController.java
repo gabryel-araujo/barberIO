@@ -41,6 +41,11 @@ public class HorarioFuncionamentoController {
         return horarioFuncionamentoService.editarHorario(horarioFuncionamentoRecordDto,id);
     }
 
+    @PutMapping("/horarioFuncionamento/semana/{config_empresa_id}")
+    public ResponseEntity<List<HorarioFuncionamentoModel>> editarVariosHorarios(@RequestBody @Valid List<HorarioFuncionamentoRecordDto> horarioFuncionamentoRecordDto, @PathVariable(name = "config_empresa_id")Long config_empresa_id){
+        return horarioFuncionamentoService.editarVariosHorarios(horarioFuncionamentoRecordDto,config_empresa_id);
+    }
+
     @DeleteMapping("/horarioFuncionamento/{id}")
     public ResponseEntity<Object> excluirHorario(@PathVariable(name = "id")Long id){
         return horarioFuncionamentoService.excluirHorario(id);

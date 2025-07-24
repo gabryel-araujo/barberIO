@@ -3,7 +3,9 @@ package com.example.barberIO.services;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,7 +88,7 @@ public class HorarioFuncionamentoService {
 			throw new DadosVioladosException("Não é possível cadastrar outro horário de funcionamento. O limite de dias da semana já foi atingido.");
 		}
 
-		int codigo_dia = horarios.size() + 1;
+//		int codigo_dia = horarios.size() + 1;
 
 		List<HorarioFuncionamentoModel> horariosNew = new ArrayList<>();
 
@@ -97,7 +99,7 @@ public class HorarioFuncionamentoService {
 
 			horarioNew.setUltima_alteracao(LocalDateTime.now());
 			horarioNew.setConfig_empresa(configO.get());
-			horarioNew.setCodigo_dia(codigo_dia);
+			horarioNew.setCodigo_dia(horario.codigo_dia());
 
 			horariosNew.add(horarioNew);
 		}
@@ -121,6 +123,50 @@ public class HorarioFuncionamentoService {
 		horarioFuncionamentoRepository.save(newHorario);
 		return ResponseEntity.status(HttpStatus.OK).body(newHorario);
 	}
+
+	public ResponseEntity<List<HorarioFuncionamentoModel>> editarVariosHorarios(
+			List<HorarioFuncionamentoRecordDto> horarioFuncionamento,
+			Long config_empresa_id) {
+
+		Optional<ConfigEmpresaModel> configO = configEmpresaRepository.findById(config_empresa_id);
+
+		if (configO.isEmpty()) {
+			throw new RecursoNaoEncontradoException("Parâmetros de configuração não localizados! Verifique informações");
+		}
+
+		List<HorarioFuncionamentoModel> horariosExistentes = horarioFuncionamentoRepository.findAllByEmpresa(config_empresa_id);
+
+		if (horariosExistentes.size() != 7) {
+			throw new DadosVioladosException("É necessário que os 7 dias da semana já estejam cadastrados para poder editar.");
+		}
+
+		// Corrigido aqui: tratamento de duplicatas
+		Map<Integer, HorarioFuncionamentoModel> mapaHorarios = horariosExistentes.stream()
+				.collect(Collectors.toMap(
+						HorarioFuncionamentoModel::getCodigo_dia,
+						h -> h,
+						(h1, h2) -> h1 // mantém o primeiro em caso de duplicata
+				));
+
+		List<HorarioFuncionamentoModel> horariosEditados = new ArrayList<>();
+
+		for (HorarioFuncionamentoRecordDto dto : horarioFuncionamento) {
+			HorarioFuncionamentoModel horario = mapaHorarios.get(dto.codigo_dia());
+
+			if (horario == null) {
+				throw new DadosVioladosException("Não foi encontrado o dia com código " + dto.codigo_dia());
+			}
+
+			BeanUtils.copyProperties(dto, horario);
+			horario.setUltima_alteracao(LocalDateTime.now());
+			horariosEditados.add(horario);
+		}
+
+		horarioFuncionamentoRepository.saveAll(horariosEditados);
+
+		return ResponseEntity.ok(horariosEditados);
+	}
+
 
 	public ResponseEntity<Object> excluirHorario(Long horario_func_id){
 		Optional<HorarioFuncionamentoModel> horarioFuncO = horarioFuncionamentoRepository.findById(horario_func_id);

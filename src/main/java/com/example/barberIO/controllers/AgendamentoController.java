@@ -4,7 +4,6 @@ import com.example.barberIO.dtos.AgendamentoRecordDto;
 import com.example.barberIO.exceptions.RecursoNaoEncontradoException;
 import com.example.barberIO.models.AgendamentoModel;
 import com.example.barberIO.repositories.AgendamentoRepository;
-import com.example.barberIO.repositories.FuncionarioRepository;
 import com.example.barberIO.services.AgendamentoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +20,8 @@ import java.util.Optional;
 public class AgendamentoController {
 
     @Autowired
-    AgendamentoRepository agendamentoRepository;
+    private AgendamentoRepository agendamentoRepository;
 
-    @Autowired
-    FuncionarioRepository funcionarioRepository;
     @Autowired
     private AgendamentoService agendamentoService;
 
