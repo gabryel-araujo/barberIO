@@ -27,7 +27,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Feriados } from "./models/feriados";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -36,6 +35,7 @@ import axios from "axios";
 import { baseUrl } from "@/lib/baseUrl";
 import { useMutations } from "./mutations/configuracoes";
 import { AxiosError } from "axios";
+import { DialogComponent } from "@/components/layout/DialogComponent";
 
 type ErrorResponse = {
   error: string;
@@ -46,10 +46,13 @@ type ErrorResponse = {
 };
 
 const configuracao = () => {
-  const [feriadosGeral, _setFeriadosGeral] =
-    useState<z.infer<typeof formSchemaFeriado>[]>(Feriados);
+  const [feriadoExistente, setFeriadoExistente] =
+    useState<z.infer<typeof formSchemaFeriado>>();
+  const [feriadoParaExcluir, setFeriadoParaExcluir] =
+    useState<z.infer<typeof formSchemaFeriado>>();
   const [dadosEmpresa, setDadosEmpresa] =
     useState<z.infer<typeof empresaSchema>>();
+  const [openModalExcluir, setOpenModalExcluir] = useState(false);
 
   const { data, error } = useQuery<
     z.infer<typeof empresaSchema>,
@@ -115,12 +118,18 @@ const configuracao = () => {
 
   const formFeriado = useForm<z.infer<typeof formSchemaFeriado>>({
     resolver: zodResolver(formSchemaFeriado),
+    defaultValues: {
+      recorrente: false,
+    },
   });
 
   const {
     mutationAtualizarEmpresa,
     mutationAtualizaEndereco,
     mutationAtualizaConfigEmpresa,
+    mutationCriarFeriado,
+    mutationEditarFeriado,
+    mutationDeletarFeriado,
   } = useMutations();
 
   const onSubmitConfiguracao = (values: z.infer<typeof empresaSchema>) => {
@@ -176,19 +185,67 @@ const configuracao = () => {
     console.log(values);
   };
 
-  const adicionarFeriado = (values: z.infer<typeof formSchemaFeriado>) => {
-    toast.info("verifique o console log!");
-    console.log(values);
+  const adicionarFeriado = (feriados: z.infer<typeof formSchemaFeriado>) => {
+    try {
+      if (
+        feriados.nome === undefined ||
+        feriados.data === undefined ||
+        feriados.data === undefined
+      ) {
+        return toast.error("Preencha os campos");
+      }
+      if (feriadoExistente) {
+        const feriadoAtualizado = feriados;
+        mutationEditarFeriado.mutate({
+          id: feriadoAtualizado.id!,
+          feriados: feriadoAtualizado,
+        });
+      } else {
+        mutationCriarFeriado.mutate({
+          config_id: dadosEmpresa?.config_empresa?.id!,
+          feriados: {
+            nome: feriados.nome,
+            data: feriados.data,
+            recorrente: feriados.recorrente,
+          },
+        });
+      }
+      setFeriadoExistente(undefined);
+      console.log(feriados);
+      toast.success("Feriado cadastrado com sucesso");
+      formFeriado.reset({
+        id: undefined,
+        nome: "",
+        data: "",
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
-
   const deleteFeriado = (feriado: z.infer<typeof formSchemaFeriado>) => {
-    toast.info("verifique o console log!");
-    console.log("Deletando Feriado: ", feriado);
+    try {
+      mutationDeletarFeriado.mutate({
+        id: feriado.id!,
+      });
+      toast.success(`Feriado de "${feriado.nome}" foi deletado com sucesso!`);
+      console.log("Deletando Feriado: ", feriado);
+      setFeriadoParaExcluir(undefined);
+    } catch (error) {
+      console.log(`Erro ao deletar feriado`, error);
+    }
   };
 
   const editFeriado = (feriado: z.infer<typeof formSchemaFeriado>) => {
-    toast.info("verifique o console log!");
-    console.log("Deletando Feriado: ", feriado);
+    setFeriadoExistente(feriado);
+
+    formFeriado.reset({
+      id: feriado.id,
+      nome: feriado.nome,
+      data: feriado.data,
+      recorrente: feriado.recorrente,
+    });
+
+    console.log("Editando Feriado: ", feriado);
   };
   return (
     <div className="w-screen min-h-screen bg-[#e6f0ff]">
@@ -590,14 +647,23 @@ const configuracao = () => {
                         )}
                       />
                     </div>
-                    <Button form="formFeriado">
-                      <Plus /> Adicionar
-                    </Button>
+                    {feriadoExistente ? (
+                      <Button
+                        className="bg-green-600 min-w-[110px]"
+                        form="formFeriado"
+                      >
+                        <Plus /> Salvar
+                      </Button>
+                    ) : (
+                      <Button className="min-w-[110px]" form="formFeriado">
+                        <Plus /> Adicionar
+                      </Button>
+                    )}
                   </form>
                 </Form>
               </Card>
               <p className="font-semibold text-sm pt-4">Feriados Cadastrado</p>
-              {feriadosGeral.map((feriado) => (
+              {dadosEmpresa?.config_empresa?.feriados!.map((feriado) => (
                 <Card
                   key={feriado.id}
                   className="min-h-16 flex-row justify-between items-center p-4"
@@ -605,13 +671,21 @@ const configuracao = () => {
                   <div className="flex gap-4">
                     <p className="font-bold">{feriado.nome}</p>
                     <p className="text-slate-500">{feriado.data}</p>
-                    <Badge className="bg-primary/20 text-primary">
-                      {feriado.recorrente ? "Recorrente" : ""}
-                    </Badge>
+
+                    {feriado.recorrente ? (
+                      <Badge className="bg-primary/20 text-primary">
+                        Recorrente
+                      </Badge>
+                    ) : (
+                      ""
+                    )}
                   </div>
                   <div className="flex gap-2">
                     <div
-                      onClick={() => deleteFeriado(feriado)}
+                      onClick={() => {
+                        setFeriadoParaExcluir(feriado),
+                          setOpenModalExcluir(!openModalExcluir);
+                      }}
                       className="hover:bg-red-600 flex items-center justify-center w-8 h-8 rounded-sm text-red-100 bg-red-400 cursor-pointer transition-all duration-300"
                     >
                       <Trash2 size={18} />
@@ -626,6 +700,13 @@ const configuracao = () => {
                 </Card>
               ))}
             </Card>
+            <DialogComponent
+              actionLabel={`Excluir`}
+              open={openModalExcluir}
+              setOpen={setOpenModalExcluir}
+              title={`Deseja realmente excluir o feriado de "${feriadoParaExcluir?.nome}"`}
+              action={() => deleteFeriado(feriadoParaExcluir!)}
+            />
           </TabsContent>
         </Tabs>
       </div>

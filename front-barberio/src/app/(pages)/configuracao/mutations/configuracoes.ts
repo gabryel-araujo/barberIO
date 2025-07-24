@@ -4,16 +4,21 @@ import {
   AtualizaEndereco,
   AtualizarConfigEmpresa,
   AtualizarEmpresa,
+  CriarFeriado,
+  DeletarFeriado,
+  EditarFeriado,
 } from "../controllers/configuracoes";
 import {
   configEmpresaSchema,
   empresaSchema,
   enderecoSchema,
+  formSchemaFeriado,
 } from "../schemas/schemas";
 
 type Empresa = z.infer<typeof empresaSchema>;
 type Endereco = z.infer<typeof enderecoSchema>;
 type ConfigEMpresa = z.infer<typeof configEmpresaSchema>;
+type Feriado = z.infer<typeof formSchemaFeriado>;
 
 export const useMutations = () => {
   const queryClient = useQueryClient();
@@ -57,9 +62,46 @@ export const useMutations = () => {
       console.error("Erro ao atualizar ConfigEmpresa", error);
     },
   });
+
+  const mutationCriarFeriado = useMutation({
+    mutationFn: ({
+      config_id,
+      feriados,
+    }: {
+      config_id: number;
+      feriados: Feriado;
+    }) => CriarFeriado(config_id, feriados),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["empresas"] });
+    },
+    onError: (error) => {
+      console.error("Erro ao criar Feriado", error);
+    },
+  });
+
+  const mutationEditarFeriado = useMutation({
+    mutationFn: ({ id, feriados }: { id: number; feriados: Feriado }) =>
+      EditarFeriado(id, feriados),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["empresas"] }),
+    onError: (error) => {
+      console.error("Erro ao editar feriado", error);
+    },
+  });
+
+  const mutationDeletarFeriado = useMutation({
+    mutationFn: ({ id }: { id: number }) => DeletarFeriado(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["empresas"] }),
+    onError: (error) => {
+      console.error("Erro ao deletar feriado", error);
+    },
+  });
+
   return {
     mutationAtualizarEmpresa,
     mutationAtualizaEndereco,
     mutationAtualizaConfigEmpresa,
+    mutationCriarFeriado,
+    mutationEditarFeriado,
+    mutationDeletarFeriado,
   };
 };
