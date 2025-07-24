@@ -88,8 +88,6 @@ public class HorarioFuncionamentoService {
 			throw new DadosVioladosException("Não é possível cadastrar outro horário de funcionamento. O limite de dias da semana já foi atingido.");
 		}
 
-//		int codigo_dia = horarios.size() + 1;
-
 		List<HorarioFuncionamentoModel> horariosNew = new ArrayList<>();
 
 		for (HorarioFuncionamentoRecordDto horario : horarioFuncionamento) {
@@ -104,7 +102,6 @@ public class HorarioFuncionamentoService {
 			horariosNew.add(horarioNew);
 		}
 
-		// Salvar todos de uma vez
 		horarioFuncionamentoRepository.saveAll(horariosNew);
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(horariosNew);
