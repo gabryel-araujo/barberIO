@@ -59,3 +59,14 @@ export const DeletarFeriado = async (id: number) => {
   const response = await axios.delete(`${baseUrl}/feriados/${id}`);
   return response.data;
 };
+
+export const editarHorarioFuncionamento = async (
+  config_id: number,
+  horarioSemana: z.infer<typeof formSchemaFeriado>[]
+) => {
+  const response = await axios.put(
+    `${baseUrl}/horarioFuncionamento/semana/${config_id}`,
+    horarioSemana
+  );
+  return response.data;
+};

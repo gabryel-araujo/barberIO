@@ -130,6 +130,7 @@ const configuracao = () => {
     mutationCriarFeriado,
     mutationEditarFeriado,
     mutationDeletarFeriado,
+    mutationAtualizarHorarioFuncionamento,
   } = useMutations();
 
   const onSubmitConfiguracao = (values: z.infer<typeof empresaSchema>) => {
@@ -176,6 +177,12 @@ const configuracao = () => {
         config_id: values.config_empresa?.id!,
         empresa_id: empresa.id,
         config_empresa,
+      });
+
+      //função mutation para atualizar os dados do Horario Semana
+      mutationAtualizarHorarioFuncionamento.mutate({
+        config_id: values.config_empresa?.id!,
+        horarioSemana: values.config_empresa?.horarios!,
       });
     } catch (error) {
       console.error("Erro: ", error);

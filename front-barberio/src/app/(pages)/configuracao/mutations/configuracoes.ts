@@ -7,18 +7,22 @@ import {
   CriarFeriado,
   DeletarFeriado,
   EditarFeriado,
+  editarHorarioFuncionamento,
 } from "../controllers/configuracoes";
 import {
   configEmpresaSchema,
   empresaSchema,
   enderecoSchema,
   formSchemaFeriado,
+  horarioSchema,
 } from "../schemas/schemas";
 
 type Empresa = z.infer<typeof empresaSchema>;
 type Endereco = z.infer<typeof enderecoSchema>;
 type ConfigEMpresa = z.infer<typeof configEmpresaSchema>;
 type Feriado = z.infer<typeof formSchemaFeriado>;
+type HorarioSemana = z.infer<typeof horarioSchema>;
+type HorarioSemanaArray = HorarioSemana[];
 
 export const useMutations = () => {
   const queryClient = useQueryClient();
@@ -96,6 +100,20 @@ export const useMutations = () => {
     },
   });
 
+  const mutationAtualizarHorarioFuncionamento = useMutation({
+    mutationFn: ({
+      config_id,
+      horarioSemana,
+    }: {
+      config_id: number;
+      horarioSemana: HorarioSemanaArray;
+    }) => editarHorarioFuncionamento(config_id, horarioSemana),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["empresas"] }),
+    onError: (error) => {
+      console.log("Erro ao atualizar Horario de funcionamento", error);
+    },
+  });
+
   return {
     mutationAtualizarEmpresa,
     mutationAtualizaEndereco,
@@ -103,5 +121,6 @@ export const useMutations = () => {
     mutationCriarFeriado,
     mutationEditarFeriado,
     mutationDeletarFeriado,
+    mutationAtualizarHorarioFuncionamento,
   };
 };

@@ -7,7 +7,7 @@ export const formSchemaFeriado = z.object({
   recorrente: z.boolean().optional(),
 });
 
-const horarioSchema = z.object({
+export const horarioSchema = z.object({
   id: z.number().optional(),
   aberto: z.boolean(),
   nome: z.string(),
