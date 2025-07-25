@@ -13,7 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm as useFormZod } from "react-hook-form";
 import { useForm } from "@/contexts/AgendamentoContextProvider";
 import { useQuery } from "@tanstack/react-query";
-import { baseUrl } from "@/lib/baseUrl";
+import { baseCrm, baseUrl } from "@/lib/baseUrl";
 import axios, { AxiosError } from "axios";
 import { agendar } from "@/lib/api/agendamento";
 import { findByTelefone, POSTCliente } from "@/lib/api/cliente";
@@ -167,7 +167,7 @@ export const Step4 = () => {
       if (response.status === 201) {
         toast.success("Agendamento realizado com sucesso!");
         //IMPLEMENTAÇÃO WHATSAPP PARA ENVIO APÓS O AGENDAMENTO
-        axios.post(`http://136.248.85.49:3000/api/sendText`, {
+        axios.post(`${baseCrm}/api/sendText`, {
           chatId: `5583${state.telefone.slice(3)}@c.us`,
           text: `✅ *AGENDAMENTO CONFIRMADO!*\n\n🎯 *${
             state.nome
