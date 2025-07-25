@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
-//import { servicos } from "@/model/servico";
 import { Servico } from "@/types/servico";
 import { Calendar, Clock, Scissors, User } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -15,12 +14,12 @@ import { useForm as useFormZod } from "react-hook-form";
 import { useForm } from "@/contexts/AgendamentoContextProvider";
 import { useQuery } from "@tanstack/react-query";
 import { baseUrl } from "@/lib/baseUrl";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { agendar } from "@/lib/api/agendamento";
 import { findByTelefone, POSTCliente } from "@/lib/api/cliente";
 import { LoadingComponent } from "../../../../../components/LoadingComponent";
 import { format } from "date-fns";
-import { nomeCapitalizado } from "@/utils/functions";
+import { dataFormatada, nomeCapitalizado } from "@/utils/functions";
 
 export const Step4 = () => {
   const { state, dispatch } = useForm();
@@ -152,12 +151,14 @@ export const Step4 = () => {
       const data = format(state.data, "yyyy-MM-dd'T'");
       const horario = data + state.horario;
       const findCliente = await findByTelefone(state.telefone);
+      const fim = horario;
 
       const response = await agendar(
         state.barbeiro.id,
         findCliente[0].id! as number,
         state.servico.id as number,
-        horario
+        horario,
+        fim
       );
 
       setIsLoading(true);
@@ -165,13 +166,29 @@ export const Step4 = () => {
 
       if (response.status === 201) {
         toast.success("Agendamento realizado com sucesso!");
+        //IMPLEMENTAÇÃO WHATSAPP PARA ENVIO APÓS O AGENDAMENTO
+        axios.post(`http://136.248.85.49:3000/api/sendText`, {
+          chatId: `5583${state.telefone.slice(3)}@c.us`,
+          text: `💈 *Agendamento Confirmado!*\n
+${state.nome}, seu horário com o barbeiro ${state.barbeiro.nome} 
+está confirmado para o dia ${dataFormatada(state.data)} às ${state.horario}.\n
+Estamos te esperando para deixar o visual em dia! 💇‍♂️\n
+Caso precise reagendar, é só entrar em contato com a gente.\n
+Barbearia BarberIO — Estilo que fala mais alto.\n `,
+          session: "default",
+        });
+
+        setIsLoading(true);
+
         setTimeout(() => {
           push("/");
         }, 2000);
       }
       setOpenModalRevisao(!openModalRevisao);
     } catch (error) {
-      toast.error("O barbeiro está ocupado no horário selecionado");
+      const err = error as AxiosError;
+      toast.error(`Erro ao validar: ${JSON.stringify(err.response?.data)}`);
+      console.log(error);
     }
   };
 

@@ -1,4 +1,12 @@
-import { Calendar, Users, Scissors, BarChart, User, Home } from "lucide-react";
+import {
+  Calendar,
+  Users,
+  Scissors,
+  BarChart,
+  User,
+  Home,
+  Settings,
+} from "lucide-react";
 import { ReactNode } from "react";
 
 type MenuItem = {
@@ -37,6 +45,11 @@ const menuItems: MenuItem[] = [
     path: "/servicos",
     icon: <Scissors className="h-5 w-5" />,
     label: "Serviços",
+  },
+  {
+    path: "/configuracao",
+    icon: <Settings className="h-5 w-5" />,
+    label: "Configuração",
   },
 ];
 

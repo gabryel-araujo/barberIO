@@ -12,7 +12,7 @@ export const schema = z.object({
     }),
   phone: z
     .string()
-    .regex(/^\d{11}$/, "Telefone inválido, digite no formato XX 9XXXX XXXX"),
+    .regex(/^\d{11}$/, "Telefone inválido, digite no formato XX XXXXX XXXX"),
 });
 
 export type FormData = z.infer<typeof schema>;
