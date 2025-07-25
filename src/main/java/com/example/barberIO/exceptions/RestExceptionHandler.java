@@ -26,4 +26,34 @@ public class RestExceptionHandler {
 
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(RecursoDuplicadoException.class)
+    public ResponseEntity<ApiErrorResponseDto> handleRecursoDuplicado(
+            RecursoDuplicadoException ex, HttpServletRequest request) {
+
+        ApiErrorResponseDto errorResponse = new ApiErrorResponseDto(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),
+                "Recurso duplicado",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DadosVioladosException.class)
+    public ResponseEntity<ApiErrorResponseDto> handleDadosViolados(
+            DadosVioladosException ex, HttpServletRequest request) {
+
+        ApiErrorResponseDto errorResponse = new ApiErrorResponseDto(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),
+                "Dados Violados",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
 }

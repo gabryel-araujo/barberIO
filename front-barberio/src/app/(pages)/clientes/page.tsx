@@ -130,7 +130,7 @@ const clientes = () => {
       .max(120, { message: "Nome precisa ter no maximo 120 caracteres" }),
     telefone: z
       .string({ required_error: "Digite seu telefone" })
-      .regex(/^\d{11}$/, "Telefone inválido, digite no formato XX XXXXX XXXX"),
+      .regex(/^\d{11}$/, "Telefone inválido, digite no formato XX XXXXX XXXX")
       .min(11, { message: "Nome precisa ter no minimo 11 caracteres" }),
   });
 

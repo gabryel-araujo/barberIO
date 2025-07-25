@@ -1,20 +1,18 @@
 package com.example.barberIO.controllers;
 
 import com.example.barberIO.dtos.FuncionarioRecordDto;
+import com.example.barberIO.exceptions.RecursoDuplicadoException;
+import com.example.barberIO.exceptions.RecursoNaoEncontradoException;
 import com.example.barberIO.models.FuncionarioModel;
 import com.example.barberIO.models.ServiceModel;
-import com.example.barberIO.repositories.ClienteRepository;
 import com.example.barberIO.repositories.FuncionarioRepository;
 import com.example.barberIO.repositories.ServiceRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -30,12 +28,23 @@ public class FuncionarioController {
         return ResponseEntity.status(HttpStatus.OK).body(funcionarioRepository.findAll());
     }
 
+    @GetMapping("funcionarios/{id}")
+    public ResponseEntity<Object> getById(@PathVariable(value = "id") Long id){
+        Optional<FuncionarioModel> funcionarioO = funcionarioRepository.findById(id);
+
+        if(funcionarioO.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário não encontrado na base de dados");
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(funcionarioO.get());
+    }
+
     @PostMapping("/funcionarios")
-    public ResponseEntity<Object> addFuncionario(@RequestBody @Valid FuncionarioRecordDto funcionarioRecordDto) {
+    public ResponseEntity<FuncionarioModel> addFuncionario(@RequestBody @Valid FuncionarioRecordDto funcionarioRecordDto) {
         try {
             Optional<FuncionarioModel> funcionario = funcionarioRepository.findByEmail(funcionarioRecordDto.email());
             if (funcionario.isPresent()) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Email já cadastrado!");
+                throw new RecursoDuplicadoException("Já existe um usuário cadastrado com o e-mail informado");
             }
 
             FuncionarioModel funcionarioModel = new FuncionarioModel();
@@ -62,16 +71,16 @@ public class FuncionarioController {
         } catch (Exception e) {
             System.err.println("Erro no processamento: " + e.getMessage());
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao processar: " + e.getMessage());
+            throw new RuntimeException("Erro ao processar os dados. Verifique informações");
         }
     }
 
     @PutMapping("/funcionarios/{id}")
-    public ResponseEntity<Object> updateFuncionario(@PathVariable(value = "id") Long id, @RequestBody @Valid FuncionarioRecordDto funcionarioRecordDto) {
+    public ResponseEntity<FuncionarioModel> updateFuncionario(@PathVariable(value = "id") Long id, @RequestBody @Valid FuncionarioRecordDto funcionarioRecordDto) {
         Optional<FuncionarioModel> funcionarioO = funcionarioRepository.findById(id);
 
         if (funcionarioO.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário não encontrado!");
+            throw new RecursoNaoEncontradoException("Funcionário não encontrado na base de dados. Verifique os dados.");
         }
 
         FuncionarioModel funcionarioModel = funcionarioO.get();

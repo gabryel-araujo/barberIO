@@ -255,8 +255,8 @@ const configuracao = () => {
     console.log("Editando Feriado: ", feriado);
   };
   return (
-    <div className="w-screen min-h-screen bg-[#e6f0ff]">
-      <div className="w-full flex justify-between items-center md:px-10 px-3 py-5">
+    <div className="w-screen min-h-screen bg-[#e6f0ff] p-2">
+      <div className="w-full flex justify-between items-center md:px-8 px-2 py-3">
         <TitulosPages
           Titulos="Configurações"
           subtitulo="Gerencie as configurações da sua barbearia"
@@ -267,7 +267,7 @@ const configuracao = () => {
         </Button>
       </div>
       {/* tabs de configurações */}
-      <div className="md:px-10">
+      <div className="md:px-5">
         <Tabs defaultValue="geral">
           <TabsList className="bg-[#e6f0ff] w-full h-11 gap-3">
             <TabsTrigger value="geral">
@@ -592,28 +592,28 @@ const configuracao = () => {
           </Form>
           <TabsContent value="feriado">
             {/* Aqui será colocado o conteudo da tab Feriado */}
-            <Card className="min-h-[250px] p-4">
+            <Card className="min-h-[250px] p-4 ">
               <TitulosCards
                 Titulos="Feriados"
                 subtitulo="Configure feriado em que a barbearia não funcionará"
               />
-              <Card className="p-4 w-full gap-4">
+              <Card className="p-3 sm:p-4 w-full gap-4">
                 <Form {...formFeriado}>
                   <form
                     id="formFeriado"
                     onSubmit={formFeriado.handleSubmit(adicionarFeriado)}
-                    className="gap-5 flex justify-between items-center"
+                    className="gap-5 flex flex-col lg:flex-row justify-between items-start lg:items-center lg:space-y-0"
                   >
-                    <div className="flex items-center gap-5">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 w-full lg:w-auto">
                       <FormField
                         control={formFeriado.control}
                         name="nome"
                         render={({ field }) => (
-                          <FormItem className="">
+                          <FormItem className="w-full sm:w-auto">
                             <FormLabel>Nome do Feriado</FormLabel>
                             <FormControl>
                               <Input
-                                className="w-[250px]"
+                                className="w-full sm:w-[250px]"
                                 placeholder="Feriado de Natal"
                                 {...field}
                               />
@@ -625,11 +625,11 @@ const configuracao = () => {
                         control={formFeriado.control}
                         name="data"
                         render={({ field }) => (
-                          <FormItem className="min-w-20">
+                          <FormItem className="w-full sm:w-auto">
                             <FormLabel>Data</FormLabel>
                             <FormControl>
                               <Input
-                                className="w-[250px]"
+                                className="w-full sm:w-[250px]"
                                 type="date"
                                 {...field}
                               />
@@ -641,7 +641,7 @@ const configuracao = () => {
                         control={formFeriado.control}
                         name="recorrente"
                         render={({ field }) => (
-                          <FormItem className="flex gap-4">
+                          <FormItem className="flex gap-4 items-center">
                             <FormControl>
                               <Switch
                                 className=""
@@ -656,38 +656,42 @@ const configuracao = () => {
                     </div>
                     {feriadoExistente ? (
                       <Button
-                        className="bg-green-600 min-w-[110px]"
+                        className="bg-green-600 w-full sm:w-auto min-w-[110px]"
                         form="formFeriado"
                       >
-                        <Plus /> Salvar
+                        <Plus className="mr-2" /> Salvar
                       </Button>
                     ) : (
-                      <Button className="min-w-[110px]" form="formFeriado">
-                        <Plus /> Adicionar
+                      <Button
+                        className="w-full sm:w-auto min-w-[110px]"
+                        form="formFeriado"
+                      >
+                        <Plus className="mr-2" /> Adicionar
                       </Button>
                     )}
                   </form>
                 </Form>
               </Card>
-              <p className="font-semibold text-sm pt-4">Feriados Cadastrado</p>
+
+              <p className="font-semibold text-md pt-4">Feriados Cadastrados</p>
               {dadosEmpresa?.config_empresa?.feriados!.map((feriado) => (
                 <Card
                   key={feriado.id}
-                  className="min-h-16 flex-row justify-between items-center p-4"
+                  className="min-h-16 flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 sm:p-4 gap-4 sm:gap-0"
                 >
-                  <div className="flex gap-4">
+                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
                     <p className="font-bold">{feriado.nome}</p>
                     <p className="text-slate-500">{feriado.data}</p>
 
                     {feriado.recorrente ? (
-                      <Badge className="bg-primary/20 text-primary">
+                      <Badge className="bg-primary/20 text-primary w-fit">
                         Recorrente
                       </Badge>
                     ) : (
                       ""
                     )}
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 self-end sm:self-center">
                     <div
                       onClick={() => {
                         setFeriadoParaExcluir(feriado),
