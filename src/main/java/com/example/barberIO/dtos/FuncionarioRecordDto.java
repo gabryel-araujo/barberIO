@@ -1,11 +1,7 @@
 package com.example.barberIO.dtos;
 
-import com.example.barberIO.models.ServiceModel;
+
 import jakarta.validation.constraints.NotBlank;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
 public record FuncionarioRecordDto(
         @NotBlank(message = "O nome não pode ser vazio") String nome,
         @NotBlank(message = "O email não pode ser vazio") String email,
@@ -16,7 +12,6 @@ public record FuncionarioRecordDto(
         int atendimentos,
         boolean disponivel,
         String[] newServices,
-        boolean ativo,
-        LocalDateTime created_at) {
+        boolean ativo) {
 }
 
