@@ -17,6 +17,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
+      <head>
+        <meta name="apple-mobile-web-app-title" content="BarberiO" />
+      </head>
       <body className={`antialiased`}>
         <AgendamentoProvider>
           <Providers>
