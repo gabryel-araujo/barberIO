@@ -37,7 +37,7 @@ import { useMutations } from "./mutations/configuracoes";
 import { AxiosError } from "axios";
 import { DialogComponent } from "@/components/layout/DialogComponent";
 
-type ErrorResponse = {
+export type ErrorResponse = {
   error: string;
   message: string;
   path: string;

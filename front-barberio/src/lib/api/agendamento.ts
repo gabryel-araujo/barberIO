@@ -7,7 +7,8 @@ export const agendar = async (
   barbeiro_id: number,
   cliente_id: number,
   servico_id: number,
-  horario: string
+  horario: string,
+  fim: string
 ) => {
   try {
     const response = axiosInstance.post("/agendamentos", {
@@ -15,6 +16,7 @@ export const agendar = async (
       cliente: { id: cliente_id },
       servico: { id: servico_id },
       horario,
+      fim,
     });
     return response;
   } catch (error) {
