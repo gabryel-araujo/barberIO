@@ -48,6 +48,8 @@ export const Step4 = () => {
     },
   });
 
+  const urlApi = "/api/send-email";
+
   // const queryClient = useQueryClient();
 
   const review = [
@@ -130,6 +132,20 @@ export const Step4 = () => {
     setOpenModalRevisao(!openModalRevisao);
   };
 
+  async function handleSendEmail() {
+    try {
+      await fetch(urlApi, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(state),
+      });
+    } catch (error) {
+      toast.error("Erro ao enviar o email");
+    }
+  }
+
   const confirmarAgendamento = async () => {
     try {
       const data = format(state.data, "yyyy-MM-dd'T'");
@@ -145,11 +161,12 @@ export const Step4 = () => {
         fim
       );
 
+      setIsLoading(true);
+      await handleSendEmail();
+
       if (response.status === 201) {
         toast.success("Agendamento realizado com sucesso!");
-
         //IMPLEMENTAÇÃO WHATSAPP PARA ENVIO APÓS O AGENDAMENTO
-
         axios.post(`http://136.248.85.49:3000/api/sendText`, {
           chatId: `5583${state.telefone.slice(3)}@c.us`,
           text: `💈 *Agendamento Confirmado!*\n
@@ -162,6 +179,7 @@ Barbearia BarberIO — Estilo que fala mais alto.\n `,
         });
 
         setIsLoading(true);
+
         setTimeout(() => {
           push("/");
         }, 2000);

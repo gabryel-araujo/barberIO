@@ -123,11 +123,15 @@ const clientes = () => {
   const formShema = z.object({
     nome: z
       .string({ required_error: "Digite seu nome" })
+      .regex(/^[a-zA-ZáàâãäéèêëíìîïóòôõöúùûüçÇ\s]*$/, {
+        message: "O campo deve conter apenas letras.",
+      })
       .min(2, { message: "Nome precisa ter no minimo 2 caracteres" })
       .max(120, { message: "Nome precisa ter no maximo 120 caracteres" }),
     telefone: z
       .string({ required_error: "Digite seu telefone" })
       .regex(/^\d{11}$/, "Telefone inválido, digite no formato XX XXXXX XXXX"),
+      .min(11, { message: "Nome precisa ter no minimo 11 caracteres" }),
   });
 
   const form = useForm<z.infer<typeof formShema>>({

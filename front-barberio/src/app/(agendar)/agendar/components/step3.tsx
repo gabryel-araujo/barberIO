@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
-import { Clock } from "lucide-react";
+import { CalendarX2, Clock } from "lucide-react";
 import { useForm } from "@/contexts/AgendamentoContextProvider";
 import { toast } from "sonner";
 import { GETHorarios } from "@/lib/api/agendamento";
@@ -88,33 +88,44 @@ export const Step3 = () => {
         </span>
       </div>
       <div className="flex flex-col gap-5 items-center justify-center pt-5">
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-5">
-          {disponiveis.map((horario: string) => {
-            const horarioFormatado = horario.slice(0, 5); // "09:00"
+        {disponiveis.length > 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-5 ">
+            {disponiveis.map((horario: string) => {
+              const horarioFormatado = horario.slice(0, 5); // "09:00"
 
-            return (
-              <Button
-                key={horario}
-                variant={hora === horario ? "default" : "outline"}
-                className={
-                  hora === horario
-                    ? "bg-primary hover:bg-barber-accent/90 w-[150px]"
-                    : "w-[150px] cursor-pointer"
-                }
-                onClick={() => {
-                  setHora(horario);
-                  dispatch({
-                    type: AgendamentoAction.setHorario,
-                    payload: horario,
-                  });
-                }}
-              >
-                <Clock className="mr-2 h-4 w-4" />
-                {horarioFormatado}
-              </Button>
-            );
-          })}
-        </div>
+              return (
+                <Button
+                  key={horario}
+                  variant={hora === horario ? "default" : "outline"}
+                  className={
+                    hora === horario
+                      ? "bg-primary hover:bg-barber-accent/90 w-[150px]"
+                      : "w-[150px] cursor-pointer"
+                  }
+                  onClick={() => {
+                    setHora(horario);
+                    dispatch({
+                      type: AgendamentoAction.setHorario,
+                      payload: horario,
+                    });
+                  }}
+                >
+                  <Clock className="mr-2 h-4 w-4" />
+                  {horarioFormatado}
+                </Button>
+              );
+            })}
+          </div>
+        ) : (
+          <>
+            <div className="flex flex-col items-center justify-center py-8">
+              <CalendarX2 size={50} className="text-slate-300" />
+              <h1 className="font-semibold text-slate-300 text-sm md:text-md text-center">
+                Nenhum horário disponível para esse barbeiro nessa data
+              </h1>
+            </div>
+          </>
+        )}
 
         <div className="flex gap-3 items-center justify-between">
           {state.currentStep != 1 && (
