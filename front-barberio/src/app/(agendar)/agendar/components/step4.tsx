@@ -20,11 +20,7 @@ import { agendar } from "@/lib/api/agendamento";
 import { findByTelefone, POSTCliente } from "@/lib/api/cliente";
 import { LoadingComponent } from "../../../../../components/LoadingComponent";
 import { format } from "date-fns";
-import {
-  dataFormatada,
-  nomeCapitalizado,
-  normalizarData,
-} from "@/utils/functions";
+import { nomeCapitalizado } from "@/utils/functions";
 
 export const Step4 = () => {
   const { state, dispatch } = useForm();
