@@ -169,12 +169,13 @@ export const Step4 = () => {
         //IMPLEMENTAÇÃO WHATSAPP PARA ENVIO APÓS O AGENDAMENTO
         axios.post(`http://136.248.85.49:3000/api/sendText`, {
           chatId: `5583${state.telefone.slice(3)}@c.us`,
-          text: `💈 *Agendamento Confirmado!*\n
-${state.nome}, seu horário com o barbeiro ${state.barbeiro.nome} 
-está confirmado para o dia ${dataFormatada(state.data)} às ${state.horario}.\n
-Estamos te esperando para deixar o visual em dia! 💇‍♂️\n
-Caso precise reagendar, é só entrar em contato com a gente.\n
-Barbearia BarberIO — Estilo que fala mais alto.\n `,
+          text: `✅ *AGENDAMENTO CONFIRMADO!*\n\n🎯 *${
+            state.nome
+          }*, está tudo certo!\n\n📅 *Data:* ${dataFormatada(
+            state.data
+          )}\n⏰ *Horário:* ${state.horario}\n✂️ *Barbeiro:* ${
+            state.barbeiro.nome
+          }\n\nPreparamos tudo para deixar seu visual impecável! 🔥\n\nPrecisa reagendar? É só chamar aqui mesmo! 📲\n\n*BarberIO* — *Onde o estilo encontra a perfeição* ✨`,
           session: "default",
         });
 
