@@ -1,3 +1,5 @@
+import { format } from "date-fns";
+
 export function formatarTelefone(telefone: string): string {
   // Remove tudo que não é número
   const numeros = telefone.replace(/\D/g, "");
@@ -8,6 +10,11 @@ export function formatarTelefone(telefone: string): string {
 
 export function normalizarData(data: Date): Date {
   return new Date(data.getFullYear(), data.getMonth(), data.getDate());
+}
+
+export function dataFormatada(data: Date) {
+  const dataNova = format(data, "dd/MM/yyyy");
+  return dataNova;
 }
 
 export function nomeCapitalizado(nome: string): string {

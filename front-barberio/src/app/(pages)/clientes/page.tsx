@@ -130,7 +130,7 @@ const clientes = () => {
       .max(120, { message: "Nome precisa ter no maximo 120 caracteres" }),
     telefone: z
       .string({ required_error: "Digite seu telefone" })
-      .regex(/^\d{11}$/, "Telefone inválido, digite no formato XX 9XXXX XXXX")
+      .regex(/^\d{11}$/, "Telefone inválido, digite no formato XX XXXXX XXXX")
       .min(11, { message: "Nome precisa ter no minimo 11 caracteres" }),
   });
 
@@ -234,7 +234,7 @@ const clientes = () => {
   };
 
   return (
-    <div className="w-full min-h-screen">
+    <div className="w-full min-h-screen bg-[#e6f0ff]">
       <div className="w-full flex items-center justify-between px-10 py-5">
         <div className="flex flex-col">
           <p className="text-3xl font-bold">Clientes</p>
@@ -274,15 +274,21 @@ const clientes = () => {
           className="pl-8 text-slate-500"
         />
       </div>
-      <div className="px-10 py-5 bg-white">
-        <Table>
+      <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden m-5 p-3">
+        <Table className="">
           <TableHeader>
-            <TableRow className="">
+            <TableRow className="overflow-hidden">
               {/* <TableHead>ID</TableHead> */}
-              <TableHead>Nome</TableHead>
-              <TableHead className="">Telefone</TableHead>
-              <TableHead className="text-center">Data de Cadastro</TableHead>
-              <TableHead className="flex justify-end pl-10">Ações</TableHead>
+              <TableHead className="rounded-tl-2xl px-4 py-3 text-start">
+                Nome
+              </TableHead>
+              <TableHead className="px-4 py-3">Telefone</TableHead>
+              <TableHead className="text-center px-4 py-3">
+                Data de Cadastro
+              </TableHead>
+              <TableHead className="text-end px-6 py-3 rounded-tr-2xl">
+                Ações
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -290,9 +296,12 @@ const clientes = () => {
               .sort((a: { id: number }, b: { id: number }) => b.id - a.id)
               .slice(inicio, fim)
               .map((cliente: Cliente) => (
-                <TableRow key={cliente.id}>
+                <TableRow
+                  key={cliente.id}
+                  className="hover:bg-gray-50 transition-colors duration-300 border-b last:border-none"
+                >
                   {/* <TableCell>{cliente.id}</TableCell> */}
-                  <TableCell className="flex gap-3">
+                  <TableCell className="flex gap-3 px-4">
                     <p>{cliente.nome}</p>
                     <p>
                       {cliente.ativo === false && (
@@ -300,34 +309,37 @@ const clientes = () => {
                       )}
                     </p>
                   </TableCell>
-                  <TableCell className="">
-                    <Link
-                      className="flex gap-3 max-w-[150px]"
-                      target="_blank"
-                      href={`${whatsapp}${cliente.telefone}`}
-                    >
-                      <Badge
-                        variant="default"
-                        className="group items-center justify-center flex min-w-[150px] py-1 hover:bg-green-600 font-semibold hover:font-semibold hover:text-white transition-all duration-400"
+                  <TableCell className="px-4">
+                    <div className="flex w-full justify-center">
+                      <Link
+                        className="flex gap-3 max-w-[150px] "
+                        target="_blank"
+                        href={`${whatsapp}${cliente.telefone}`}
                       >
-                        {/* <div className="flex items-center justify-center gap-2"> */}
-                        <p className="flex items-center justify-center">
-                          {formatarTelefone(cliente.telefone)}
-                        </p>
+                        <Badge
+                          variant="default"
+                          className="group w-full items-center justify-center flex min-w-[150px] py-1 hover:bg-green-600 font-semibold hover:font-semibold hover:text-white transition-all duration-400"
+                        >
+                          {/* <div className="flex items-center justify-center gap-2"> */}
+                          <p className="flex items-center justify-center">
+                            {formatarTelefone(cliente.telefone)}
+                          </p>
 
-                        <div className="group-hover:animate-bounce group-hover:fill-green-200 fill-green-100">
-                          <Whatsapp height={15} width={15} />
-                        </div>
-                        {/* </div> */}
-                      </Badge>
-                    </Link>
+                          <div className="group-hover:animate-bounce group-hover:fill-green-200 fill-green-100">
+                            <Whatsapp height={15} width={15} />
+                          </div>
+                          {/* </div> */}
+                        </Badge>
+                      </Link>
+                    </div>
                   </TableCell>
 
-                  <TableCell className="text-center">
+                  <TableCell className="text-center px-4">
                     {ConversaoData(cliente.created_at)}
                   </TableCell>
-                  <TableCell className="flex justify-end pl-10">
+                  <TableCell className="flex justify-end px-4">
                     <Button
+                      className=""
                       onClick={() => {
                         handleClienteDados(cliente);
                         form.reset({

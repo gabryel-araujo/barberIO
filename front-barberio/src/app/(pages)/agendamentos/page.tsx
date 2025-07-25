@@ -148,7 +148,7 @@ const agendamentos = () => {
     <div className="min-h-screen w-full flex flex-col px-4 py-4 md:px-10 md:py-5 bg-[#e6f0ff]">
       <DialogComponent
         title="Tem certeza que deseja cancelar o agendamento?"
-        actionLabel="Cancelar"
+        actionLabel="Sim"
         open={open}
         setOpen={setOpen}
         action={handleCancel}
