@@ -14,31 +14,31 @@ import com.example.barberIO.services.FuncionarioService;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-	
-	private final FuncionarioService funcionarioService;
-	
-	public SecurityConfig(FuncionarioService funcionarioService) {
-        this.funcionarioService = funcionarioService;
-    }
-	
-	@Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/admin/**").hasRole("GESTOR")
-                .requestMatchers("/clientes/**").hasAnyRole("GESTOR", "BARBEIRO")
-                .requestMatchers("/agendamentos/**").permitAll() // cliente acessa direto
-                .anyRequest().permitAll()
-            )
-            .httpBasic();
 
-        return http.build();
-    }
-	
+	private final FuncionarioService funcionarioService;
+
+	public SecurityConfig(FuncionarioService funcionarioService) {
+		this.funcionarioService = funcionarioService;
+	}
+
 	@Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // 💥 isso que faltava
-    }
-	
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		http.csrf(csrf -> csrf.disable())
+				.authorizeHttpRequests(auth -> auth.requestMatchers("/admin/**").hasRole("GESTOR")
+						.requestMatchers("/clientes/**", "/servico", "/empresas", "/configEmpresa",
+								"/horarioFuncionamento", "/enderecos", "/feriados")
+						.hasAnyRole("GESTOR", "BARBEIRO").requestMatchers("/agendamentos/**").permitAll() // cliente
+																											// acessa
+																											// direto
+						.anyRequest().permitAll())
+				.httpBasic();
+
+		return http.build();
+	}
+
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder(); // 💥 isso que faltava
+	}
+
 }
