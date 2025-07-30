@@ -2,10 +2,21 @@
 import { Button } from "../../components/ui/button";
 import { Calendar } from "lucide-react";
 import Link from "next/link";
-
+import Cookies from "js-cookie";
 import { PrefetchAgendar } from "../../../components/PrefetchAgendar";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const Home = () => {
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = Cookies.get("authToken");
+
+    if (!token) {
+      router.replace("/login");
+    }
+  }, []);
   return (
     <div className="w-full flex min-h-screen flex-col items-center justify-center space-y-7 px-7 pt-7 md:pt-0 bg-[#e6f0ff]">
       <PrefetchAgendar />
