@@ -16,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className={`antialiased bg-[#e6f0ff] min-h-screen`}>
-        <div className="p-5 lg:p-0 md:p-0 ">
+        <div className="p-5 min-h-full flex flex-col lg:p-0 md:p-0 ">
           <Providers>
             <Toaster richColors position="top-center" />
             <AgendamentoProvider>{children}</AgendamentoProvider>
