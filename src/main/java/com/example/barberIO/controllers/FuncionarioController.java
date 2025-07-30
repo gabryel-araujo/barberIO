@@ -12,23 +12,27 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
+@RequestMapping("/admin/funcionarios")
 public class FuncionarioController {
     @Autowired
     FuncionarioRepository funcionarioRepository;
     @Autowired
     private ServiceRepository serviceRepository;
+    @Autowired
+    private PasswordEncoder encoder;
 
-    @GetMapping("/funcionarios")
+    @GetMapping
     public ResponseEntity<List<FuncionarioModel>> getAll() {
         return ResponseEntity.status(HttpStatus.OK).body(funcionarioRepository.findAll());
     }
 
-    @GetMapping("funcionarios/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Object> getById(@PathVariable(value = "id") Long id){
         Optional<FuncionarioModel> funcionarioO = funcionarioRepository.findById(id);
 
@@ -39,7 +43,7 @@ public class FuncionarioController {
         return ResponseEntity.status(HttpStatus.OK).body(funcionarioO.get());
     }
 
-    @PostMapping("/funcionarios")
+    @PostMapping
     public ResponseEntity<FuncionarioModel> addFuncionario(@RequestBody @Valid FuncionarioRecordDto funcionarioRecordDto) {
         try {
             Optional<FuncionarioModel> funcionario = funcionarioRepository.findByEmail(funcionarioRecordDto.email());
@@ -51,6 +55,7 @@ public class FuncionarioController {
             LocalDateTime now = LocalDateTime.now();
             BeanUtils.copyProperties(funcionarioRecordDto, funcionarioModel);
             funcionarioModel.setAtivo(true);
+            funcionarioModel.setSenha(encoder.encode(funcionarioModel.getSenha()));
             funcionarioModel.setCreated_at(now);
 
             FuncionarioModel salvo = funcionarioRepository.save(funcionarioModel);
@@ -75,7 +80,7 @@ public class FuncionarioController {
         }
     }
 
-    @PutMapping("/funcionarios/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<FuncionarioModel> updateFuncionario(@PathVariable(value = "id") Long id, @RequestBody @Valid FuncionarioRecordDto funcionarioRecordDto) {
         Optional<FuncionarioModel> funcionarioO = funcionarioRepository.findById(id);
 
@@ -88,7 +93,7 @@ public class FuncionarioController {
         return ResponseEntity.status(HttpStatus.OK).body(funcionarioRepository.save(funcionarioModel));
     }
 
-    @DeleteMapping("/funcionarios/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteFuncionario(@PathVariable(value = "id") Long id) {
         Optional<FuncionarioModel> funcionarioO = funcionarioRepository.findById(id);
 
@@ -100,7 +105,7 @@ public class FuncionarioController {
         return ResponseEntity.status(HttpStatus.OK).body("Funcionário deletado com sucesso!");
     }
 
-    @PatchMapping("/funcionarios/{id}/adicionarServico/{servicoId}")
+    @PatchMapping("/{id}/adicionarServico/{servicoId}")
     public ResponseEntity<Object> adicionarServico(@PathVariable(value = "id") Long id, @PathVariable(value = "servicoId") Long servicoId) {
         Optional<FuncionarioModel> funcionarioO = funcionarioRepository.findById(id);
         Optional<ServiceModel> serviceO = serviceRepository.findById(servicoId);
@@ -125,7 +130,7 @@ public class FuncionarioController {
 
     }
 
-    @PatchMapping("/funcionarios/{id}/removerServico/{servicoId}")
+    @PatchMapping("/{id}/removerServico/{servicoId}")
     public ResponseEntity<Object> removerServico(@PathVariable(value = "id") Long id, @PathVariable(value = "servicoId") Long servicoId) {
         Optional<FuncionarioModel> funcionarioO = funcionarioRepository.findById(id);
         Optional<ServiceModel> servicoO = serviceRepository.findById(servicoId);
