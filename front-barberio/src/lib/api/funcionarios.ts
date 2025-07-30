@@ -18,7 +18,7 @@ export const login = async (email: String, password: String) => {
 
 export const setGoogleFuncionario = async (nome: String, email: String) => {
   try {
-    const response = await axiosInstance.post("/funcionarios", {
+    const response = await axiosInstance.post("/admin/funcionarios", {
       nome: nome,
       email: email,
     });
@@ -31,7 +31,7 @@ export const setGoogleFuncionario = async (nome: String, email: String) => {
 
 export const GETFuncionarios = cache(async (): Promise<Barbeiro[]> => {
   try {
-    const respose = await axiosInstance.get<Barbeiro[]>("/funcionarios");
+    const respose = await axiosInstance.get<Barbeiro[]>("/admin/funcionarios");
     return respose.data;
   } catch (error) {
     console.error("Erro ao listar funcionarios", error);
@@ -49,7 +49,7 @@ export const POSTFuncionario = async (
   ativo?: boolean
 ) => {
   try {
-    const response = await axiosInstance.post("/funcionarios", {
+    const response = await axiosInstance.post("/admin/funcionarios", {
       nome,
       email,
       senha,
@@ -74,7 +74,7 @@ export const changeStatus = async (
   ativo: boolean
 ) => {
   try {
-    const response = await axiosInstance.put(`/funcionarios/${id}`, {
+    const response = await axiosInstance.put(`/admin/funcionarios/${id}`, {
       nome,
       email,
       senha,
@@ -98,7 +98,7 @@ export const PUTFuncionario = async (
   ativo?: boolean
 ) => {
   try {
-    const response = await axiosInstance.put(`/funcionarios/${id}`, {
+    const response = await axiosInstance.put(`/admin/funcionarios/${id}`, {
       nome,
       email,
       senha,
@@ -115,7 +115,7 @@ export const PUTFuncionario = async (
 
 export const DELETEFuncionario = async (value: Barbeiro) => {
   try {
-    const response = await axiosInstance.put(`funcionarios/${value.id}`, {
+    const response = await axiosInstance.put(`admin/funcionarios/${value.id}`, {
       ...value,
       disponivel: false,
       ativo: false,
@@ -128,7 +128,7 @@ export const DELETEFuncionario = async (value: Barbeiro) => {
 
 export const ReativarFuncionario = async (value: Barbeiro) => {
   try {
-    const response = await axiosInstance.put(`funcionarios/${value.id}`, {
+    const response = await axiosInstance.put(`admin/funcionarios/${value.id}`, {
       ...value,
       disponivel: true,
       ativo: true,

@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import com.example.barberIO.enums.TipoFuncionario;
+
 @Entity
 @Table(name="funcionario")
 public class FuncionarioModel implements Serializable {
@@ -37,6 +39,9 @@ public class FuncionarioModel implements Serializable {
     private float experiencia;
 
     private int atendimentos = 0;
+    
+    @Enumerated(EnumType.STRING)
+    private TipoFuncionario tipo;
 
     @ManyToMany
     @JoinTable(
@@ -148,5 +153,13 @@ public class FuncionarioModel implements Serializable {
     public void setAtendimentos(int atendimentos) {
         this.atendimentos = atendimentos;
     }
+
+	public TipoFuncionario getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(TipoFuncionario tipo) {
+		this.tipo = tipo;
+	}
     
 }

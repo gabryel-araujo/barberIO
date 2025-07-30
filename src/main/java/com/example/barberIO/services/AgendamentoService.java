@@ -1,6 +1,7 @@
 package com.example.barberIO.services;
 
 import com.example.barberIO.dtos.AgendamentoRecordDto;
+import com.example.barberIO.dtos.ResponseAgendamentoRecordDto;
 import com.example.barberIO.exceptions.RecursoNaoEncontradoException;
 import com.example.barberIO.models.AgendamentoModel;
 import com.example.barberIO.models.ClienteModel;
@@ -161,6 +162,23 @@ public class AgendamentoService {
         }
 
         return horariosDisponiveis;
+    }
+    
+    public ResponseEntity<List<ResponseAgendamentoRecordDto>> listarAgendamentosMinificado(){
+    	List<AgendamentoModel> agendamentos = agendamentoRepository.findAll();
+    	
+    	List<ResponseAgendamentoRecordDto> dtos = agendamentos.stream().map(agendamento -> 
+        new ResponseAgendamentoRecordDto(
+            agendamento.getHorario(),
+            agendamento.getFim(),
+            agendamento.getBarbeiro().getNome(),
+            agendamento.getCliente().getNome(),
+            agendamento.getCliente().getTelefone(),
+            agendamento.getServico().getNome(),
+            agendamento.getServico().getPreco()
+        )
+    ).toList();
+    	return ResponseEntity.status(HttpStatus.OK).body(dtos);
     }
 
 }
