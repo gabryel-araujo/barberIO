@@ -9,21 +9,25 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.example.barberIO.models.FuncionarioModel;
 
-public class FuncionarioDetails implements UserDetails{
-	
-	private final FuncionarioModel funcionario;
-	
-	public FuncionarioDetails(FuncionarioModel funcionario) {
-		this.funcionario = funcionario;
-	}
-	
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities(){
-		String role = "ROLE_" + funcionario.getTipo().name();
-		return List.of(new SimpleGrantedAuthority(role));
-	}
-	
-	@Override
+public class FuncionarioDetails implements UserDetails {
+
+    private final FuncionarioModel funcionario;
+
+    public FuncionarioDetails(FuncionarioModel funcionario) {
+        this.funcionario = funcionario;
+    }
+
+    public FuncionarioModel getFuncionario() {
+        return funcionario;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        String role = "ROLE_" + funcionario.getTipo().name();
+        return List.of(new SimpleGrantedAuthority(role));
+    }
+
+    @Override
     public String getPassword() {
         return funcionario.getSenha();
     }
@@ -32,7 +36,7 @@ public class FuncionarioDetails implements UserDetails{
     public String getUsername() {
         return funcionario.getEmail();
     }
-    
+
     @Override public boolean isAccountNonExpired() { return true; }
     @Override public boolean isAccountNonLocked() { return true; }
     @Override public boolean isCredentialsNonExpired() { return true; }
