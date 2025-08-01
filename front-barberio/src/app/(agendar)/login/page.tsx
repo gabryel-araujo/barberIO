@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -34,6 +35,7 @@ const LoginPage = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchemaUser>) => {
+    form.formState.isSubmitting && toast.info("Fazendo Login...");
     try {
       const response = await axios.post("http://localhost:1509/auth/login", {
         email: values.email,
@@ -47,6 +49,8 @@ const LoginPage = () => {
         sameSite: "strict", // proteção contra CSRF
       });
 
+      form.formState.isSubmitted &&
+        toast.success("Login realizado com sucesso!");
       router.replace("/");
     } catch (error: any) {
       console.error(
