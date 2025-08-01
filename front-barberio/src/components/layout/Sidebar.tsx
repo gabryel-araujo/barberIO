@@ -4,7 +4,7 @@ import MenuItems from "./ItemMenu";
 import { usePathname, useRouter } from "next/navigation";
 import InstallButton from "../../../components/InstallButton";
 import { useState, useRef, useEffect } from "react";
-import { User, LogOut, LogIn } from "lucide-react";
+import { User, LogOut, LogIn, EllipsisVertical } from "lucide-react";
 import { validarToken } from "@/utils/functions";
 import { tokenType } from "@/types/tokenType";
 import Cookies from "js-cookie";
@@ -107,8 +107,17 @@ export const Sidebar = ({ onClick }: SideBarProps) => {
               onClick={toggleDropdown}
               className="flex items-end gap-3 w-full py-2 px-3 hover:bg-[#3f88c5]/40 rounded-md transition-colors cursor-pointer"
             >
-              <User size={20} className="text-[#3f88c5]" />
-              <span className="truncate">{user.nome}</span>
+              <section className="flex justify-between w-full items-center gap-2">
+                <div className="flex items-center gap-2">
+                  <User size={20} className="text-[#3f88c5]" />
+                  <section className="flex flex-col items-start">
+                    <span className="">{user.nome}</span>
+                    <span className="text-slate-400 text-xs">{user.sub}</span>
+                  </section>
+                </div>
+
+                <EllipsisVertical />
+              </section>
             </button>
 
             {showDropdown && (
