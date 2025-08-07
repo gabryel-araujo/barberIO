@@ -32,7 +32,7 @@ export const Step1 = () => {
   >({
     queryKey: ["empresas"],
     queryFn: async () => {
-      const response = await axios.get(`${baseUrl}/empresas/1`, {
+      const response = await axios.get(`${baseUrl}/public/empresas/1`, {
         headers: {
           Authorization: `Bearer ${Cookies.get("authToken")}`,
         },

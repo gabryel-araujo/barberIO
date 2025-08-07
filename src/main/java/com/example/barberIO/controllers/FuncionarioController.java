@@ -1,6 +1,8 @@
 package com.example.barberIO.controllers;
 
+import com.example.barberIO.dtos.FuncionarioPublicoRecordDto;
 import com.example.barberIO.dtos.FuncionarioRecordDto;
+import com.example.barberIO.dtos.ResponseAgendamentoRecordDto;
 import com.example.barberIO.exceptions.RecursoDuplicadoException;
 import com.example.barberIO.exceptions.RecursoNaoEncontradoException;
 import com.example.barberIO.models.FuncionarioModel;
@@ -18,163 +20,187 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
-@RequestMapping("/admin/funcionarios")
+@RequestMapping
 public class FuncionarioController {
-    @Autowired
-    FuncionarioRepository funcionarioRepository;
-    @Autowired
-    private ServiceRepository serviceRepository;
-    @Autowired
-    private PasswordEncoder encoder;
+	@Autowired
+	FuncionarioRepository funcionarioRepository;
+	@Autowired
+	private ServiceRepository serviceRepository;
+	@Autowired
+	private PasswordEncoder encoder;
 
-    @GetMapping
-    public ResponseEntity<List<FuncionarioModel>> getAll() {
-        return ResponseEntity.status(HttpStatus.OK).body(funcionarioRepository.findAll());
+	@GetMapping("/funcionarios")
+	public ResponseEntity<List<FuncionarioModel>> getAll() {
+		return ResponseEntity.status(HttpStatus.OK).body(funcionarioRepository.findAll());
+	}
+
+	@GetMapping("public/funcionarios")
+    public ResponseEntity<List<FuncionarioPublicoRecordDto>> listarFuncionariosPublicos() {
+    	List<FuncionarioModel> funcionarios = funcionarioRepository.findAll();
+    	
+    	List<FuncionarioPublicoRecordDto> dtos = funcionarios.stream().map(funcionario -> 
+        new FuncionarioPublicoRecordDto(
+        		funcionario.getId(),
+        		funcionario.getNome(),
+        		funcionario.getAvaliacao(),
+        		funcionario.getExperiencia(),
+        		funcionario.getAtendimentos(),
+        		funcionario.isDisponivel(),
+        		funcionario.getServicos(),
+        		funcionario.isAtivo()
+    )).toList();
+        
+        return ResponseEntity.status(HttpStatus.OK).body(dtos);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> getById(@PathVariable(value = "id") Long id){
-        Optional<FuncionarioModel> funcionarioO = funcionarioRepository.findById(id);
+	@GetMapping("/funcionarios/{id}")
+	public ResponseEntity<Object> getById(@PathVariable(value = "id") Long id) {
+		Optional<FuncionarioModel> funcionarioO = funcionarioRepository.findById(id);
 
-        if(funcionarioO.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário não encontrado na base de dados");
-        }
+		if (funcionarioO.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário não encontrado na base de dados");
+		}
 
-        return ResponseEntity.status(HttpStatus.OK).body(funcionarioO.get());
-    }
+		return ResponseEntity.status(HttpStatus.OK).body(funcionarioO.get());
+	}
 
-    @PostMapping
-    public ResponseEntity<FuncionarioModel> addFuncionario(@RequestBody @Valid FuncionarioRecordDto funcionarioRecordDto) {
-        try {
-            Optional<FuncionarioModel> funcionario = funcionarioRepository.findByEmail(funcionarioRecordDto.email());
-            if (funcionario.isPresent()) {
-                throw new RecursoDuplicadoException("Já existe um usuário cadastrado com o e-mail informado");
-            }
+	@PostMapping("/funcionarios")
+	public ResponseEntity<FuncionarioModel> addFuncionario(
+			@RequestBody @Valid FuncionarioRecordDto funcionarioRecordDto) {
+		try {
+			Optional<FuncionarioModel> funcionario = funcionarioRepository.findByEmail(funcionarioRecordDto.email());
+			if (funcionario.isPresent()) {
+				throw new RecursoDuplicadoException("Já existe um usuário cadastrado com o e-mail informado");
+			}
 
-            FuncionarioModel funcionarioModel = new FuncionarioModel();
-            LocalDateTime now = LocalDateTime.now();
-            BeanUtils.copyProperties(funcionarioRecordDto, funcionarioModel);
-            funcionarioModel.setAtivo(true);
-            funcionarioModel.setSenha(encoder.encode(funcionarioModel.getSenha()));
-            funcionarioModel.setCreated_at(now);
+			FuncionarioModel funcionarioModel = new FuncionarioModel();
+			LocalDateTime now = LocalDateTime.now();
+			BeanUtils.copyProperties(funcionarioRecordDto, funcionarioModel);
+			funcionarioModel.setAtivo(true);
+			funcionarioModel.setSenha(encoder.encode(funcionarioModel.getSenha()));
+			funcionarioModel.setCreated_at(now);
 
-            FuncionarioModel salvo = funcionarioRepository.save(funcionarioModel);
+			FuncionarioModel salvo = funcionarioRepository.save(funcionarioModel);
 
-            String[] servicosArray = funcionarioRecordDto.newServices();
+			String[] servicosArray = funcionarioRecordDto.newServices();
 
-            if (servicosArray != null) {
-                for (String s : servicosArray) {
-                    try {
-                        this.adicionarServicoAux(salvo.getId(), Long.parseLong(s));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
+			if (servicosArray != null) {
+				for (String s : servicosArray) {
+					try {
+						this.adicionarServicoAux(salvo.getId(), Long.parseLong(s));
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
-        } catch (Exception e) {
-            System.err.println("Erro no processamento: " + e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException("Erro ao processar os dados. Verifique informações");
-        }
-    }
+			return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
+		} catch (Exception e) {
+			System.err.println("Erro no processamento: " + e.getMessage());
+			e.printStackTrace();
+			throw new RuntimeException("Erro ao processar os dados. Verifique informações");
+		}
+	}
 
-    @PutMapping("/{id}")
-    public ResponseEntity<FuncionarioModel> updateFuncionario(@PathVariable(value = "id") Long id, @RequestBody @Valid FuncionarioRecordDto funcionarioRecordDto) {
-        Optional<FuncionarioModel> funcionarioO = funcionarioRepository.findById(id);
+	@PutMapping("/funcionarios/{id}")
+	public ResponseEntity<FuncionarioModel> updateFuncionario(@PathVariable(value = "id") Long id,
+			@RequestBody @Valid FuncionarioRecordDto funcionarioRecordDto) {
+		Optional<FuncionarioModel> funcionarioO = funcionarioRepository.findById(id);
 
-        if (funcionarioO.isEmpty()) {
-            throw new RecursoNaoEncontradoException("Funcionário não encontrado na base de dados. Verifique os dados.");
-        }
+		if (funcionarioO.isEmpty()) {
+			throw new RecursoNaoEncontradoException("Funcionário não encontrado na base de dados. Verifique os dados.");
+		}
 
-        FuncionarioModel funcionarioModel = funcionarioO.get();
-        BeanUtils.copyProperties(funcionarioRecordDto, funcionarioModel);
-        return ResponseEntity.status(HttpStatus.OK).body(funcionarioRepository.save(funcionarioModel));
-    }
+		FuncionarioModel funcionarioModel = funcionarioO.get();
+		BeanUtils.copyProperties(funcionarioRecordDto, funcionarioModel);
+		return ResponseEntity.status(HttpStatus.OK).body(funcionarioRepository.save(funcionarioModel));
+	}
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteFuncionario(@PathVariable(value = "id") Long id) {
-        Optional<FuncionarioModel> funcionarioO = funcionarioRepository.findById(id);
+	@DeleteMapping("/funcionarios/{id}")
+	public ResponseEntity<Object> deleteFuncionario(@PathVariable(value = "id") Long id) {
+		Optional<FuncionarioModel> funcionarioO = funcionarioRepository.findById(id);
 
-        if (funcionarioO.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário não encontrado.");
-        }
+		if (funcionarioO.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário não encontrado.");
+		}
 
-        funcionarioRepository.delete(funcionarioO.get());
-        return ResponseEntity.status(HttpStatus.OK).body("Funcionário deletado com sucesso!");
-    }
+		funcionarioRepository.delete(funcionarioO.get());
+		return ResponseEntity.status(HttpStatus.OK).body("Funcionário deletado com sucesso!");
+	}
 
-    @PatchMapping("/{id}/adicionarServico/{servicoId}")
-    public ResponseEntity<Object> adicionarServico(@PathVariable(value = "id") Long id, @PathVariable(value = "servicoId") Long servicoId) {
-        Optional<FuncionarioModel> funcionarioO = funcionarioRepository.findById(id);
-        Optional<ServiceModel> serviceO = serviceRepository.findById(servicoId);
+	@PatchMapping("/funcionarios/{id}/adicionarServico/{servicoId}")
+	public ResponseEntity<Object> adicionarServico(@PathVariable(value = "id") Long id,
+			@PathVariable(value = "servicoId") Long servicoId) {
+		Optional<FuncionarioModel> funcionarioO = funcionarioRepository.findById(id);
+		Optional<ServiceModel> serviceO = serviceRepository.findById(servicoId);
 
-        if (funcionarioO.isEmpty() || serviceO.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário ou serviço não encontrados!");
-        }
+		if (funcionarioO.isEmpty() || serviceO.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário ou serviço não encontrados!");
+		}
 
-        FuncionarioModel funcionarioModel = funcionarioO.get();
-        ServiceModel serviceModel = serviceO.get();
+		FuncionarioModel funcionarioModel = funcionarioO.get();
+		ServiceModel serviceModel = serviceO.get();
 
-        boolean servicoAdicionado = funcionarioModel.getServicos().stream().anyMatch(s -> s.getId().equals(serviceModel.getId()));
+		boolean servicoAdicionado = funcionarioModel.getServicos().stream()
+				.anyMatch(s -> s.getId().equals(serviceModel.getId()));
 
-        if (servicoAdicionado) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Serviço já adicionado!");
-        }
+		if (servicoAdicionado) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Serviço já adicionado!");
+		}
 
-        funcionarioModel.getServicos().add(serviceModel);
-        funcionarioRepository.save(funcionarioModel);
+		funcionarioModel.getServicos().add(serviceModel);
+		funcionarioRepository.save(funcionarioModel);
 
-        return ResponseEntity.status(HttpStatus.OK).body(funcionarioModel);
+		return ResponseEntity.status(HttpStatus.OK).body(funcionarioModel);
 
-    }
+	}
 
-    @PatchMapping("/{id}/removerServico/{servicoId}")
-    public ResponseEntity<Object> removerServico(@PathVariable(value = "id") Long id, @PathVariable(value = "servicoId") Long servicoId) {
-        Optional<FuncionarioModel> funcionarioO = funcionarioRepository.findById(id);
-        Optional<ServiceModel> servicoO = serviceRepository.findById(servicoId);
+	@PatchMapping("/funcionarios/{id}/removerServico/{servicoId}")
+	public ResponseEntity<Object> removerServico(@PathVariable(value = "id") Long id,
+			@PathVariable(value = "servicoId") Long servicoId) {
+		Optional<FuncionarioModel> funcionarioO = funcionarioRepository.findById(id);
+		Optional<ServiceModel> servicoO = serviceRepository.findById(servicoId);
 
-        if (funcionarioO.isEmpty() || servicoO.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário ou serviço não encontrados!");
-        }
+		if (funcionarioO.isEmpty() || servicoO.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário ou serviço não encontrados!");
+		}
 
-        FuncionarioModel funcionario = funcionarioO.get();
-        ServiceModel servico = servicoO.get();
+		FuncionarioModel funcionario = funcionarioO.get();
+		ServiceModel servico = servicoO.get();
 
-        funcionario.getServicos().removeIf(s -> s.getId().equals(servico.getId()));
-        funcionarioRepository.save(funcionario);
+		funcionario.getServicos().removeIf(s -> s.getId().equals(servico.getId()));
+		funcionarioRepository.save(funcionario);
 
-        return ResponseEntity.status(HttpStatus.OK).body(funcionario);
+		return ResponseEntity.status(HttpStatus.OK).body(funcionario);
 
-    }
+	}
 
-    public void adicionarServicoAux(Long id, Long servicoId) {
-        Optional<FuncionarioModel> funcionarioO = funcionarioRepository.findById(id);
-        Optional<ServiceModel> serviceO = serviceRepository.findById(servicoId);
+	public void adicionarServicoAux(Long id, Long servicoId) {
+		Optional<FuncionarioModel> funcionarioO = funcionarioRepository.findById(id);
+		Optional<ServiceModel> serviceO = serviceRepository.findById(servicoId);
 
-        if (funcionarioO.isEmpty()) {
-            throw new RuntimeException("Funcionário com ID " + id + " não encontrado!");
-            // Considere usar exceções mais específicas, como EntityNotFoundException
-        }
-        if (serviceO.isEmpty()) {
-            throw new RuntimeException("Serviço com ID " + servicoId + " não encontrado!");
-        }
+		if (funcionarioO.isEmpty()) {
+			throw new RuntimeException("Funcionário com ID " + id + " não encontrado!");
+			// Considere usar exceções mais específicas, como EntityNotFoundException
+		}
+		if (serviceO.isEmpty()) {
+			throw new RuntimeException("Serviço com ID " + servicoId + " não encontrado!");
+		}
 
-        FuncionarioModel funcionarioModel = funcionarioO.get();
-        ServiceModel serviceModel = serviceO.get();
+		FuncionarioModel funcionarioModel = funcionarioO.get();
+		ServiceModel serviceModel = serviceO.get();
 
-        if (funcionarioModel.getServicos() != null) {
-            boolean servicoAdicionado = funcionarioModel.getServicos().stream().anyMatch(s -> s.getId().equals(serviceModel.getId()));
+		if (funcionarioModel.getServicos() != null) {
+			boolean servicoAdicionado = funcionarioModel.getServicos().stream()
+					.anyMatch(s -> s.getId().equals(serviceModel.getId()));
 
-            if (servicoAdicionado) {
-                throw new RuntimeException("Serviço já adicionado");
-            }
-        }
+			if (servicoAdicionado) {
+				throw new RuntimeException("Serviço já adicionado");
+			}
+		}
 
-        funcionarioModel.getServicos().add(serviceModel);
-        funcionarioRepository.save(funcionarioModel);
+		funcionarioModel.getServicos().add(serviceModel);
+		funcionarioRepository.save(funcionarioModel);
 
-    }
+	}
 }
-
