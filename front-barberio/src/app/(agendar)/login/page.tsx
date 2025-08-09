@@ -37,16 +37,19 @@ const LoginPage = () => {
   const onSubmit = async (values: z.infer<typeof formSchemaUser>) => {
     form.formState.isSubmitting && toast.info("Fazendo Login...");
     try {
-      const response = await axios.post("http://localhost:1509/auth/login", {
-        email: values.email,
-        senha: values.senha,
-      });
+      const response = await axios.post(
+        "http://137.131.135.29:1509/auth/login",
+        {
+          email: values.email,
+          senha: values.senha,
+        }
+      );
 
       const token = response.data.token;
       Cookies.set("authToken", token, {
-        expires: 1, // número de dias que o cookie vai durar
-        secure: true, // só em HTTPS
-        sameSite: "strict", // proteção contra CSRF
+        expires: 1,
+        secure: true,
+        sameSite: "strict",
       });
 
       form.formState.isSubmitted &&
