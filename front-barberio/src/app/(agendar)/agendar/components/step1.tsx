@@ -14,6 +14,7 @@ import { empresaSchema } from "@/app/(pages)/configuracao/schemas/schemas";
 import { ErrorResponse } from "@/app/(pages)/configuracao/page";
 import { z } from "zod";
 import { toast } from "sonner";
+import Cookies from "js-cookie";
 
 export const Step1 = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -31,7 +32,11 @@ export const Step1 = () => {
   >({
     queryKey: ["empresas"],
     queryFn: async () => {
-      const response = await axios.get(`${baseUrl}/empresas/1`);
+      const response = await axios.get(`${baseUrl}/public/empresas/1`, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get("authToken")}`,
+        },
+      });
       return response.data;
     },
     staleTime: 5 * (60 * 1000),

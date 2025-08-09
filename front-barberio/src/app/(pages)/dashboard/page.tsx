@@ -22,6 +22,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Calendar, Scissors, Users2 } from "lucide-react";
 import React, { useState } from "react";
+import Cookies from "js-cookie";
 
 const dashboard = () => {
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
@@ -34,9 +35,24 @@ const dashboard = () => {
   useQuery({
     queryKey: ["agendamentos", "serviços"],
     queryFn: async () => {
-      const responseAgendamento = await axios.get(`${baseUrl}/agendamentos`);
-      const responseServico = await axios.get(`${baseUrl}/servico`);
-      const responseBarbeiro = await axios.get(`${baseUrl}/funcionarios`);
+      const responseAgendamento = await axios.get(`${baseUrl}/agendamentos`, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get("authToken")}`,
+        },
+      });
+      const responseServico = await axios.get(`${baseUrl}/servico`, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get("authToken")}`,
+        },
+      });
+      const responseBarbeiro = await axios.get(
+        `${baseUrl}/admin/funcionarios`,
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("authToken")}`,
+          },
+        }
+      );
 
       console.log(responseAgendamento.data);
       console.log(responseServico.data);

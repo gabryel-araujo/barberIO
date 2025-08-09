@@ -4,6 +4,7 @@ import { LayoutResponsivo } from "@/components/layout/layoutResponsivo";
 import { AgendamentoProvider } from "@/contexts/AgendamentoContextProvider";
 import { Toaster } from "sonner";
 import { Providers } from "@/utils/providers";
+import RegisterServiceWorker from "../../../components/RegisterServiceWorker";
 
 export const metadata: Metadata = {
   title: "BaberIO",
@@ -18,9 +19,10 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <head>
-        <meta name="apple-mobile-web-app-title" content="BarberiO" />
+        <link rel="manifest" href="/manifest.json" />
       </head>
       <body className={`antialiased`}>
+        <RegisterServiceWorker />
         <AgendamentoProvider>
           <Providers>
             <Toaster richColors position="top-right" duration={3000} />

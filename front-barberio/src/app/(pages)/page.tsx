@@ -2,7 +2,6 @@
 import { Button } from "../../components/ui/button";
 import { Calendar } from "lucide-react";
 import Link from "next/link";
-
 import { PrefetchAgendar } from "../../../components/PrefetchAgendar";
 
 const Home = () => {

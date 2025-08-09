@@ -11,7 +11,7 @@ export const agendar = async (
   fim: string
 ) => {
   try {
-    const response = axiosInstance.post("/agendamentos", {
+    const response = axiosInstance.post("/public/agendamentos", {
       barbeiro: { id: barbeiro_id },
       cliente: { id: cliente_id },
       servico: { id: servico_id },
@@ -50,7 +50,7 @@ export const DELETEAgendamento = cache(
 export const GETHorarios = cache(async (id_barbeiro: number, data: string) => {
   try {
     const respose = await axiosInstance.get(
-      `/agendamentos/horarios/${id_barbeiro}?data=${data}&empresa_id=1`
+      `/public/agendamentos/horarios/${id_barbeiro}?data=${data}&empresa_id=1`
     );
     return respose;
   } catch (error) {

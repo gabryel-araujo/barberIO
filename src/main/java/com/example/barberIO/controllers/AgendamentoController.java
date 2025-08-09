@@ -47,7 +47,7 @@ public class AgendamentoController {
         return ResponseEntity.status(HttpStatus.OK).body(agendamentoO.get());
     }
 
-    @PostMapping("/admin/agendamentos")
+    @PostMapping("/public/agendamentos")
     public ResponseEntity<Object> adicionarAgendamento(@RequestBody @Valid AgendamentoRecordDto agendamentoRecordDto) {
         return agendamentoService.agendarHorario(agendamentoRecordDto);
     }
@@ -77,7 +77,7 @@ public class AgendamentoController {
         return agendamentoService.horarioDisponivel(data, barbeiroId, intervalo);
     }
 
-    @GetMapping("/admin/agendamentos/horarios/{barbeiro_id}")
+    @GetMapping("/public/agendamentos/horarios/{barbeiro_id}")
     public ResponseEntity<List<LocalTime>> getHorariosDisponiveis(
             @PathVariable("barbeiro_id") Long barbeiro_id,
             @RequestParam("data") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data,

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.barberIO.dtos.EmpresaPublicaRecordDto;
 import com.example.barberIO.dtos.EmpresaRecordDto;
 import com.example.barberIO.models.EmpresaModel;
 import com.example.barberIO.repositories.EmpresaRepository;
@@ -37,6 +38,11 @@ public class EmpresaController {
 	@GetMapping("/empresas/{id}")
 	public ResponseEntity<EmpresaModel> listarEmpresa(@PathVariable(value = "id") Long id){
 		return empresaService.listarEmpresaPorId(id);
+	}
+	
+	@GetMapping("/public/empresas/{id}")
+	public ResponseEntity<EmpresaPublicaRecordDto> listarEmpresaPublica(@PathVariable(value = "id") Long id){
+		return empresaService.listarEmpresaPublica(id);
 	}
 
 	@PostMapping("/empresas")

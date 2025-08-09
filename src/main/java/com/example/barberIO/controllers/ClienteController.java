@@ -24,12 +24,12 @@ public class ClienteController {
     @Autowired
     ClienteService clienteService;
 
-    @GetMapping("/clientes")
+    @GetMapping("public/clientes")
     public ResponseEntity<List<ClienteModel>> getAllClients() {
         return ResponseEntity.status(HttpStatus.OK).body(clienteRepository.findAll());
     }
 
-    @PostMapping("/clientes")
+    @PostMapping("public/clientes")
     public ResponseEntity<Object> addCliente(@RequestBody @Valid ClienteRecordDto clienteRecordDto) {
         Optional<ClienteModel> clienteO = clienteRepository.findByTelefone(clienteRecordDto.telefone());
 
