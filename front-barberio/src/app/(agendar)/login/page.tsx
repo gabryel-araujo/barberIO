@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { baseUrl } from "@/lib/baseUrl";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -37,13 +38,10 @@ const LoginPage = () => {
   const onSubmit = async (values: z.infer<typeof formSchemaUser>) => {
     form.formState.isSubmitting && toast.info("Fazendo Login...");
     try {
-      const response = await axios.post(
-        "http://137.131.135.29:1509/auth/login",
-        {
-          email: values.email,
-          senha: values.senha,
-        }
-      );
+      const response = await axios.post(`http://${baseUrl}/auth/login`, {
+        email: values.email,
+        senha: values.senha,
+      });
 
       const token = response.data.token;
       Cookies.set("authToken", token, {
