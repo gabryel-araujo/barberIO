@@ -4,7 +4,7 @@ import { Cliente } from "@/types/cliente";
 
 export const GETClientes = cache(async (): Promise<Cliente[]> => {
   try {
-    const respose = await axiosInstance.get<Cliente[]>("/clientes");
+    const respose = await axiosInstance.get<Cliente[]>("/public/clientes");
     return respose.data;
   } catch (error) {
     console.error("Erro ao listar clientes", error);
@@ -14,7 +14,7 @@ export const GETClientes = cache(async (): Promise<Cliente[]> => {
 
 export const POSTCliente = async (nome: string, telefone: string) => {
   try {
-    const response = await axiosInstance.post("/clientes", {
+    const response = await axiosInstance.post("/public/clientes", {
       nome,
       telefone,
     });

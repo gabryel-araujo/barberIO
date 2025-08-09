@@ -42,7 +42,7 @@ export const Step4 = () => {
   useQuery({
     queryKey: ["servicos"],
     queryFn: async () => {
-      const response = await axios.get(`${baseUrl}/servico`);
+      const response = await axios.get(`${baseUrl}/public/servico`);
       setServicos(response.data);
       return response.data;
     },

@@ -1,4 +1,7 @@
 import { format } from "date-fns";
+import Cookies from "js-cookie";
+import * as jose from "jose";
+import { tokenType } from "@/types/tokenType";
 
 export function formatarTelefone(telefone: string): string {
   // Remove tudo que não é número
@@ -24,4 +27,43 @@ export function nomeCapitalizado(nome: string): string {
     .filter((palavra) => palavra.trim() !== "")
     .map((palavra) => palavra.charAt(0).toUpperCase() + palavra.slice(1))
     .join(" ");
+}
+
+export function isTokenValido() {
+  const token = Cookies.get("authToken");
+
+  if (!token) {
+    return false;
+  }
+
+  try {
+    const decodificado = jose.decodeJwt(token);
+
+    const exp = decodificado.exp;
+    const agora = Math.floor(Date.now() / 1000);
+
+    if (exp && exp < agora) {
+      Cookies.remove("authToken");
+      return false;
+    }
+
+    return true;
+  } catch (err) {
+    Cookies.remove("authToken");
+    return false;
+  }
+}
+
+export function validarToken() {
+  const tokenValido = isTokenValido();
+
+  const token = Cookies.get("authToken");
+
+  if (token && tokenValido) {
+    const validado: tokenType = jose.decodeJwt(token);
+
+    return validado;
+  }
+
+  return null;
 }
