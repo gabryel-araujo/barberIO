@@ -1,14 +1,19 @@
 import { cache } from "react";
 import axiosInstance from "../axios";
 import { Barbeiro } from "@/types/barbeiro";
+import { LoginType } from "@/types/loginType";
+import axios from "axios";
+import { baseUrl } from "../baseUrl";
 
-export const login = async (email: String, password: String) => {
+export const fazerLogin = async (
+  email: String,
+  password: String
+): Promise<LoginType> => {
   try {
-    const response = await axiosInstance.post("/auth/login", {
+    const response = await axios.post(`${baseUrl}/auth/login`, {
       email: email,
       senha: password,
     });
-    //response.data.token
     return response.data;
   } catch (error) {
     console.error("Erro ao buscar funcionarios", error);

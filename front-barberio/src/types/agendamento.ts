@@ -10,3 +10,13 @@ export type Agendamento = {
   servico: Servico;
   cliente: Cliente;
 };
+
+export type AgendamentoPublic = {
+  horario: string;
+  fim: string;
+  barbeiro: string;
+  cliente: string;
+  telefone: string;
+  servico: string;
+  preco: number;
+};
