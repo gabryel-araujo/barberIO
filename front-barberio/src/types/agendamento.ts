@@ -12,6 +12,7 @@ export type Agendamento = {
 };
 
 export type AgendamentoPublic = {
+  id: number;
   horario: string;
   fim: string;
   barbeiro: string;
