@@ -65,6 +65,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+import Cookies from "js-cookie";
 const clientes = () => {
   const [openModal, setOpenModal] = useState(false);
   //const [clienteListado, setClienteListado] = useState<Cliente[]>([]);
@@ -83,7 +85,11 @@ const clientes = () => {
   const { data: clienteListado = [] } = useQuery({
     queryKey: ["clientes", exibirInativos],
     queryFn: async () => {
-      const response = await axios.get(`${baseUrl}/clientes`);
+      const response = await axios.get(`${baseUrl}/public/clientes`, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get("authToken")}`,
+        },
+      });
       const clientes = response.data;
       const clientesFiltrado = exibirInativos
         ? clientes
@@ -160,7 +166,12 @@ const clientes = () => {
         // se for cliente atualiza o cliente na lista
         await axios.put(
           `${baseUrl}/clientes/${clienteExistente.id}`,
-          clienteAtualizado
+          clienteAtualizado,
+          {
+            headers: {
+              Authorization: `Bearer ${Cookies.get("authToken")}`,
+            },
+          }
         );
         console.log("Cliente Salvo:", clienteAtualizado);
         toast.success("Cliente alterado com sucesso!");
@@ -196,12 +207,20 @@ const clientes = () => {
   const deleteCliente = async (value: Cliente) => {
     try {
       console.log(`Deletando: ${baseUrl}/clientes/${value.id}`);
-      await axios.put(`${baseUrl}/clientes/${value.id}`, {
-        ...value,
-        nome: nomeCapitalizado(value.nome),
-        telefone: value.telefone,
-        ativo: false,
-      });
+      await axios.put(
+        `${baseUrl}/clientes/${value.id}`,
+        {
+          ...value,
+          nome: nomeCapitalizado(value.nome),
+          telefone: value.telefone,
+          ativo: false,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("authToken")}`,
+          },
+        }
+      );
 
       await queryClient.invalidateQueries({ queryKey: ["clientes"] });
       toast.success("Cliente deletado com sucesso!");
@@ -216,12 +235,20 @@ const clientes = () => {
   const reativarCliente = async (value: Cliente) => {
     try {
       console.log(`Deletando: ${baseUrl}/clientes/${value.id}`);
-      await axios.put(`${baseUrl}/clientes/${value.id}`, {
-        ...value,
-        nome: nomeCapitalizado(value.nome),
-        telefone: value.telefone,
-        ativo: true,
-      });
+      await axios.put(
+        `${baseUrl}/clientes/${value.id}`,
+        {
+          ...value,
+          nome: nomeCapitalizado(value.nome),
+          telefone: value.telefone,
+          ativo: true,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("authToken")}`,
+          },
+        }
+      );
 
       await queryClient.invalidateQueries({ queryKey: ["clientes"] });
       toast.success("Cliente Ativado com sucesso!");
@@ -266,12 +293,12 @@ const clientes = () => {
         </div>
       </div>
       <div className="relative flex-1 max-w-sm px-10">
-        <Search className="absolute left-12 top-2.5 h-4 w-4 text-slate-500 " />
+        <Search className="absolute left-12 top-2.5 h-4 w-4 text-slate-500 bg-white" />
         <Input
           value={pesquisaInput}
           onChange={handlePesquisa}
           placeholder="Buscar clientes..."
-          className="pl-8 text-slate-500"
+          className="pl-8 text-slate-500 bg-white"
         />
       </div>
       <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden m-5 p-3">
