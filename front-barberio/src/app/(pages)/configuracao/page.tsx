@@ -36,6 +36,7 @@ import { baseUrl } from "@/lib/baseUrl";
 import { useMutations } from "./mutations/configuracoes";
 import { AxiosError } from "axios";
 import { DialogComponent } from "@/components/layout/DialogComponent";
+import Cookies from "js-cookie";
 
 export type ErrorResponse = {
   error: string;
@@ -60,7 +61,11 @@ const configuracao = () => {
   >({
     queryKey: ["empresas"],
     queryFn: async () => {
-      const response = await axios.get(`${baseUrl}/empresas/1`);
+      const response = await axios.get(`${baseUrl}/empresas/1`, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get("authToken")}`,
+        },
+      });
       return response.data;
     },
     staleTime: 5 * (60 * 1000),

@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { formSchemaUser } from "./components/formSchemaUser";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import axios from "axios";
 import { useState } from "react";
 import Cookies from "js-cookie";
 
@@ -19,7 +18,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { baseUrl } from "@/lib/baseUrl";
+import { fazerLogin } from "@/lib/api/funcionarios";
+import { LoginType } from "@/types/loginType";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -38,26 +38,22 @@ const LoginPage = () => {
   const onSubmit = async (values: z.infer<typeof formSchemaUser>) => {
     form.formState.isSubmitting && toast.info("Fazendo Login...");
     try {
-      const response = await axios.post(`http://${baseUrl}/auth/login`, {
-        email: values.email,
-        senha: values.senha,
-      });
+      const response = await fazerLogin(values.email, values.senha);
 
-      const token = response.data.token;
+      const { token }: LoginType = response;
+
       Cookies.set("authToken", token, {
-        expires: 1,
-        secure: true,
-        sameSite: "strict",
+        expires: 1, // número de dias que o cookie vai durar
+        secure: false, // só em HTTPS
+        sameSite: "strict", // proteção contra CSRF
       });
 
       form.formState.isSubmitted &&
         toast.success("Login realizado com sucesso!");
       router.replace("/");
     } catch (error: any) {
-      console.error(
-        "❌ erro no Login: ",
-        error.response?.data || error.message
-      );
+      toast.error("Email ou senha incorretos");
+      console.error("Erro no Login: ", error.response?.data || error.message);
     }
   };
 

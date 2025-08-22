@@ -7,12 +7,17 @@ import {
   configEmpresaSchema,
 } from "../schemas/schemas";
 import { baseUrl } from "@/lib/baseUrl";
+import Cookies from "js-cookie";
 
 export const AtualizarEmpresa = async (
   id: number,
   empresa: z.infer<typeof empresaSchema>
 ) => {
-  const response = await axios.put(`${baseUrl}/empresas/${id}`, empresa);
+  const response = await axios.put(`${baseUrl}/empresas/${id}`, empresa, {
+    headers: {
+      Authorization: `Bearer ${Cookies.get("authToken")}`,
+    },
+  });
   return response.data;
 };
 
@@ -20,7 +25,11 @@ export const AtualizaEndereco = async (
   id: number,
   endereco: z.infer<typeof enderecoSchema>
 ) => {
-  const response = await axios.put(`${baseUrl}/enderecos/${id}`, endereco);
+  const response = await axios.put(`${baseUrl}/enderecos/${id}`, endereco, {
+    headers: {
+      Authorization: `Bearer ${Cookies.get("authToken")}`,
+    },
+  });
   return response.data;
 };
 
@@ -31,7 +40,12 @@ export const AtualizarConfigEmpresa = async (
 ) => {
   const response = await axios.put(
     `${baseUrl}/configEmpresa/?config_id=${config_id}&empresa_id=${empresa_id}`,
-    config_empresa
+    config_empresa,
+    {
+      headers: {
+        Authorization: `Bearer ${Cookies.get("authToken")}`,
+      },
+    }
   );
   return response.data;
 };
@@ -42,7 +56,12 @@ export const CriarFeriado = async (
 ) => {
   const response = await axios.post(
     `${baseUrl}/feriados/${config_id}`,
-    feriados
+    feriados,
+    {
+      headers: {
+        Authorization: `Bearer ${Cookies.get("authToken")}`,
+      },
+    }
   );
   return response.data;
 };
@@ -51,12 +70,20 @@ export const EditarFeriado = async (
   id: number,
   feriados: z.infer<typeof formSchemaFeriado>
 ) => {
-  const response = await axios.put(`${baseUrl}/feriados/${id}`, feriados);
+  const response = await axios.put(`${baseUrl}/feriados/${id}`, feriados, {
+    headers: {
+      Authorization: `Bearer ${Cookies.get("authToken")}`,
+    },
+  });
   return response.data;
 };
 
 export const DeletarFeriado = async (id: number) => {
-  const response = await axios.delete(`${baseUrl}/feriados/${id}`);
+  const response = await axios.delete(`${baseUrl}/feriados/${id}`, {
+    headers: {
+      Authorization: `Bearer ${Cookies.get("authToken")}`,
+    },
+  });
   return response.data;
 };
 
@@ -66,7 +93,12 @@ export const editarHorarioFuncionamento = async (
 ) => {
   const response = await axios.put(
     `${baseUrl}/horarioFuncionamento/semana/${config_id}`,
-    horarioSemana
+    horarioSemana,
+    {
+      headers: {
+        Authorization: `Bearer ${Cookies.get("authToken")}`,
+      },
+    }
   );
   return response.data;
 };
