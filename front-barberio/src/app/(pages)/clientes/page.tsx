@@ -67,6 +67,7 @@ import {
 } from "@/components/ui/select";
 
 import Cookies from "js-cookie";
+
 const clientes = () => {
   const [openModal, setOpenModal] = useState(false);
   //const [clienteListado, setClienteListado] = useState<Cliente[]>([]);

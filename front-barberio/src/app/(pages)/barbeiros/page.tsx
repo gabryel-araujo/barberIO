@@ -53,6 +53,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import Cookies from "js-cookie";
+
 const barbeiros = () => {
   const { state, dispatch } = useFormReducer();
   const [openModal, setOpenModal] = useState(false);
@@ -272,7 +274,11 @@ const barbeiros = () => {
   useQuery({
     queryKey: ["servicos"],
     queryFn: async () => {
-      const response = await axios.get(`${baseUrl}/servico`);
+      const response = await axios.get(`${baseUrl}/public/servico`, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get("authToken")}`,
+        },
+      });
       setServicos(response.data);
       return response.data;
     },

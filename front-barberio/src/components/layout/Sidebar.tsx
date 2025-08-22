@@ -95,7 +95,6 @@ export const Sidebar = ({ onClick }: SideBarProps) => {
             </Link>
           );
         })}
-
         <InstallButton />
       </div>
 

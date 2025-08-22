@@ -4,6 +4,7 @@ import { Barbeiro } from "@/types/barbeiro";
 import { LoginType } from "@/types/loginType";
 import axios from "axios";
 import { baseUrl } from "../baseUrl";
+import Cookies from "js-cookie";
 
 export const fazerLogin = async (
   email: String,
@@ -36,7 +37,11 @@ export const setGoogleFuncionario = async (nome: String, email: String) => {
 
 export const GETFuncionarios = cache(async (): Promise<Barbeiro[]> => {
   try {
-    const respose = await axiosInstance.get<Barbeiro[]>("/public/funcionarios");
+    const respose = await axiosInstance.get<Barbeiro[]>("/funcionarios", {
+      headers: {
+        Authorization: `Bearer ${Cookies.get("authToken")}`,
+      },
+    });
     return respose.data;
   } catch (error) {
     console.error("Erro ao listar funcionarios", error);
@@ -54,15 +59,23 @@ export const POSTFuncionario = async (
   ativo?: boolean
 ) => {
   try {
-    const response = await axiosInstance.post("/admin/funcionarios", {
-      nome,
-      email,
-      senha,
-      data_nascimento,
-      disponivel,
-      newServices: servicos,
-      ativo,
-    });
+    const response = await axiosInstance.post(
+      "/funcionarios",
+      {
+        nome,
+        email,
+        senha,
+        data_nascimento,
+        disponivel,
+        newServices: servicos,
+        ativo,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${Cookies.get("authToken")}`,
+        },
+      }
+    );
     return response;
   } catch (error) {
     console.error("Erro ao cadastrar funcionario", error);
@@ -79,13 +92,21 @@ export const changeStatus = async (
   ativo: boolean
 ) => {
   try {
-    const response = await axiosInstance.put(`/admin/funcionarios/${id}`, {
-      nome,
-      email,
-      senha,
-      disponivel,
-      ativo,
-    });
+    const response = await axiosInstance.put(
+      `/funcionarios/${id}`,
+      {
+        nome,
+        email,
+        senha,
+        disponivel,
+        ativo,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${Cookies.get("authToken")}`,
+        },
+      }
+    );
     return response;
   } catch (error) {
     console.error("Erro ao atualizar", error);
@@ -103,14 +124,22 @@ export const PUTFuncionario = async (
   ativo?: boolean
 ) => {
   try {
-    const response = await axiosInstance.put(`/admin/funcionarios/${id}`, {
-      nome,
-      email,
-      senha,
-      data_nascimento,
-      disponivel,
-      ativo,
-    });
+    const response = await axiosInstance.put(
+      `/funcionarios/${id}`,
+      {
+        nome,
+        email,
+        senha,
+        data_nascimento,
+        disponivel,
+        ativo,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${Cookies.get("authToken")}`,
+        },
+      }
+    );
     return response;
   } catch (error) {
     console.error("Erro ao cadastrar funcionario", error);
@@ -120,11 +149,19 @@ export const PUTFuncionario = async (
 
 export const DELETEFuncionario = async (value: Barbeiro) => {
   try {
-    const response = await axiosInstance.put(`admin/funcionarios/${value.id}`, {
-      ...value,
-      disponivel: false,
-      ativo: false,
-    });
+    const response = await axiosInstance.put(
+      `/funcionarios/${value.id}`,
+      {
+        ...value,
+        disponivel: false,
+        ativo: false,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${Cookies.get("authToken")}`,
+        },
+      }
+    );
     return response;
   } catch (error) {
     throw error;
@@ -133,11 +170,19 @@ export const DELETEFuncionario = async (value: Barbeiro) => {
 
 export const ReativarFuncionario = async (value: Barbeiro) => {
   try {
-    const response = await axiosInstance.put(`admin/funcionarios/${value.id}`, {
-      ...value,
-      disponivel: true,
-      ativo: true,
-    });
+    const response = await axiosInstance.put(
+      `/funcionarios/${value.id}`,
+      {
+        ...value,
+        disponivel: true,
+        ativo: true,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${Cookies.get("authToken")}`,
+        },
+      }
+    );
     return response;
   } catch (error) {
     throw error;
@@ -150,7 +195,13 @@ export const addServicoFuncionario = async (
 ) => {
   try {
     const response = await axiosInstance.patch(
-      `funcionarios/${funcionarioId}/adicionarServico/${servicoId}`
+      `/funcionarios/${funcionarioId}/adicionarServico/${servicoId}`,
+      null,
+      {
+        headers: {
+          Authorization: `Bearer ${Cookies.get("authToken")}`,
+        },
+      }
     );
     return response;
   } catch (error) {
@@ -164,7 +215,13 @@ export const removeServicoFuncionario = async (
 ) => {
   try {
     const response = await axiosInstance.patch(
-      `funcionarios/${funcionarioId}/removerServico/${servicoId}`
+      `/funcionarios/${funcionarioId}/removerServico/${servicoId}`,
+      null,
+      {
+        headers: {
+          Authorization: `Bearer ${Cookies.get("authToken")}`,
+        },
+      }
     );
     return response;
   } catch (error) {
