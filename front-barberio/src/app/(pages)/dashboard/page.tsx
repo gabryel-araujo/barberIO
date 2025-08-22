@@ -1,5 +1,5 @@
 "use client";
-import { ButtonLembrete } from "@/components/layout/Dashboard/buttonLembretes";
+// import { ButtonLembrete } from "@/components/layout/Dashboard/buttonLembretes";
 import { CardGrande } from "@/components/layout/Dashboard/cardGrande";
 import { CardPequeno } from "@/components/layout/Dashboard/cardPequeno";
 import { TitulosPages } from "@/components/layout/titulosPages";
@@ -13,8 +13,8 @@ import {
 } from "@/components/ui/table";
 import { baseUrl } from "@/lib/baseUrl";
 import { ConversaoData, obterHoras, obterNomeMes } from "@/lib/utils";
-import { whatsapp } from "@/lib/whstsapp";
-import { Agendamento, AgendamentoPublic } from "@/types/agendamento";
+// import { whatsapp } from "@/lib/whstsapp";
+import { AgendamentoPublic } from "@/types/agendamento";
 import { Barbeiro } from "@/types/barbeiro";
 import { Servico } from "@/types/servico";
 import { formatarTelefone, normalizarData } from "@/utils/functions";

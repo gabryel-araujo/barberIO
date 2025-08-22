@@ -14,7 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { DELETEAgendamento, GETAgendamentos } from "@/lib/api/agendamento";
-import { Agendamento, AgendamentoPublic } from "@/types/agendamento";
+import { AgendamentoPublic } from "@/types/agendamento";
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarX2, Clock, User, Scissors, DollarSign } from "lucide-react";
 import { DialogComponent } from "@/components/layout/DialogComponent";
