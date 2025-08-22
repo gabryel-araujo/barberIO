@@ -1,6 +1,6 @@
 import { cache } from "react";
 import axiosInstance from "../axios";
-import { Agendamento, AgendamentoPublic } from "@/types/agendamento";
+import { AgendamentoPublic } from "@/types/agendamento";
 import { AxiosResponse } from "axios";
 
 export const agendar = async (
