@@ -6,7 +6,7 @@ import { User } from "lucide-react";
 import { inicialData, useForm } from "@/contexts/AgendamentoContextProvider";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
-import { GETFuncionarios } from "@/lib/api/funcionarios";
+import { GETFuncionariosPublic } from "@/lib/api/funcionarios";
 
 export const Step2 = () => {
   const { state, dispatch } = useForm();
@@ -14,7 +14,7 @@ export const Step2 = () => {
 
   const { data: barbeiros = [] } = useQuery({
     queryKey: ["barbeirosDisponivel"],
-    queryFn: GETFuncionarios,
+    queryFn: GETFuncionariosPublic,
     //staleTime: 3000,
   });
 

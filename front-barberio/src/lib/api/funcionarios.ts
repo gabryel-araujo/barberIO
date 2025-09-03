@@ -49,6 +49,19 @@ export const GETFuncionarios = cache(async (): Promise<Barbeiro[]> => {
   }
 });
 
+export const GETFuncionariosPublic = cache(async (): Promise<Barbeiro[]> => {
+  try {
+    const respose = await axiosInstance.get<Barbeiro[]>(
+      "/public/funcionarios",
+      {}
+    );
+    return respose.data;
+  } catch (error) {
+    console.error("Erro ao listar funcionarios", error);
+    throw error;
+  }
+});
+
 export const POSTFuncionario = async (
   nome: string,
   email: string,

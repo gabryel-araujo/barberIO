@@ -120,7 +120,6 @@ export const Step4 = () => {
 
     const response = await findByTelefone(data.phone);
     if (response.length == 0) {
-      console.log("entrou aqui");
       const response = await POSTCliente(
         nomeCapitalizado(data.name),
         data.phone
@@ -180,10 +179,9 @@ export const Step4 = () => {
         // });
 
         setIsLoading(true);
-
-        setTimeout(() => {
-          push("/");
-        }, 2000);
+        push("/");
+        // setTimeout(() => {
+        // }, 2000);
       }
       setOpenModalRevisao(!openModalRevisao);
     } catch (error) {
