@@ -14,7 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { DELETEAgendamento, GETAgendamentos } from "@/lib/api/agendamento";
-import { Agendamento } from "@/types/agendamento";
+import { AgendamentoPublic } from "@/types/agendamento";
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarX2, Clock, User, Scissors, DollarSign } from "lucide-react";
 import { DialogComponent } from "@/components/layout/DialogComponent";
@@ -28,7 +28,7 @@ const agendamentos = () => {
   const dateRef = useRef(
     format(Date.now(), "dd 'de' MMMM, yyyy", { locale: ptBR })
   );
-  const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
+  const [agendamentos, setAgendamentos] = useState<AgendamentoPublic[]>([]);
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [selecionada, setSelecionada] = useState(
     format(Date.now(), "dd 'de' MMMM, yyyy", { locale: ptBR })
@@ -81,7 +81,7 @@ const agendamentos = () => {
     agendamento,
     index,
   }: {
-    agendamento: Agendamento;
+    agendamento: AgendamentoPublic;
     index: number;
   }) => (
     <Card key={index} className="p-4 space-y-3">
@@ -97,14 +97,14 @@ const agendamentos = () => {
           </div>
           <div className="flex items-center gap-2">
             <User size={16} className="text-green-500" />
-            <span>{agendamento.cliente.nome}</span>
+            <span>{agendamento.cliente || agendamento.cliente}</span>
           </div>
         </div>
         <div className="text-right">
           <div className="flex items-center gap-2 justify-end">
             <DollarSign size={16} className="text-orange-500" />
             <span className="font-semibold text-green-600">
-              R${agendamento.servico.preco.toFixed(2)}
+              R${agendamento.preco.toFixed(2)}
             </span>
           </div>
         </div>
@@ -114,13 +114,13 @@ const agendamentos = () => {
         <div className="flex items-center gap-2">
           <User size={16} className="text-purple-500" />
           <span className="text-sm text-gray-600">
-            Barbeiro: {agendamento.barbeiro.nome}
+            Barbeiro: {agendamento.barbeiro}
           </span>
         </div>
         <div className="flex items-center gap-2">
           <Scissors size={16} className="text-blue-500" />
           <span className="text-sm text-gray-600">
-            Serviço: {agendamento.servico.nome}
+            Serviço: {agendamento.servico}
           </span>
         </div>
       </div>
@@ -220,11 +220,11 @@ const agendamentos = () => {
                                 locale: ptBR,
                               })}
                             </TableCell>
-                            <TableCell>{agendamento.cliente.nome}</TableCell>
-                            <TableCell>{agendamento.barbeiro.nome}</TableCell>
-                            <TableCell>{agendamento.servico.nome}</TableCell>
+                            <TableCell>{agendamento.cliente}</TableCell>
+                            <TableCell>{agendamento.barbeiro}</TableCell>
+                            <TableCell>{agendamento.servico}</TableCell>
                             <TableCell>
-                              R${agendamento.servico.preco.toFixed(2)}
+                              R${agendamento.preco.toFixed(2)}
                             </TableCell>
                             <TableCell className="flex gap-2 items-center justify-center">
                               <Button
@@ -303,11 +303,11 @@ const agendamentos = () => {
                                   locale: ptBR,
                                 })}
                               </TableCell>
-                              <TableCell>{agendamento.cliente.nome}</TableCell>
-                              <TableCell>{agendamento.barbeiro.nome}</TableCell>
-                              <TableCell>{agendamento.servico.nome}</TableCell>
+                              <TableCell>{agendamento.cliente}</TableCell>
+                              <TableCell>{agendamento.barbeiro}</TableCell>
+                              <TableCell>{agendamento.servico}</TableCell>
                               <TableCell>
-                                R${agendamento.servico.preco.toFixed(2)}
+                                R${agendamento.preco.toFixed(2)}
                               </TableCell>
                               <TableCell className="flex gap-2 items-center justify-center">
                                 <Button
@@ -418,7 +418,7 @@ const agendamentos = () => {
                             </div>
                             <div className="flex items-center gap-2">
                               <User size={16} className="text-green-500" />
-                              <span>{agendamento.cliente.nome}</span>
+                              <span>{agendamento.cliente}</span>
                             </div>
                           </div>
                         </Card>

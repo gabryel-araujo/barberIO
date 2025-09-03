@@ -1,5 +1,5 @@
 "use client";
-import { ButtonLembrete } from "@/components/layout/Dashboard/buttonLembretes";
+// import { ButtonLembrete } from "@/components/layout/Dashboard/buttonLembretes";
 import { CardGrande } from "@/components/layout/Dashboard/cardGrande";
 import { CardPequeno } from "@/components/layout/Dashboard/cardPequeno";
 import { TitulosPages } from "@/components/layout/titulosPages";
@@ -13,8 +13,8 @@ import {
 } from "@/components/ui/table";
 import { baseUrl } from "@/lib/baseUrl";
 import { ConversaoData, obterHoras, obterNomeMes } from "@/lib/utils";
-import { whatsapp } from "@/lib/whstsapp";
-import { Agendamento } from "@/types/agendamento";
+// import { whatsapp } from "@/lib/whstsapp";
+import { AgendamentoPublic } from "@/types/agendamento";
 import { Barbeiro } from "@/types/barbeiro";
 import { Servico } from "@/types/servico";
 import { formatarTelefone, normalizarData } from "@/utils/functions";
@@ -25,7 +25,7 @@ import React, { useState } from "react";
 import Cookies from "js-cookie";
 
 const dashboard = () => {
-  const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
+  const [agendamentos, setAgendamentos] = useState<AgendamentoPublic[]>([]);
   const [servicos, setServicos] = useState<Servico[]>([]);
   const [barbeiros, setBarbeiros] = useState<Barbeiro[]>([]);
   const [hoje] = useState(new Date());
@@ -40,13 +40,13 @@ const dashboard = () => {
           Authorization: `Bearer ${Cookies.get("authToken")}`,
         },
       });
-      const responseServico = await axios.get(`${baseUrl}/servico`, {
+      const responseServico = await axios.get(`${baseUrl}/public/servico`, {
         headers: {
           Authorization: `Bearer ${Cookies.get("authToken")}`,
         },
       });
       const responseBarbeiro = await axios.get(
-        `${baseUrl}/admin/funcionarios`,
+        `${baseUrl}/public/funcionarios`,
         {
           headers: {
             Authorization: `Bearer ${Cookies.get("authToken")}`,
@@ -73,13 +73,13 @@ const dashboard = () => {
     },
   });
 
-  const agendamentosDoDia: Agendamento[] = agendamentos
+  const agendamentosDoDia: AgendamentoPublic[] = agendamentos
     .filter((age) => ConversaoData(age.horario) === ConversaoData(hoje))
     .sort(
       (a, b) => new Date(a.horario).getTime() - new Date(b.horario).getTime()
     );
 
-  const proximosAgendamentos: Agendamento[] = agendamentos
+  const proximosAgendamentos: AgendamentoPublic[] = agendamentos
     .filter(
       (age) => normalizarData(new Date(age.horario)) > normalizarData(hoje)
     )
@@ -139,8 +139,8 @@ const dashboard = () => {
                   </TableHeader>
                   <TableBody className="">
                     {agendamentosDoDia.map(
-                      (agendamento: Agendamento, index) => (
-                        <React.Fragment key={agendamento.id}>
+                      (agendamento: AgendamentoPublic, index) => (
+                        <React.Fragment key={index}>
                           <TableRow
                             // key={agendamento.id}
                             className="hover:bg-slate-200 cursor-pointer "
@@ -151,9 +151,9 @@ const dashboard = () => {
                             <TableCell>
                               {obterHoras(agendamento.horario)}
                             </TableCell>
-                            <TableCell>{agendamento.cliente.nome}</TableCell>
-                            <TableCell>{agendamento.barbeiro.nome}</TableCell>
-                            <TableCell>{agendamento.servico.nome}</TableCell>
+                            <TableCell>{agendamento.cliente}</TableCell>
+                            <TableCell>{agendamento.barbeiro}</TableCell>
+                            <TableCell>{agendamento.servico}</TableCell>
                           </TableRow>
                           {expandido === index && (
                             <TableRow className="">
@@ -181,11 +181,11 @@ const dashboard = () => {
                                         <TableBody>
                                           <TableRow className="text-slate-500">
                                             <TableCell>
-                                              {agendamento.cliente.nome}
+                                              {agendamento.cliente}
                                             </TableCell>
                                             <TableCell>
                                               {formatarTelefone(
-                                                agendamento.cliente.telefone
+                                                agendamento.cliente
                                               )}
                                             </TableCell>
                                             <TableCell>01/01/1990</TableCell>
@@ -203,17 +203,17 @@ const dashboard = () => {
                                         <TableHeader>
                                           <TableRow className="font-semibold text-slate-500">
                                             <TableCell>Nome</TableCell>
-                                            <TableCell>Avaliação</TableCell>
+                                            {/* <TableCell>Avaliação</TableCell> */}
                                           </TableRow>
                                         </TableHeader>
                                         <TableBody>
                                           <TableRow className="text-slate-500">
                                             <TableCell>
-                                              {agendamento.barbeiro.nome}
+                                              {agendamento.barbeiro}
                                             </TableCell>
-                                            <TableCell>
+                                            {/* <TableCell>
                                               {agendamento.barbeiro.experiencia}
-                                            </TableCell>
+                                            </TableCell> */}
                                           </TableRow>
                                         </TableBody>
                                       </Table>
@@ -226,15 +226,14 @@ const dashboard = () => {
                                     <div className="flex items-center justify-between px-5">
                                       <div className="flex flex-col">
                                         <p className="font-semibold text-lg text-slate-600">
-                                          {agendamento.servico.nome}
+                                          {agendamento.servico}
                                         </p>
-                                        <p className="text-slate-500">
+                                        {/* <p className="text-slate-500">
                                           {agendamento.servico.descricao}
-                                        </p>
+                                        </p> */}
                                       </div>
                                       <div className="text-slate-600 font-semibold">
-                                        R${" "}
-                                        {agendamento.servico.preco.toFixed(2)}
+                                        R$ {agendamento.preco.toFixed(2)}
                                       </div>
                                     </div>
                                   </div>
@@ -243,12 +242,13 @@ const dashboard = () => {
                                       Funções de Enviar Lembrete
                                     </p>
                                     <div className="flex items-center justify-center">
-                                      <ButtonLembrete
+                                      {/* todo: importar isso aqui no back-end */}
+                                      {/* <ButtonLembrete
                                         mensagem="Mensagem será enviada pelo Whatsapp Web"
                                         link={`${whatsapp}${agendamento.cliente.telefone}`}
                                       >
                                         Whatsapp Web
-                                      </ButtonLembrete>
+                                      </ButtonLembrete> */}
                                     </div>
                                   </div>
                                 </div>
@@ -280,8 +280,8 @@ const dashboard = () => {
                   </TableHeader>
                   <TableBody className="">
                     {proximosAgendamentos.map(
-                      (agendamentoProx: Agendamento, index) => (
-                        <React.Fragment key={agendamentoProx.id}>
+                      (agendamentoProx: AgendamentoPublic, index) => (
+                        <React.Fragment key={index}>
                           <TableRow
                             //key={agendamentoProx.id}
                             className="hover:bg-slate-200 cursor-pointer "
@@ -297,12 +297,8 @@ const dashboard = () => {
                             <TableCell>
                               {obterHoras(agendamentoProx.horario)}
                             </TableCell>
-                            <TableCell>
-                              {agendamentoProx.cliente.nome}
-                            </TableCell>
-                            <TableCell>
-                              {agendamentoProx.barbeiro.nome}
-                            </TableCell>
+                            <TableCell>{agendamentoProx.cliente}</TableCell>
+                            <TableCell>{agendamentoProx.barbeiro}</TableCell>
                           </TableRow>
                           {expandidoProximo === index && (
                             <TableRow className="">
@@ -330,10 +326,11 @@ const dashboard = () => {
                                         <TableBody>
                                           <TableRow className="text-slate-500">
                                             <TableCell>
-                                              {agendamentoProx.cliente.nome}
+                                              {agendamentoProx.cliente}
                                             </TableCell>
                                             <TableCell>
-                                              {agendamentoProx.cliente.telefone}
+                                              {/* todo: inserir o telefone do cliente no public */}
+                                              {/* {agendamentoProx.cliente.telefone} */}
                                             </TableCell>
                                             <TableCell>01/01/1990</TableCell>
                                           </TableRow>
@@ -356,14 +353,15 @@ const dashboard = () => {
                                         <TableBody>
                                           <TableRow className="text-slate-500">
                                             <TableCell>
-                                              {agendamentoProx.barbeiro.nome}
+                                              {agendamentoProx.barbeiro}
                                             </TableCell>
-                                            <TableCell>
+                                            {/* todo: ajustar a experiencia no back-end */}
+                                            {/* <TableCell>
                                               {
                                                 agendamentoProx.barbeiro
                                                   .experiencia
                                               }
-                                            </TableCell>
+                                            </TableCell> */}
                                           </TableRow>
                                         </TableBody>
                                       </Table>
@@ -376,17 +374,14 @@ const dashboard = () => {
                                     <div className="flex items-center justify-between px-5">
                                       <div className="flex flex-col">
                                         <p className="font-semibold text-lg text-slate-600">
-                                          {agendamentoProx.servico.nome}
+                                          {agendamentoProx.servico}
                                         </p>
-                                        <p className="text-slate-500">
+                                        {/* <p className="text-slate-500">
                                           {agendamentoProx.servico.descricao}
-                                        </p>
+                                        </p> */}
                                       </div>
                                       <div className="text-slate-600 font-semibold">
-                                        R${" "}
-                                        {agendamentoProx.servico.preco.toFixed(
-                                          2
-                                        )}
+                                        R$ {agendamentoProx.preco.toFixed(2)}
                                       </div>
                                     </div>
                                   </div>
@@ -395,12 +390,12 @@ const dashboard = () => {
                                       Funções de Enviar Lembrete
                                     </p>
                                     <div className="flex items-center justify-center">
-                                      <ButtonLembrete
+                                      {/* <ButtonLembrete
                                         mensagem="Mensagem será enviada pelo Whatsapp Web"
                                         link={`${whatsapp}${agendamentoProx.cliente.telefone}`}
                                       >
                                         Whatsapp Web
-                                      </ButtonLembrete>
+                                      </ButtonLembrete> */}
                                     </div>
                                   </div>
                                 </div>

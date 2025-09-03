@@ -36,6 +36,7 @@ import { Filter, Scissors } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import Cookies from "js-cookie";
 
 const servicos = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -46,7 +47,11 @@ const servicos = () => {
   const { data: servicos = [] } = useQuery({
     queryKey: ["servicos", exibirInativos],
     queryFn: async () => {
-      const response = await axios.get(`${baseUrl}/servico`);
+      const response = await axios.get(`${baseUrl}/public/servico`, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get("authToken")}`,
+        },
+      });
       const servicosApi = response.data;
       const servicoFiltrado = exibirInativos
         ? servicosApi
@@ -107,20 +112,36 @@ const servicos = () => {
   const onSubmit = async (value: Servico) => {
     try {
       if (servicoSelecionado) {
-        await axios.put(`${baseUrl}/servico/${servicoSelecionado.id}`, {
-          nome: value.nome,
-          descricao: value.descricao,
-          duracao: value.duracao,
-          preco: value.preco,
-          ativo: servicoSelecionado.ativo,
-        });
+        await axios.put(
+          `${baseUrl}/servico/${servicoSelecionado.id}`,
+          {
+            nome: value.nome,
+            descricao: value.descricao,
+            duracao: value.duracao,
+            preco: value.preco,
+            ativo: servicoSelecionado.ativo,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${Cookies.get("authToken")}`,
+            },
+          }
+        );
       } else {
-        const response = await axios.post(`${baseUrl}/servico`, {
-          nome: value.nome,
-          descricao: value.descricao,
-          duracao: value.duracao,
-          preco: value.preco,
-        });
+        const response = await axios.post(
+          `${baseUrl}/servico`,
+          {
+            nome: value.nome,
+            descricao: value.descricao,
+            duracao: value.duracao,
+            preco: value.preco,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${Cookies.get("authToken")}`,
+            },
+          }
+        );
 
         console.log(response);
       }
@@ -137,10 +158,18 @@ const servicos = () => {
   };
   const deleteServico = async (value: Servico) => {
     try {
-      await axios.put(`${baseUrl}/servico/${value.id}`, {
-        ...value,
-        ativo: false,
-      });
+      await axios.put(
+        `${baseUrl}/servico/${value.id}`,
+        {
+          ...value,
+          ativo: false,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("authToken")}`,
+          },
+        }
+      );
 
       console.log(`Serviço ${servicoSelecionado} foi excluido com sucesso`);
 
@@ -152,10 +181,18 @@ const servicos = () => {
 
   const reativarServico = async (value: Servico) => {
     try {
-      await axios.put(`${baseUrl}/servico/${value.id}`, {
-        ...value,
-        ativo: true,
-      });
+      await axios.put(
+        `${baseUrl}/servico/${value.id}`,
+        {
+          ...value,
+          ativo: true,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("authToken")}`,
+          },
+        }
+      );
 
       console.log(`Serviço ${servicoSelecionado} foi reativado com sucesso`);
 

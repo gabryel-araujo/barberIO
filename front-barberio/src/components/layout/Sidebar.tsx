@@ -66,9 +66,16 @@ export const Sidebar = ({ onClick }: SideBarProps) => {
   return (
     <div className="flex flex-col bg-[#1a1f2c] text-white md:w-[300px] min-h-screen justify-between">
       <div>
-        <p className="py-8 text-center font-bold text-2xl">
-          <span className="text-[#3f88c5]">Barber</span>iO
-        </p>
+        <div className="flex flex-col justify-center items-center mt-4 mb-2">
+          <img
+            src="/barberio.png"
+            alt="logo da empresa barberiO"
+            className="w-40"
+          />
+        </div>
+        {/* <p className="py-8 text-center font-bold text-2xl"> */}
+        {/* <span className="text-[#3f88c5]">Barber</span>iO */}
+        {/* </p> */}
 
         {MenuItems.map((menu) => {
           // Exibe item se permission === "" (público) ou se bate com role do usuário
@@ -95,7 +102,6 @@ export const Sidebar = ({ onClick }: SideBarProps) => {
             </Link>
           );
         })}
-
         <InstallButton />
       </div>
 
