@@ -54,7 +54,7 @@ const menuItems: MenuItem[] = [
     permission: "GESTOR",
   },
   {
-    path: "/configuracao",
+    path: "/configuracao?empresaId=3",
     icon: <Settings className="h-5 w-5" />,
     label: "Configuração",
     permission: "GESTOR",
