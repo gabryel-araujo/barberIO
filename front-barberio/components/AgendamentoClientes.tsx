@@ -119,7 +119,7 @@ export const AgendamentoClientes = () => {
               <div className="flex flex-col items-center justify-center py-8">
                 <CalendarX2 size={50} className="text-slate-300" />
                 <h1 className="font-semibold text-slate-300 text-sm md:text-md text-center">
-                  Nenhum agendamento encontrado para essa data
+                  Nenhum agendamento encontrado
                 </h1>
               </div>
             )}
