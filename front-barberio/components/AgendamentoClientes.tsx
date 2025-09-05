@@ -62,7 +62,6 @@ export const AgendamentoClientes = () => {
           <div>
             {agendamentosFiltradosProximos.length > 0 ? (
               <>
-                {/* Tabela para desktop */}
                 <div className="hidden md:block">
                   <Table className="text-center">
                     <TableHeader>
@@ -113,6 +112,78 @@ export const AgendamentoClientes = () => {
                       )}
                     </TableBody>
                   </Table>
+                </div>
+                {/* Versão Mobile (Cards em Grid) */}
+                <div className="block md:hidden">
+                  <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
+                    {agendamentosFiltradosProximos.map((agendamento, index) => (
+                      <div
+                        key={index}
+                        className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm"
+                      >
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <p className="text-sm font-medium text-gray-900">
+                                {agendamento.cliente}
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                {format(agendamento.horario, "Pp", {
+                                  locale: ptBR,
+                                })}
+                              </p>
+                            </div>
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                              Implementando
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-2 text-sm">
+                            <div>
+                              <span className="font-medium text-gray-700">
+                                Barbeiro:
+                              </span>
+                              <p className="text-gray-900">
+                                {agendamento.barbeiro}
+                              </p>
+                            </div>
+                            <div>
+                              <span className="font-medium text-gray-700">
+                                Serviço:
+                              </span>
+                              <p className="text-gray-900">
+                                {agendamento.servico}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex justify-between items-center pt-2 border-t border-gray-100">
+                            <span className="text-lg font-semibold text-green-600">
+                              R${agendamento.preco.toFixed(2)}
+                            </span>
+                            <div className="flex gap-2">
+                              <Button
+                                onClick={reagendar}
+                                variant={"ghost"}
+                                size="sm"
+                                className="text-xs"
+                              >
+                                Reagendar
+                              </Button>
+                              <Button
+                                onClick={cancelar}
+                                variant={"destructive"}
+                                size="sm"
+                                className="text-xs"
+                              >
+                                Cancelar
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </>
             ) : (
