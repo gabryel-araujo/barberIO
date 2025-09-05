@@ -6,22 +6,10 @@ import { PrefetchAgendar } from "../../../components/PrefetchAgendar";
 import { BotaoMeusAgendamentos } from "../../../components/BotaoMeusAgendamentos";
 import { MensagemPadrao } from "../../../components/MensagemPadrao";
 import { AgendamentoClientes } from "../../../components/AgendamentoClientes";
+import Cookies from "js-cookie";
 
 const Home = () => {
-  // const [refresh, setRefresh] = useState(false);
-
-  // function refreshLogin(refresh: boolean) {
-  //   setRefresh(refresh);
-  //   if (refresh === true) {
-  //     setTimeout(() => {
-  //       window.location.href = "/";
-  //       toast.success("refresh");
-  //     }, 2000);
-  //   } else {
-  //     toast.warning("no Refresh");
-  //   }
-  // }
-
+  const gestorLogado = Cookies.get("authToken");
   return (
     <div className="w-full flex min-h-screen flex-col items-center justify-center space-y-7 px-7 pt-7 md:pt-0 bg-[#e6f0ff]">
       <PrefetchAgendar />
@@ -40,9 +28,7 @@ const Home = () => {
             </Link>
           </Button>
         </div>
-        <div className="flex">
-          <BotaoMeusAgendamentos />
-        </div>
+        <div className="flex">{!gestorLogado && <BotaoMeusAgendamentos />}</div>
       </div>
       <MensagemPadrao />
       <AgendamentoClientes />
