@@ -15,5 +15,6 @@ export const config = {
     "/servicos",
     "/barbeiros",
     "/dashboard",
+    "/agendamentos",
   ],
 };
