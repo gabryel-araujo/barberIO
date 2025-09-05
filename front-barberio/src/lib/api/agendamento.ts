@@ -2,6 +2,7 @@ import { cache } from "react";
 import axiosInstance from "../axios";
 import { AgendamentoPublic } from "@/types/agendamento";
 import { AxiosResponse } from "axios";
+import Cookies from "js-cookie";
 
 export const agendar = async (
   barbeiro_id: number,
@@ -40,7 +41,11 @@ export const GETAgendamentos = cache(async (): Promise<AgendamentoPublic[]> => {
 export const DELETEAgendamento = cache(
   async (id: number): Promise<AxiosResponse<any, any>> => {
     try {
-      const respose = await axiosInstance.delete(`/agendamentos/${id}`);
+      const respose = await axiosInstance.delete(`/admin/agendamentos/${id}`, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get("authToken")}`,
+        },
+      });
       return respose;
     } catch (error) {
       console.error("Erro ao apagar agendamento", error);

@@ -7,20 +7,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { GETAgendamentos } from "@/lib/api/agendamento";
+import { DELETEAgendamento, GETAgendamentos } from "@/lib/api/agendamento";
 import { AgendamentoPublic } from "@/types/agendamento";
 import Cookies from "js-cookie";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { CalendarX2 } from "lucide-react";
 import { ptBR } from "date-fns/locale";
 import { normalizarData } from "@/utils/functions";
 import { toast } from "sonner";
+import { DialogComponent } from "@/components/layout/DialogComponent";
 
 export const AgendamentoClientes = () => {
   const [agendamentos, setAgendamentos] = useState<AgendamentoPublic[]>([]);
   const clienteLogado = Cookies.get("telefoneCliente");
+  const [open, setOpen] = useState(false);
+  const idSelecionadoRef = useRef(0);
 
   async function fetchData() {
     const response = await GETAgendamentos();
@@ -48,6 +51,18 @@ export const AgendamentoClientes = () => {
 
   function cancelar() {
     toast.warning("Irá cancelar em breve");
+  }
+
+  async function handleCancel() {
+    const response = await DELETEAgendamento(idSelecionadoRef.current);
+    console.log(response);
+
+    if (response.status == 200) {
+      toast.success(response.data);
+      fetchData();
+    } else {
+      toast.error(response.data);
+    }
   }
 
   return (
@@ -100,7 +115,10 @@ export const AgendamentoClientes = () => {
                                 Reagendar
                               </Button>
                               <Button
-                                onClick={cancelar}
+                                onClick={() => {
+                                  setOpen(!open);
+                                  idSelecionadoRef.current = agendamento.id;
+                                }}
                                 variant={"destructive"}
                                 size="sm"
                               >
@@ -113,6 +131,13 @@ export const AgendamentoClientes = () => {
                     </TableBody>
                   </Table>
                 </div>
+                <DialogComponent
+                  title="Tem certeza que deseja cancelar o agendamento?"
+                  actionLabel="Sim"
+                  open={open}
+                  setOpen={setOpen}
+                  action={handleCancel}
+                />
                 {/* Versão Mobile (Cards em Grid) */}
                 <div className="block md:hidden">
                   <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">

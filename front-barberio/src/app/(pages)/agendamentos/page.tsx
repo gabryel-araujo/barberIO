@@ -65,6 +65,7 @@ const agendamentos = () => {
   }, []);
 
   async function handleCancel() {
+    console.log(idSelecionadoRef.current);
     const response = await DELETEAgendamento(idSelecionadoRef.current);
     console.log(response);
 
