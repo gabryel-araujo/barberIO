@@ -6,8 +6,6 @@ import { PrefetchAgendar } from "../../../components/PrefetchAgendar";
 import { BotaoMeusAgendamentos } from "../../../components/BotaoMeusAgendamentos";
 import { MensagemPadrao } from "../../../components/MensagemPadrao";
 import { AgendamentoClientes } from "../../../components/AgendamentoClientes";
-import { useState } from "react";
-import { toast } from "sonner";
 
 const Home = () => {
   // const [refresh, setRefresh] = useState(false);

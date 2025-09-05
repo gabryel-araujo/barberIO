@@ -3,7 +3,7 @@ import { useState } from "react";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
 import { Servico } from "@/types/servico";
-import { Calendar, Clock, Cookie, Scissors, User } from "lucide-react";
+import { Calendar, Clock, Scissors, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
