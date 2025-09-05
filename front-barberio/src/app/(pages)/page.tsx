@@ -3,8 +3,27 @@ import { Button } from "../../components/ui/button";
 import { Calendar } from "lucide-react";
 import Link from "next/link";
 import { PrefetchAgendar } from "../../../components/PrefetchAgendar";
+import { BotaoMeusAgendamentos } from "../../../components/BotaoMeusAgendamentos";
+import { MensagemPadrao } from "../../../components/MensagemPadrao";
+import { AgendamentoClientes } from "../../../components/AgendamentoClientes";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const Home = () => {
+  // const [refresh, setRefresh] = useState(false);
+
+  // function refreshLogin(refresh: boolean) {
+  //   setRefresh(refresh);
+  //   if (refresh === true) {
+  //     setTimeout(() => {
+  //       window.location.href = "/";
+  //       toast.success("refresh");
+  //     }, 2000);
+  //   } else {
+  //     toast.warning("no Refresh");
+  //   }
+  // }
+
   return (
     <div className="w-full flex min-h-screen flex-col items-center justify-center space-y-7 px-7 pt-7 md:pt-0 bg-[#e6f0ff]">
       <PrefetchAgendar />
@@ -15,42 +34,20 @@ const Home = () => {
         Agende seu horário de forma rápida e fácil com os melhores barbeiros da
         cidade.
       </p>
-      <div className="flex">
-        <Button asChild className="rounded-sm bg-primary h-12 w-60">
-          <Link href="/agendar">
-            <Calendar /> <p className="font-bold text-lg">Agendar Horário</p>
-          </Link>
-        </Button>
-      </div>
-      <div className="bg-white border rounded-lg p-6">
-        <p className="text-2xl text-center font-semibold">Nossos Serviços</p>
-        <div className="grid grid-cols-1 md:grid-cols-2 text-center gap-5 pt-3">
-          <div className="bg-[#f3f4f6]/30 rounded-sm p-5">
-            <p className="font-semibold text-lg">Corte de Cabelo</p>
-            <span className="text-slate-400">
-              Estilo personalizado para seu tipo de cabelo
-            </span>
-          </div>
-          <div className="bg-[#f3f4f6]/30 rounded-sm p-5">
-            <p className="font-semibold text-lg">Barba</p>
-            <span className="text-slate-400">
-              Modelagem e tratamento completo
-            </span>
-          </div>
-          <div className="bg-[#f3f4f6]/30 rounded-sm p-5">
-            <p className="font-semibold text-lg">Combo (Cabelo + Barba)</p>
-            <span className="text-slate-400">
-              Pacote completo com preço especial
-            </span>
-          </div>
-          <div className="bg-[#f3f4f6]/30 rounded-sm p-5">
-            <p className="font-semibold text-lg">Tratamentos Especiais</p>
-            <span className="text-slate-400">
-              Hidratação, relaxamento e mais
-            </span>
-          </div>
+      <div className="flex gap-5">
+        <div className="flex">
+          <Button asChild className="rounded-sm bg-primary h-12 w-60">
+            <Link href="/agendar">
+              <Calendar /> <p className="font-bold text-lg">Agendar Horário</p>
+            </Link>
+          </Button>
+        </div>
+        <div className="flex">
+          <BotaoMeusAgendamentos />
         </div>
       </div>
+      <MensagemPadrao />
+      <AgendamentoClientes />
     </div>
   );
 };

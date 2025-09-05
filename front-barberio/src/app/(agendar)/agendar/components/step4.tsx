@@ -3,7 +3,7 @@ import { useState } from "react";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
 import { Servico } from "@/types/servico";
-import { Calendar, Clock, Scissors, User } from "lucide-react";
+import { Calendar, Clock, Cookie, Scissors, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -20,6 +20,7 @@ import { findByTelefone, POSTCliente } from "@/lib/api/cliente";
 import { LoadingComponent } from "../../../../../components/LoadingComponent";
 import { format } from "date-fns";
 import { nomeCapitalizado } from "@/utils/functions";
+import Cookies from "js-cookie";
 
 export const Step4 = () => {
   const { state, dispatch } = useForm();
@@ -161,6 +162,8 @@ export const Step4 = () => {
         fim
       );
 
+      Cookies.set("telefoneCliente", state.telefone);
+
       setIsLoading(true);
       await handleSendEmail();
 
@@ -180,10 +183,7 @@ export const Step4 = () => {
         // });
 
         setIsLoading(true);
-
-        setTimeout(() => {
-          push("/");
-        }, 2000);
+        push("/");
       }
       setOpenModalRevisao(!openModalRevisao);
     } catch (error) {
