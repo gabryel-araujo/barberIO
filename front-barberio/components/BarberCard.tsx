@@ -4,13 +4,14 @@ import { Label } from "@/components/ui/label";
 import { changeStatus } from "@/lib/api/funcionarios";
 import { Barbeiro } from "@/types/barbeiro";
 import { Star } from "lucide-react";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { useForm as useFormReducer } from "@/contexts/AgendamentoContextProvider";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
 
 type BarbeiroFormData = {
   nome: string;
@@ -75,12 +76,27 @@ export function BarberCard({
       console.error(response.statusText);
     }
   };
+  const [caminhoAvatar, setCaminhoAvatar] = useState<string | null>(null);
+  useState(() => {
+    const saveLocal = localStorage.getItem("demoImagem");
+    setCaminhoAvatar(saveLocal);
+  });
 
   return (
     <Card key={barbeiro.id}>
       <div className="rounded-t-md p-3 bg-slate-800 flex justify-start items-center gap-3">
-        <div className="border rounded-full h-14 min-w-14 bg-slate-700 items-center justify-center flex text-white">
-          <p className="font-bold text-3xl">{barbeiro.nome.split("")[0]}</p>
+        <div className="relative border rounded-full h-14 min-w-14 bg-slate-700 items-center justify-center flex text-white">
+          {caminhoAvatar ? (
+            <Image
+              src={caminhoAvatar}
+              sizes="56px"
+              fill
+              alt="avatar"
+              className="absolute rounded-full inset-0 h-full w-full object-cover object-center"
+            />
+          ) : (
+            <p className="font-bold text-3xl">{barbeiro.nome.split("")[0]}</p>
+          )}
         </div>
         <div className="flex items-center justify-between w-full">
           <div>

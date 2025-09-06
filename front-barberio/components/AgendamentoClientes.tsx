@@ -107,13 +107,13 @@ export const AgendamentoClientes = () => {
                             </TableCell>
                             <TableCell>Implementando</TableCell>
                             <TableCell className="flex gap-2 items-center justify-center">
-                              <Button
+                              {/* <Button
                                 onClick={reagendar}
                                 variant={"ghost"}
                                 size="sm"
                               >
                                 Reagendar
-                              </Button>
+                              </Button> */}
                               <Button
                                 onClick={() => {
                                   setOpen(!open);
