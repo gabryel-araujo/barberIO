@@ -38,11 +38,10 @@ public class SecurityConfig {
                     .requestMatchers("/clientes/**").hasAnyRole("GESTOR","BARBEIRO")
                     .requestMatchers("/servico/**").hasRole("GESTOR")
                     .requestMatchers("/horarioFuncionamento/**").hasRole("GESTOR")
-                    .requestMatchers("/empresa/**").hasRole("GESTOR")
                     .requestMatchers("/configEmpresa/**").hasRole("GESTOR")
                     .requestMatchers("/feriados/**").hasRole("GESTOR")
                     .requestMatchers("/enderecos/**").hasRole("GESTOR")
-                    .requestMatchers("/auth/login").permitAll()
+                    .requestMatchers("/auth/login","/empresas/**").permitAll()
                     // Qualquer outra requisição precisa estar autenticada
                     .anyRequest().authenticated()
             )
