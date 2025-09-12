@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
+import { checkImagem, pegarImagem, URLPublicaImg } from "@/lib/utils";
 
 type BarbeiroFormData = {
   nome: string;
@@ -76,22 +77,21 @@ export function BarberCard({
       console.error(response.statusText);
     }
   };
-  const [caminhoAvatar, setCaminhoAvatar] = useState<string | null>(null);
-  useState(() => {
-    const saveLocal = localStorage.getItem("demoImagem");
-    setCaminhoAvatar(saveLocal);
-  });
+
+  const ImagemUrl = pegarImagem(barbeiro.nome, String(barbeiro.id));
+  const [erroImagem, setErroImagem] = useState(false);
 
   return (
     <Card key={barbeiro.id}>
       <div className="rounded-t-md p-3 bg-slate-800 flex justify-start items-center gap-3">
         <div className="relative border rounded-full h-14 min-w-14 bg-slate-700 items-center justify-center flex text-white">
-          {caminhoAvatar ? (
+          {!erroImagem ? (
             <Image
-              src={caminhoAvatar}
+              src={`${ImagemUrl}`}
               sizes="56px"
               fill
               alt="avatar"
+              onError={() => setErroImagem(true)}
               className="absolute rounded-full inset-0 h-full w-full object-cover object-center"
             />
           ) : (

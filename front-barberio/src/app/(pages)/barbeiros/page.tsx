@@ -52,8 +52,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
 import Cookies from "js-cookie";
+import { pegarImagem } from "@/lib/utils";
 import Image from "next/image";
 
 const barbeiros = () => {
@@ -328,9 +328,7 @@ const barbeiros = () => {
     });
   }
 
-  const [caminhoAvatar, setCaminhoAvatar] = useState<string | null>(null);
-
-  const enviarImagem = async () => {
+  const enviarImagem = async (nome: string, idBarbeiro: number) => {
     const imagem = avatarRef.current?.files?.[0];
     const saveLocal = localStorage.getItem("demoImagem");
 
@@ -338,21 +336,52 @@ const barbeiros = () => {
       console.log("Nenhuma imagem selecionada");
       return;
     }
-
     if (saveLocal) {
       localStorage.removeItem("demoImagem");
     }
 
     const base64 = await fileToBase64(imagem);
-    localStorage.setItem("demoImagem", base64);
-    setCaminhoAvatar(base64);
+    //localStorage.setItem("demoImagem", base64);
+
+    const json = {
+      base64,
+      NomeBarbeiro: nome,
+      idBarbeiro,
+    };
+    console.log(json);
+    const resUpload = await axios.post("/api/avatar-upload", {
+      base64,
+      NomeBarbeiro: nome,
+      idBarbeiro,
+    });
+    console.log(resUpload.data.publicUrl);
+    const urlPublica = resUpload.data.publicUrl;
+    console.log(urlPublica);
+
+    queryClient.invalidateQueries({
+      queryKey: [""],
+    });
+    // FUNÇÇÃO PARA ATUALIZAR A IMAGEM DO BARBEIRO
+    // const funcionarioAtualizado = {
+    //   ...barbeiroSelecionado,
+    //   avatar: urlPublica,
+    // };
+    // await axiosInstance.put(
+    //   `/funcionarios/${idBarbeiro}`,
+    //   funcionarioAtualizado,
+    //   {
+    //     headers: {
+    //       Authorization: `Bearer ${Cookies.get("authToken")}`,
+    //     },
+    //   }
+    // );
   };
 
-  useState(() => {
-    const saveLocal = localStorage.getItem("demoImagem");
-    setCaminhoAvatar(saveLocal);
-  });
-
+  const ImagemUrl = pegarImagem(
+    barbeiroSelecionado?.nome,
+    String(barbeiroSelecionado?.id)
+  );
+  const [erroImagem, setErroImagem] = useState(false);
   return (
     <div className="w-full min-h-screen bg-[#e6f0ff]">
       <div className="w-full flex items-center justify-between px-10 py-5">
@@ -416,7 +445,12 @@ const barbeiros = () => {
               ref={avatarRef}
               className="absolute w-0 h-0 opacity-0"
               accept="image/*"
-              onChange={enviarImagem}
+              onChange={() => {
+                enviarImagem(
+                  barbeiroSelecionado?.nome!,
+                  barbeiroSelecionado?.id!
+                );
+              }}
             />
 
             <button
@@ -424,12 +458,13 @@ const barbeiros = () => {
               type="button"
               className="relative h-28 w-28 rounded-full border-2 border-green-400 hover:border-green-400 shadow shadow-primary hover:shadow-primary/20 transition-all duration-300 cursor-pointer bg-primary text-white overflow-hidden"
             >
-              {caminhoAvatar ? (
+              {!erroImagem ? (
                 <Image
-                  src={caminhoAvatar}
+                  src={`${ImagemUrl}`}
                   sizes="112px"
-                  fill
                   alt="avatar"
+                  fill
+                  onError={() => setErroImagem(true)}
                   className="absolute inset-0 h-full w-full object-cover object-center"
                 />
               ) : (

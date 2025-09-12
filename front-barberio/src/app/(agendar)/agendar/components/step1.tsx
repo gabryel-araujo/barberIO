@@ -149,14 +149,6 @@ export const Step1 = () => {
           }}
           disabled={(date) => {
             return isDataInvalida(date);
-
-            // const hoje = new Date();
-            // hoje.setHours(0, 0, 0, 0);
-            // const isBeforeToday = date < hoje;
-            // const isSunday = date.getDay() === 0;
-            // const dataStr = date.toISOString().slice(0, 10);
-            // const isFeriados = arrayFeriadoData.includes(dataStr);
-            // return isBeforeToday || isSunday || isFeriados;
           }}
           className="w-[250px] rounded-md border shadow"
         />
