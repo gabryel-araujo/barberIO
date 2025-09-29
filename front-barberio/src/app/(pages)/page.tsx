@@ -7,7 +7,6 @@ import { BotaoMeusAgendamentos } from "../../../components/BotaoMeusAgendamentos
 import { MensagemPadrao } from "../../../components/MensagemPadrao";
 import { AgendamentoClientes } from "../../../components/AgendamentoClientes";
 import Cookies from "js-cookie";
-import { ImagemBarbearia } from "../../../components/ImagemBarbearia";
 
 const Home = () => {
   const gestorLogado = Cookies.get("authToken");
