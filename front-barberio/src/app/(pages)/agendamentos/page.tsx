@@ -20,7 +20,6 @@ import { CalendarX2, Clock, User, Scissors, DollarSign } from "lucide-react";
 import { DialogComponent } from "@/components/layout/DialogComponent";
 import { toast } from "sonner";
 import { normalizarData } from "@/utils/functions";
-import usePlaySom from "@/app/hooks/usePlaySom";
 
 const agendamentos = () => {
   const [open, setOpen] = useState(false);
