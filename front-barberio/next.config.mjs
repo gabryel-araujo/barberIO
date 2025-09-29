@@ -7,7 +7,7 @@ const nextConfig = {
     return [
       {
         source: "/api/:path*", // tudo que vier de /api/...
-        destination: "http://137.131.135.29:1509/:path*", // vai para o seu back-end  Novo - 136.248.85.49
+        destination: "http://136.248.85.49:1509/:path*", // vai para o seu back-end  Novo - 136.248.85.49 ANTIGO - 137.131.135.29
       },
     ];
   },
