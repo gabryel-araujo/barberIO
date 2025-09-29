@@ -26,6 +26,7 @@ public class FuncionarioController {
 	FuncionarioRepository funcionarioRepository;
 	@Autowired
 	private ServiceRepository serviceRepository;
+
 	@Autowired
 	private PasswordEncoder encoder;
 
@@ -34,7 +35,7 @@ public class FuncionarioController {
 		return ResponseEntity.status(HttpStatus.OK).body(funcionarioRepository.findAll());
 	}
 
-	@GetMapping("public/funcionarios")
+	@GetMapping("/public/funcionarios")
     public ResponseEntity<List<FuncionarioPublicoRecordDto>> listarFuncionariosPublicos() {
     	List<FuncionarioModel> funcionarios = funcionarioRepository.findAll();
     	

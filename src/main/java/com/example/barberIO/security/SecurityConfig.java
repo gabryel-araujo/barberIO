@@ -28,7 +28,13 @@ public class SecurityConfig {
         return authConfig.getAuthenticationManager();
     }
 
-	@Bean
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
@@ -36,6 +42,7 @@ public class SecurityConfig {
                     // Endpoints específicos
                     .requestMatchers("/admin/**").hasRole("GESTOR")
                     .requestMatchers("/clientes/**").hasAnyRole("GESTOR","BARBEIRO")
+                    .requestMatchers("/funcionarios/**").hasAnyRole("GESTOR","BARBEIRO")
                     .requestMatchers("/servico/**").hasRole("GESTOR")
                     .requestMatchers("/horarioFuncionamento/**").hasRole("GESTOR")
                     .requestMatchers("/configEmpresa/**").hasRole("GESTOR")
@@ -50,11 +57,6 @@ public class SecurityConfig {
 
 
         return http.build();
-    }
-
-	@Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 
 }
