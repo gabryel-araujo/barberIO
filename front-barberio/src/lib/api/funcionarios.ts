@@ -37,7 +37,7 @@ export const setGoogleFuncionario = async (nome: String, email: String) => {
 
 export const GETFuncionarios = cache(async (): Promise<Barbeiro[]> => {
   try {
-    const respose = await axiosInstance.get<Barbeiro[]>("/funcionarios", {
+    const respose = await axiosInstance.get<Barbeiro[]>("public/funcionarios", {
       headers: {
         Authorization: `Bearer ${Cookies.get("authToken")}`,
       },

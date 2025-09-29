@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Filter, UserPlus } from "lucide-react";
+import { Filter, User, UserPlus } from "lucide-react";
 // import { servicos } from "@/model/servico";
 import {
   Dialog,
@@ -12,7 +12,7 @@ import {
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Form,
   FormControl,
@@ -52,8 +52,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
 import Cookies from "js-cookie";
+import { pegarImagem } from "@/lib/utils";
+import Image from "next/image";
 
 const barbeiros = () => {
   const { state, dispatch } = useFormReducer();
@@ -64,6 +65,7 @@ const barbeiros = () => {
   const [servicos, setServicos] = useState<Servico[]>([]);
   const [servicoSelecionado, setServicoSelecionado] = useState<string[]>([]);
   const [exibirInativos, setExibirInativos] = useState(false);
+  const avatarRef = useRef<HTMLInputElement>(null);
 
   const formSchema = z.object({
     nome: z
@@ -314,6 +316,72 @@ const barbeiros = () => {
     }
   }
 
+  // LÓGICA PARA PEGAR IMAGEM E JOGAR NO LOCALSTORAGE, PRONTO PARA
+  /// JOGAR NO REPOSITORIO CORRETO.
+
+  function fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
+  }
+
+  const enviarImagem = async (nome: string, idBarbeiro: number) => {
+    const imagem = avatarRef.current?.files?.[0];
+    const saveLocal = localStorage.getItem("demoImagem");
+
+    if (!imagem) {
+      console.log("Nenhuma imagem selecionada");
+      return;
+    }
+    if (saveLocal) {
+      localStorage.removeItem("demoImagem");
+    }
+
+    const base64 = await fileToBase64(imagem);
+    //localStorage.setItem("demoImagem", base64);
+
+    const json = {
+      base64,
+      NomeBarbeiro: nome,
+      idBarbeiro,
+    };
+    console.log(json);
+    const resUpload = await axios.post("/api/avatar-upload", {
+      base64,
+      NomeBarbeiro: nome,
+      idBarbeiro,
+    });
+    console.log(resUpload.data.publicUrl);
+    const urlPublica = resUpload.data.publicUrl;
+    console.log(urlPublica);
+
+    queryClient.invalidateQueries({
+      queryKey: [""],
+    });
+    // FUNÇÇÃO PARA ATUALIZAR A IMAGEM DO BARBEIRO
+    // const funcionarioAtualizado = {
+    //   ...barbeiroSelecionado,
+    //   avatar: urlPublica,
+    // };
+    // await axiosInstance.put(
+    //   `/funcionarios/${idBarbeiro}`,
+    //   funcionarioAtualizado,
+    //   {
+    //     headers: {
+    //       Authorization: `Bearer ${Cookies.get("authToken")}`,
+    //     },
+    //   }
+    // );
+  };
+
+  const ImagemUrl = pegarImagem(
+    barbeiroSelecionado?.nome,
+    String(barbeiroSelecionado?.id)
+  );
+  const [erroImagem, setErroImagem] = useState(false);
   return (
     <div className="w-full min-h-screen bg-[#e6f0ff]">
       <div className="w-full flex items-center justify-between px-10 py-5">
@@ -370,6 +438,40 @@ const barbeiros = () => {
               Preencha todos os dados necessários
             </DialogDescription>
           </DialogHeader>
+
+          <div className="relative flex items-center justify-center">
+            <input
+              type="file"
+              ref={avatarRef}
+              className="absolute w-0 h-0 opacity-0"
+              accept="image/*"
+              onChange={() => {
+                enviarImagem(
+                  barbeiroSelecionado?.nome!,
+                  barbeiroSelecionado?.id!
+                );
+              }}
+            />
+
+            <button
+              onClick={() => avatarRef.current?.click()}
+              type="button"
+              className="relative h-28 w-28 rounded-full border-2 border-green-400 hover:border-green-400 shadow shadow-primary hover:shadow-primary/20 transition-all duration-300 cursor-pointer bg-primary text-white overflow-hidden"
+            >
+              {!erroImagem ? (
+                <Image
+                  src={`${ImagemUrl}`}
+                  sizes="112px"
+                  alt="avatar"
+                  fill
+                  onError={() => setErroImagem(true)}
+                  className="absolute inset-0 h-full w-full object-cover object-center"
+                />
+              ) : (
+                <User className="w-7 h-7 text-white absolute inset-0 m-auto" />
+              )}
+            </button>
+          </div>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
               <FormField

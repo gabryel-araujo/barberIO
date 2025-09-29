@@ -20,6 +20,7 @@ import { CalendarX2, Clock, User, Scissors, DollarSign } from "lucide-react";
 import { DialogComponent } from "@/components/layout/DialogComponent";
 import { toast } from "sonner";
 import { normalizarData } from "@/utils/functions";
+import usePlaySom from "@/app/hooks/usePlaySom";
 
 const agendamentos = () => {
   const [open, setOpen] = useState(false);
@@ -55,6 +56,9 @@ const agendamentos = () => {
       (a, b) => new Date(a.horario).getTime() - new Date(b.horario).getTime()
     );
 
+  //EFEITO SONORO
+  //usePlaySom(agendamentosFiltradosHoje ?? []);
+
   async function fetchData() {
     const response = await GETAgendamentos();
     setAgendamentos(response);
@@ -65,6 +69,7 @@ const agendamentos = () => {
   }, []);
 
   async function handleCancel() {
+    console.log(idSelecionadoRef.current);
     const response = await DELETEAgendamento(idSelecionadoRef.current);
     console.log(response);
 
