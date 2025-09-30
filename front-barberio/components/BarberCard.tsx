@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
-import { checkImagem, pegarImagem, URLPublicaImg } from "@/lib/utils";
+import { pegarImagem } from "@/lib/utils";
 
 type BarbeiroFormData = {
   nome: string;
