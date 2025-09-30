@@ -63,11 +63,14 @@ const configuracao = () => {
   >({
     queryKey: ["empresas"],
     queryFn: async () => {
-      const response = await axios.get(`${baseUrl}/empresas/${empresaId}`, {
-        headers: {
-          Authorization: `Bearer ${Cookies.get("authToken")}`,
-        },
-      });
+      const response = await axios.get(
+        `${baseUrl}/public/empresas/${empresaId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("authToken")}`,
+          },
+        }
+      );
       return response.data;
     },
     staleTime: 5 * (60 * 1000),

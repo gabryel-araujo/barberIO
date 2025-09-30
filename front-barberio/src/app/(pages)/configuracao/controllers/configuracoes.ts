@@ -13,11 +13,15 @@ export const AtualizarEmpresa = async (
   id: number,
   empresa: z.infer<typeof empresaSchema>
 ) => {
-  const response = await axios.put(`${baseUrl}/empresas/${id}`, empresa, {
-    headers: {
-      Authorization: `Bearer ${Cookies.get("authToken")}`,
-    },
-  });
+  const response = await axios.put(
+    `${baseUrl}/public/empresas/${id}`,
+    empresa,
+    {
+      headers: {
+        Authorization: `Bearer ${Cookies.get("authToken")}`,
+      },
+    }
+  );
   return response.data;
 };
 
