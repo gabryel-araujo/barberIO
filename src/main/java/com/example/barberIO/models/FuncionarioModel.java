@@ -39,6 +39,8 @@ public class FuncionarioModel implements Serializable {
     private float experiencia;
 
     private int atendimentos = 0;
+
+    private String avatar;
     
     @Enumerated(EnumType.STRING)
     private TipoFuncionario tipo;
@@ -154,7 +156,15 @@ public class FuncionarioModel implements Serializable {
         this.atendimentos = atendimentos;
     }
 
-	public TipoFuncionario getTipo() {
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public TipoFuncionario getTipo() {
 		return tipo;
 	}
 
