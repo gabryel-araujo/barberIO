@@ -55,6 +55,7 @@ import {
 import Cookies from "js-cookie";
 import { pegarImagem } from "@/lib/utils";
 import Image from "next/image";
+import axiosInstance from "@/lib/axios";
 
 const barbeiros = () => {
   const { state, dispatch } = useFormReducer();
@@ -362,19 +363,19 @@ const barbeiros = () => {
       queryKey: [""],
     });
     // FUNÇÇÃO PARA ATUALIZAR A IMAGEM DO BARBEIRO
-    // const funcionarioAtualizado = {
-    //   ...barbeiroSelecionado,
-    //   avatar: urlPublica,
-    // };
-    // await axiosInstance.put(
-    //   `/funcionarios/${idBarbeiro}`,
-    //   funcionarioAtualizado,
-    //   {
-    //     headers: {
-    //       Authorization: `Bearer ${Cookies.get("authToken")}`,
-    //     },
-    //   }
-    // );
+    const funcionarioAtualizado = {
+      ...barbeiroSelecionado,
+      avatar: urlPublica,
+    };
+    await axiosInstance.put(
+      `/funcionarios/${idBarbeiro}`,
+      funcionarioAtualizado,
+      {
+        headers: {
+          Authorization: `Bearer ${Cookies.get("authToken")}`,
+        },
+      }
+    );
   };
 
   const ImagemUrl = pegarImagem(
