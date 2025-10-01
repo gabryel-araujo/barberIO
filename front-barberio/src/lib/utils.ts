@@ -36,3 +36,19 @@ export function obterHoras(data: any) {
   const minutos = String(dataAtual.getMinutes()).padStart(2, "0");
   return `${hora}:${minutos}`;
 }
+
+export const URLPublicaImg =
+  "https://deljowbybxjkqoofsvfk.supabase.co/storage/v1/object/public/barberiO/img";
+
+export function pegarImagem(nome?: string, id?: string) {
+  if (!nome || !id) return null;
+  return `${URLPublicaImg}/${nome}${id}.png`;
+}
+export async function checkImagem(url: string) {
+  try {
+    const res = await fetch(url, { method: "HEAD" });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}

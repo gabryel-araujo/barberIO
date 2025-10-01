@@ -40,10 +40,10 @@ public class EmpresaController {
 		return empresaService.listarEmpresaPorId(id);
 	}
 	
-	@GetMapping("/public/empresas/{id}")
-	public ResponseEntity<EmpresaPublicaRecordDto> listarEmpresaPublica(@PathVariable(value = "id") Long id){
-		return empresaService.listarEmpresaPublica(id);
-	}
+//	@GetMapping("/public/empresas/{id}")
+//	public ResponseEntity<EmpresaPublicaRecordDto> listarEmpresaPublica(@PathVariable(value = "id") Long id){
+//		return empresaService.listarEmpresaPublica(id);
+//	}
 
 	@PostMapping("/empresas")
 	public ResponseEntity<EmpresaModel> cadastrarEmpresa(@RequestBody @Valid EmpresaRecordDto empresaRecordDto) {

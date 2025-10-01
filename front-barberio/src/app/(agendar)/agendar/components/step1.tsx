@@ -32,7 +32,7 @@ export const Step1 = () => {
   >({
     queryKey: ["empresas"],
     queryFn: async () => {
-      const response = await axios.get(`${baseUrl}/public/empresas/1`, {
+      const response = await axios.get(`${baseUrl}/empresas/1`, {
         headers: {
           Authorization: `Bearer ${Cookies.get("authToken")}`,
         },
@@ -66,10 +66,16 @@ export const Step1 = () => {
     .filter((d): d is string => Boolean(d));
   const arrayFeriadoData = arrayFeriados.map((data) => {
     const [ano, mes, dia] = data.split("-").map(Number);
-    const localDate = new Date(ano, mes - 1, dia);
+    const localDate = new Date(ano, mes - 1, dia + 1);
     return localDate.toISOString().slice(0, 10);
   });
   console.log(arrayFeriados);
+
+  const diasFechados =
+    dadosEmpresa?.config_empresa?.horarios
+      ?.filter((dia) => dia.aberto === false)
+      .map((dia) => dia.codigo_dia) || [];
+  console.log("dias fechados: ", diasFechados);
 
   const isDataInvalida = (date: Date) => {
     const hoje = new Date();
@@ -79,18 +85,20 @@ export const Step1 = () => {
     dateSemHoras.setHours(0, 0, 0, 0);
 
     const isBeforeToday = dateSemHoras < hoje;
-    const isSunday = dateSemHoras.getDay() === 0;
+    const codigoDia = dateSemHoras.getDay();
 
-    const isFeriado = arrayFeriadoData.some((feriadoStr) => {
-      const feriado = new Date(feriadoStr); // conversão aqui
-      return (
-        feriado.getFullYear() === date.getFullYear() &&
-        feriado.getMonth() === date.getMonth() &&
-        feriado.getDate() === date.getDate()
-      );
-    });
+    const isCloset = diasFechados.includes(codigoDia);
+    const isFeriado =
+      arrayFeriadoData.some((feriadoStr) => {
+        const feriado = new Date(feriadoStr); // conversão aqui
+        return (
+          feriado.getFullYear() === date.getFullYear() &&
+          feriado.getMonth() === date.getMonth() &&
+          feriado.getDate() === date.getDate()
+        );
+      }) || false;
 
-    return isBeforeToday || isSunday || isFeriado;
+    return isBeforeToday || isFeriado || isCloset;
   };
 
   const proximoPasso = useCallback((data: Date) => {
@@ -141,14 +149,6 @@ export const Step1 = () => {
           }}
           disabled={(date) => {
             return isDataInvalida(date);
-
-            // const hoje = new Date();
-            // hoje.setHours(0, 0, 0, 0);
-            // const isBeforeToday = date < hoje;
-            // const isSunday = date.getDay() === 0;
-            // const dataStr = date.toISOString().slice(0, 10);
-            // const isFeriados = arrayFeriadoData.includes(dataStr);
-            // return isBeforeToday || isSunday || isFeriados;
           }}
           className="w-[250px] rounded-md border shadow"
         />

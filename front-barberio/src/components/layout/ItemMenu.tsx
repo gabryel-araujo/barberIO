@@ -33,7 +33,7 @@ const menuItems: MenuItem[] = [
     path: "/agendamentos",
     icon: <Calendar className="h-5 w-5" />,
     label: "Agendamentos",
-    permission: "",
+    permission: "GESTOR",
   },
   {
     path: "/clientes",
@@ -54,7 +54,7 @@ const menuItems: MenuItem[] = [
     permission: "GESTOR",
   },
   {
-    path: "/configuracao",
+    path: "/configuracao?empresaId=1",
     icon: <Settings className="h-5 w-5" />,
     label: "Configuração",
     permission: "GESTOR",

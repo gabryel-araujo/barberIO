@@ -30,6 +30,7 @@ export const Sidebar = ({ onClick }: SideBarProps) => {
       Cookies.remove("authToken");
       setUser(null);
       setIsLoggedIn(false);
+      router.replace("/");
     } else {
       router.replace("/login");
     }

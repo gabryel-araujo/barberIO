@@ -55,13 +55,15 @@ const configuracao = () => {
     useState<z.infer<typeof empresaSchema>>();
   const [openModalExcluir, setOpenModalExcluir] = useState(false);
 
+  const empresaId = window.location.href.split("=")[1];
+
   const { data, error } = useQuery<
     z.infer<typeof empresaSchema>,
     AxiosError<ErrorResponse>
   >({
     queryKey: ["empresas"],
     queryFn: async () => {
-      const response = await axios.get(`${baseUrl}/empresas/1`, {
+      const response = await axios.get(`${baseUrl}/empresas/${empresaId}`, {
         headers: {
           Authorization: `Bearer ${Cookies.get("authToken")}`,
         },

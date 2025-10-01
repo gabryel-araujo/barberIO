@@ -38,7 +38,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth.requestMatchers("/agendamentos/**","/public/**").permitAll()
+            .authorizeHttpRequests(auth -> auth.requestMatchers("/agendamentos/**","/public/**","/empresas/**").permitAll()
                     // Endpoints específicos
                     .requestMatchers("/admin/**").hasRole("GESTOR")
                     .requestMatchers("/clientes/**").hasAnyRole("GESTOR","BARBEIRO")
@@ -48,7 +48,7 @@ public class SecurityConfig {
                     .requestMatchers("/configEmpresa/**").hasRole("GESTOR")
                     .requestMatchers("/feriados/**").hasRole("GESTOR")
                     .requestMatchers("/enderecos/**").hasRole("GESTOR")
-                    .requestMatchers("/auth/login","/empresas/**").permitAll()
+                    .requestMatchers("/auth/login/**","/auth/register/**").permitAll()
                     // Qualquer outra requisição precisa estar autenticada
                     .anyRequest().authenticated()
             )
