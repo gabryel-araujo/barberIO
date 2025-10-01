@@ -3,6 +3,7 @@ package com.example.barberIO.dtos;
 import java.time.LocalDateTime;
 
 public record ResponseAgendamentoRecordDto(
+		Long id,
 		LocalDateTime horario,
 		LocalDateTime fim,
 		String barbeiro,
