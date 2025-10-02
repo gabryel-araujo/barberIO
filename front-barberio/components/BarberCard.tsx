@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { changeStatus } from "@/lib/api/funcionarios";
 import { Barbeiro } from "@/types/barbeiro";
 import { Star } from "lucide-react";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { useForm as useFormReducer } from "@/contexts/AgendamentoContextProvider";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
@@ -12,7 +12,6 @@ import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
-import { pegarImagem } from "@/lib/utils";
 
 type BarbeiroFormData = {
   nome: string;
@@ -21,6 +20,8 @@ type BarbeiroFormData = {
   data_nascimento?: string | null;
   servico: any[] | null;
   disponivel: boolean;
+  avatar?: string | null;
+  tipo: string;
 };
 
 type BarberCardProps = {
@@ -47,6 +48,9 @@ export function BarberCard({
       data_nascimento: barbeiro.data_nascimento,
       disponivel: barbeiro.disponivel,
       servico: barbeiro.servicos?.map((s) => String(s.id)) || [],
+      avatar: barbeiro.avatar,
+      tipo: barbeiro.tipo,
+
       //ativo: barbeiro.ativo,
     });
   };
@@ -58,7 +62,9 @@ export function BarberCard({
       barbeiro.email,
       barbeiro.senha,
       !barbeiro.disponivel,
-      barbeiro.ativo!
+      barbeiro.ativo!,
+      barbeiro?.avatar!,
+      barbeiro.tipo
     );
 
     dispatch({
@@ -78,20 +84,17 @@ export function BarberCard({
     }
   };
 
-  const ImagemUrl = pegarImagem(barbeiro.nome, String(barbeiro.id));
-  const [erroImagem, setErroImagem] = useState(false);
-
   return (
     <Card key={barbeiro.id}>
       <div className="rounded-t-md p-3 bg-slate-800 flex justify-start items-center gap-3">
         <div className="relative border rounded-full h-14 min-w-14 bg-slate-700 items-center justify-center flex text-white">
-          {!erroImagem ? (
+          {barbeiro.avatar !== null ? (
             <Image
-              src={`${ImagemUrl}`}
+              src={`${barbeiro?.avatar || "/imagens/default.png"}`}
               sizes="56px"
               fill
               alt="avatar"
-              onError={() => setErroImagem(true)}
+              //onError={() => setErroImagem(true)}
               className="absolute rounded-full inset-0 h-full w-full object-cover object-center"
             />
           ) : (
