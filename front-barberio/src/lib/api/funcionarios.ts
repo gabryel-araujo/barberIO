@@ -92,7 +92,8 @@ export const changeStatus = async (
   email: string,
   senha: string,
   disponivel: boolean,
-  ativo: boolean
+  ativo: boolean,
+  tipo: string | undefined
 ) => {
   try {
     const response = await axiosInstance.put(

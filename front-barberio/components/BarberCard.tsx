@@ -58,7 +58,8 @@ export function BarberCard({
       barbeiro.email,
       barbeiro.senha,
       !barbeiro.disponivel,
-      barbeiro.ativo!
+      barbeiro.ativo!,
+      barbeiro.tipo!
     );
 
     dispatch({
