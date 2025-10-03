@@ -9,6 +9,7 @@ export interface Barbeiro {
   avaliacao?: number;
   experiencia?: number;
   atendimentos?: number;
+  avatar?: string;
   servicos?: any[];
   avatar?: string;
   tipo: string;

@@ -68,6 +68,11 @@ public class AgendamentoController {
         return agendamentoService.cancelarHorario(id);
     }
 
+    @DeleteMapping("/public/agendamentos/{id}")
+    public ResponseEntity<Object> removerAgendamentoPublic(@PathVariable(name = "id") Long id) {
+        return agendamentoService.cancelarHorario(id);
+    }
+
     @GetMapping("/admin/agendamentos/horarioDisponivel")
     public ResponseEntity<Object> getHorariosDisponiveis(
             @RequestParam Long barbeiroId,
