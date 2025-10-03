@@ -12,4 +12,6 @@ export interface Barbeiro {
   avatar?: string;
   tipo?: string;
   servicos?: any[];
+  avatar?: string;
+  tipo: string;
 }
