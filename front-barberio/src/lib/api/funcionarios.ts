@@ -95,8 +95,7 @@ export const changeStatus = async (
   senha: string,
   disponivel: boolean,
   ativo: boolean,
-  avatar: string,
-  tipo: string
+  tipo: string | undefined
 ) => {
   try {
     const response = await axiosInstance.put(
