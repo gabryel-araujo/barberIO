@@ -20,7 +20,7 @@ const Home = () => {
         Agende seu horário de forma rápida e fácil com os melhores barbeiros da
         cidade.
       </p>
-      <div className="flex gap-5">
+      <div className="flex flex-col md:flex-row gap-5 ">
         <div className="flex">
           <Button asChild className="rounded-sm bg-primary h-12 w-60">
             <Link href="/agendar">

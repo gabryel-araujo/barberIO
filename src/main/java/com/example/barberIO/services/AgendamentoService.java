@@ -169,6 +169,7 @@ public class AgendamentoService {
     	
     	List<ResponseAgendamentoRecordDto> dtos = agendamentos.stream().map(agendamento -> 
         new ResponseAgendamentoRecordDto(
+            agendamento.getId(),
             agendamento.getHorario(),
             agendamento.getFim(),
             agendamento.getBarbeiro().getNome(),
