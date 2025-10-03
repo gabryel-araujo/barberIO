@@ -7,7 +7,6 @@ import { inicialData, useForm } from "@/contexts/AgendamentoContextProvider";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { GETFuncionarios } from "@/lib/api/funcionarios";
-import Image from "next/image";
 
 export const Step2 = () => {
   const { state, dispatch } = useForm();
