@@ -369,47 +369,6 @@ const barbeiros = () => {
     });
   }
 
-  // const enviarImagem = async (nome: string, idBarbeiro: number) => {
-  //   const imagem = avatarRef.current?.files?.[0];
-  //   if (!imagem) return;
-  //   const previewUrl = URL.createObjectURL(imagem);
-  //   setPreview(previewUrl);
-
-  //   const base64 = await fileToBase64(imagem!);
-
-  //   const json = {
-  //     base64,
-  //     NomeBarbeiro: nome,
-  //     idBarbeiro,
-  //   };
-  //   console.log(json);
-
-  //   const resUpload = await axios.post("/api/avatar-upload", {
-  //     base64,
-  //     NomeBarbeiro: nome,
-  //     idBarbeiro,
-  //   });
-
-  //   console.log(resUpload.data.publicUrl);
-  //   const urlPublica = resUpload.data.publicUrl;
-  //   console.log(urlPublica);
-
-  //   // FUNÇÃO PARA ATUALIZAR A IMAGEM DO BARBEIRO
-  //   const funcionarioAtualizado: Barbeiro = {
-  //     ...barbeiroSelecionado!,
-  //     avatar: urlPublica,
-  //   };
-  //   await axiosInstance.put(
-  //     `/funcionarios/${idBarbeiro}`,
-  //     funcionarioAtualizado,
-  //     {
-  //       headers: { Authorization: `Bearer ${Cookies.get("authToken")}` },
-  //     }
-  //   );
-  //   setPreview(null);
-  //   setBarbeiroSelecionado(funcionarioAtualizado);
-  // };
-
   return (
     <div className="w-full min-h-screen bg-[#e6f0ff]">
       <div className="w-full flex items-center justify-between px-10 py-5">
