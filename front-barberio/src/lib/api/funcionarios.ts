@@ -59,7 +59,8 @@ export const POSTFuncionario = async (
   data_nascimento: string,
   disponivel: boolean,
   servicos?: string[],
-  ativo?: boolean
+  ativo?: boolean,
+  tipo?: string
 ) => {
   try {
     const response = await axiosInstance.post(
@@ -72,6 +73,7 @@ export const POSTFuncionario = async (
         disponivel,
         newServices: servicos,
         ativo,
+        tipo,
       },
       {
         headers: {
@@ -92,7 +94,9 @@ export const changeStatus = async (
   email: string,
   senha: string,
   disponivel: boolean,
-  ativo: boolean
+  ativo: boolean,
+  avatar: string,
+  tipo: string
 ) => {
   try {
     const response = await axiosInstance.put(
@@ -103,6 +107,8 @@ export const changeStatus = async (
         senha,
         disponivel,
         ativo,
+        avatar,
+        tipo,
       },
       {
         headers: {
@@ -124,7 +130,9 @@ export const PUTFuncionario = async (
   data_nascimento: string,
   disponivel: boolean,
   senha?: string,
-  ativo?: boolean
+  ativo?: boolean,
+  avatar?: string,
+  tipo?: string
 ) => {
   try {
     const response = await axiosInstance.put(
@@ -136,6 +144,8 @@ export const PUTFuncionario = async (
         data_nascimento,
         disponivel,
         ativo,
+        avatar,
+        tipo,
       },
       {
         headers: {

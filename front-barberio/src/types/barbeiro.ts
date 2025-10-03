@@ -11,4 +11,6 @@ export interface Barbeiro {
   atendimentos?: number;
   avatar?: string;
   servicos?: any[];
+  avatar?: string;
+  tipo: string;
 }

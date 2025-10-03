@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Filter, User, UserPlus } from "lucide-react";
+import { Filter, UserPlus } from "lucide-react";
 // import { servicos } from "@/model/servico";
 import {
   Dialog,
@@ -53,9 +53,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Cookies from "js-cookie";
-import { pegarImagem } from "@/lib/utils";
+
 import Image from "next/image";
-import axiosInstance from "@/lib/axios";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { validarToken } from "@/utils/functions";
+// import axiosInstance from "@/lib/axios";
 
 const barbeiros = () => {
   const { state, dispatch } = useFormReducer();
@@ -67,6 +70,8 @@ const barbeiros = () => {
   const [servicoSelecionado, setServicoSelecionado] = useState<string[]>([]);
   const [exibirInativos, setExibirInativos] = useState(false);
   const avatarRef = useRef<HTMLInputElement>(null);
+
+  const usuario = validarToken();
 
   const formSchema = z.object({
     nome: z
@@ -94,6 +99,14 @@ const barbeiros = () => {
       ),
     servico: z.array(z.any()).nullable(),
     disponivel: z.boolean(),
+    avatar: z
+      .string()
+      .url("URL inválida")
+      .or(z.literal(""))
+      .nullable()
+      .optional(),
+    tipo: z.string(),
+
     //ativo: z.boolean(),
   });
 
@@ -133,6 +146,13 @@ const barbeiros = () => {
       ),
     servico: z.array(z.any()).nullable(),
     disponivel: z.boolean(),
+    avatar: z
+      .string()
+      .url("URL inválida")
+      .or(z.literal(""))
+      .nullable()
+      .optional(),
+    tipo: z.string(),
   });
 
   const schema = useMemo(() => {
@@ -152,9 +172,11 @@ const barbeiros = () => {
       data_nascimento: "",
       disponivel: true,
       servico: [],
+      avatar: "",
+      tipo: "BARBEIRO",
     },
   });
-
+  console.log(form.formState.errors);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -170,8 +192,20 @@ const barbeiros = () => {
     }
     fetchData();
   }, [state.barbeiro, exibirInativos]);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [imagemSelecionada, setImagemSelecionada] = useState<File | null>(null);
 
   const onSubmit = async (barbeiro: BarbeiroFormData) => {
+    let urlPublica = barbeiroSelecionado?.avatar ?? "";
+    if (imagemSelecionada) {
+      const base64 = await fileToBase64(imagemSelecionada);
+      const resUpload = await axios.post("/api/avatar-upload", {
+        base64,
+        NomeBarbeiro: barbeiro.nome,
+        idBarbeiro: barbeiroSelecionado?.id,
+      });
+      urlPublica = resUpload.data.publicUrl;
+    }
     if (!barbeiroSelecionado) {
       // Cadastro
       const response = await POSTFuncionario(
@@ -180,7 +214,9 @@ const barbeiros = () => {
         barbeiro.senha!,
         barbeiro.data_nascimento!,
         barbeiro.disponivel,
-        servicoSelecionado
+        servicoSelecionado,
+        undefined,
+        barbeiro.tipo
       );
 
       if (response.status === 201) {
@@ -204,7 +240,9 @@ const barbeiros = () => {
         barbeiro.data_nascimento!,
         barbeiro.disponivel,
         barbeiro.senha ? barbeiro.senha : barbeiroSelecionado.senha,
-        barbeiroSelecionado.ativo
+        barbeiroSelecionado.ativo,
+        urlPublica,
+        barbeiro.tipo
       );
 
       if (response.status === 200) {
@@ -220,7 +258,8 @@ const barbeiros = () => {
         payload: [response.data],
       });
     }
-
+    setPreview(null);
+    setImagemSelecionada(null);
     queryClient.invalidateQueries({ queryKey: ["servicos"] });
     setOpenModal(false);
     form.reset();
@@ -233,6 +272,7 @@ const barbeiros = () => {
       senha: "",
       data_nascimento: "",
       disponivel: true,
+      tipo: "BARBEIRO",
     });
     setBarbeiroSelecionado(undefined);
     setOpenModal(true);
@@ -329,60 +369,47 @@ const barbeiros = () => {
     });
   }
 
-  const enviarImagem = async (nome: string, idBarbeiro: number) => {
-    const imagem = avatarRef.current?.files?.[0];
-    const saveLocal = localStorage.getItem("demoImagem");
+  // const enviarImagem = async (nome: string, idBarbeiro: number) => {
+  //   const imagem = avatarRef.current?.files?.[0];
+  //   if (!imagem) return;
+  //   const previewUrl = URL.createObjectURL(imagem);
+  //   setPreview(previewUrl);
 
-    if (!imagem) {
-      console.log("Nenhuma imagem selecionada");
-      return;
-    }
-    if (saveLocal) {
-      localStorage.removeItem("demoImagem");
-    }
+  //   const base64 = await fileToBase64(imagem!);
 
-    const base64 = await fileToBase64(imagem);
-    //localStorage.setItem("demoImagem", base64);
+  //   const json = {
+  //     base64,
+  //     NomeBarbeiro: nome,
+  //     idBarbeiro,
+  //   };
+  //   console.log(json);
 
-    const json = {
-      base64,
-      NomeBarbeiro: nome,
-      idBarbeiro,
-    };
-    console.log(json);
-    const resUpload = await axios.post("/api/avatar-upload", {
-      base64,
-      NomeBarbeiro: nome,
-      idBarbeiro,
-    });
-    console.log(resUpload.data.publicUrl);
-    const urlPublica = resUpload.data.publicUrl;
-    console.log(urlPublica);
+  //   const resUpload = await axios.post("/api/avatar-upload", {
+  //     base64,
+  //     NomeBarbeiro: nome,
+  //     idBarbeiro,
+  //   });
 
-    queryClient.invalidateQueries({
-      queryKey: [""],
-    });
-    // FUNÇÇÃO PARA ATUALIZAR A IMAGEM DO BARBEIRO
-    const funcionarioAtualizado = {
-      ...barbeiroSelecionado,
-      avatar: urlPublica,
-    };
-    await axiosInstance.put(
-      `/funcionarios/${idBarbeiro}`,
-      funcionarioAtualizado,
-      {
-        headers: {
-          Authorization: `Bearer ${Cookies.get("authToken")}`,
-        },
-      }
-    );
-  };
+  //   console.log(resUpload.data.publicUrl);
+  //   const urlPublica = resUpload.data.publicUrl;
+  //   console.log(urlPublica);
 
-  const ImagemUrl = pegarImagem(
-    barbeiroSelecionado?.nome,
-    String(barbeiroSelecionado?.id)
-  );
-  const [erroImagem, setErroImagem] = useState(false);
+  //   // FUNÇÃO PARA ATUALIZAR A IMAGEM DO BARBEIRO
+  //   const funcionarioAtualizado: Barbeiro = {
+  //     ...barbeiroSelecionado!,
+  //     avatar: urlPublica,
+  //   };
+  //   await axiosInstance.put(
+  //     `/funcionarios/${idBarbeiro}`,
+  //     funcionarioAtualizado,
+  //     {
+  //       headers: { Authorization: `Bearer ${Cookies.get("authToken")}` },
+  //     }
+  //   );
+  //   setPreview(null);
+  //   setBarbeiroSelecionado(funcionarioAtualizado);
+  // };
+
   return (
     <div className="w-full min-h-screen bg-[#e6f0ff]">
       <div className="w-full flex items-center justify-between px-10 py-5">
@@ -446,11 +473,13 @@ const barbeiros = () => {
               ref={avatarRef}
               className="absolute w-0 h-0 opacity-0"
               accept="image/*"
-              onChange={() => {
-                enviarImagem(
-                  barbeiroSelecionado?.nome!,
-                  barbeiroSelecionado?.id!
-                );
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  setImagemSelecionada(file);
+                  const previewUrl = URL.createObjectURL(file);
+                  setPreview(previewUrl);
+                }
               }}
             />
 
@@ -459,17 +488,26 @@ const barbeiros = () => {
               type="button"
               className="relative h-28 w-28 rounded-full border-2 border-green-400 hover:border-green-400 shadow shadow-primary hover:shadow-primary/20 transition-all duration-300 cursor-pointer bg-primary text-white overflow-hidden"
             >
-              {!erroImagem ? (
+              {preview ? (
                 <Image
-                  src={`${ImagemUrl}`}
+                  src={preview}
+                  sizes="112px"
+                  alt="avatar preview"
+                  fill
+                  className="absolute inset-0 h-full w-full object-cover object-center"
+                />
+              ) : barbeiroSelecionado?.avatar ? (
+                <Image
+                  src={barbeiroSelecionado.avatar}
                   sizes="112px"
                   alt="avatar"
                   fill
-                  onError={() => setErroImagem(true)}
                   className="absolute inset-0 h-full w-full object-cover object-center"
                 />
               ) : (
-                <User className="w-7 h-7 text-white absolute inset-0 m-auto" />
+                <p className="font-bold text-3xl">
+                  {barbeiroSelecionado?.nome.split("")[0]}
+                </p>
               )}
             </button>
           </div>
@@ -543,6 +581,35 @@ const barbeiros = () => {
                   />
                 </div>
               </div>
+              {usuario?.role === "GESTOR" && (
+                <FormField
+                  control={form.control}
+                  name="tipo"
+                  render={({ field }) => (
+                    <FormItem className="border p-2 rounded-md">
+                      <FormLabel>Tipo:</FormLabel>
+                      <FormControl>
+                        <RadioGroup
+                          defaultValue="BARBEIRO"
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          className="flex gap-6"
+                        >
+                          <div className="flex items-center gap-3">
+                            <RadioGroupItem value="BARBEIRO" id="barbeiro" />
+                            <Label htmlFor="barbeiro">Barbeiro</Label>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <RadioGroupItem value="GESTOR" id="gestor" />
+                            <Label htmlFor="gestor">Gestor</Label>
+                          </div>
+                        </RadioGroup>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
               <FormField
                 control={form.control}
                 name="servico"
