@@ -125,9 +125,9 @@ public class FuncionarioController {
 		BeanUtils.copyProperties(funcionarioRecordDto, funcionarioModel);
 
 		if (funcionarioRecordDto.senha() != null && !funcionarioRecordDto.senha().isBlank()) {
-			if (!passwordEncoder.matches(funcionarioRecordDto.senha(), senhaAtual)) {
+			if (!encoder.matches(funcionarioRecordDto.senha(), senhaAtual)) {
 				// Se a senha mudou, codifica a nova
-				funcionarioModel.setSenha(passwordEncoder.encode(funcionarioRecordDto.senha()));
+				funcionarioModel.setSenha(encoder.encode(funcionarioRecordDto.senha()));
 			} else {
 				// Se é a mesma senha, ou se não foi fornecida uma nova, garante que o hash antigo permaneça
 				funcionarioModel.setSenha(senhaAtual);
