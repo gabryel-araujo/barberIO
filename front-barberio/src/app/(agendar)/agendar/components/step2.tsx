@@ -7,6 +7,7 @@ import { inicialData, useForm } from "@/contexts/AgendamentoContextProvider";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { GETFuncionarios } from "@/lib/api/funcionarios";
+import Image from "next/image";
 
 export const Step2 = () => {
   const { state, dispatch } = useForm();
@@ -72,13 +73,13 @@ export const Step2 = () => {
               }}
               className={`border-2 w-4/5 py-10 cursor-pointer${
                 barber.nome === barbeiro.nome ? "border-2 border-[#3f89c5]" : ""
-              } border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 rounded-lg p-4 flex gap-4 items-center`}
+              } border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 rounded-lg p-4 flex gap-4 items-center w-full`}
             >
               {barber.avatar ? (
                 <img
                   src={barber.avatar}
                   alt="imagem do barbeiro"
-                  className="h-20 w-20 rounded-full border-3 border-[#3f89c5]"
+                  className="h-20 w-20 rounded-full border-4 border-[#3f89c5] object-cover"
                 />
               ) : (
                 <div className="h-20 w-20 rounded-full bg-slate-700 flex items-center justify-center text-white font-bold text-3xl border border-slate-700">
