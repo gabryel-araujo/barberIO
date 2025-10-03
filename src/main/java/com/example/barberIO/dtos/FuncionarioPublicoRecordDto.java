@@ -2,6 +2,7 @@ package com.example.barberIO.dtos;
 
 import java.util.List;
 
+import com.example.barberIO.enums.TipoFuncionario;
 import com.example.barberIO.models.ServiceModel;
 
 public record FuncionarioPublicoRecordDto(
@@ -12,6 +13,7 @@ public record FuncionarioPublicoRecordDto(
         int atendimentos,
         boolean disponivel,
         List<ServiceModel> servicos,
-        boolean ativo) {
+        boolean ativo,
+		String avatar) {
 }
 

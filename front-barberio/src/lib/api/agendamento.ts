@@ -41,7 +41,7 @@ export const GETAgendamentos = cache(async (): Promise<AgendamentoPublic[]> => {
 export const DELETEAgendamento = cache(
   async (id: number): Promise<AxiosResponse<any, any>> => {
     try {
-      const respose = await axiosInstance.delete(`/admin/agendamentos/${id}`, {
+      const respose = await axiosInstance.delete(`/public/agendamentos/${id}`, {
         headers: {
           Authorization: `Bearer ${Cookies.get("authToken")}`,
         },
