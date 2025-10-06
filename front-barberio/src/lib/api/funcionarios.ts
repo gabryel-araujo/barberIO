@@ -95,6 +95,7 @@ export const changeStatus = async (
   senha: string,
   disponivel: boolean,
   ativo: boolean,
+  avatar: string,
   tipo: string | undefined
 ) => {
   try {
@@ -135,7 +136,7 @@ export const PUTFuncionario = async (
 ) => {
   try {
     const response = await axiosInstance.put(
-      `/funcionarios/${id}`,
+      `/public/funcionarios/${id}`,
       {
         nome,
         email,
