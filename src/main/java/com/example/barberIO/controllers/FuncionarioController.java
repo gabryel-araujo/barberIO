@@ -125,17 +125,17 @@ public class FuncionarioController {
 		BeanUtils.copyProperties(funcionarioRecordDto, funcionarioModel);
 
 		if (funcionarioRecordDto.senha() != null && !funcionarioRecordDto.senha().isBlank()) {
-			if (!encoder.matches(funcionarioRecordDto.senha(), senhaAtual)) {
+			if (!funcionarioRecordDto.senha().equals(senhaAtual)) {
 				// Se a senha mudou, codifica a nova
 				funcionarioModel.setSenha(encoder.encode(funcionarioRecordDto.senha()));
 			} else {
 				// Se é a mesma senha, ou se não foi fornecida uma nova, garante que o hash antigo permaneça
 				funcionarioModel.setSenha(senhaAtual);
 			}
-		} else {
+		} //else {
 			// Garante que a senha antiga seja mantida se nenhuma for enviada
-			funcionarioModel.setSenha(senhaAtual);
-		}
+			//funcionarioModel.setSenha(senhaAtual);
+		//}
 
 		return ResponseEntity.status(HttpStatus.OK).body(funcionarioRepository.save(funcionarioModel));
 	}
