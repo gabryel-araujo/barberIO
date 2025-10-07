@@ -11,7 +11,6 @@ import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import Image from "next/image";
 
 type BarbeiroFormData = {
   nome: string;
