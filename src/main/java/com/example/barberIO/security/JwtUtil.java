@@ -22,6 +22,7 @@ public class JwtUtil {
                 .setSubject(funcionario.getEmail())
                 .claim("nome",funcionario.getNome())
                 .claim("role",funcionario.getTipo())
+                .claim("empresa_id",funcionario.getEmpresa().getId())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(key)

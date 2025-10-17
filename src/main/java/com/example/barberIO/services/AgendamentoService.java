@@ -164,8 +164,8 @@ public class AgendamentoService {
         return horariosDisponiveis;
     }
     
-    public ResponseEntity<List<ResponseAgendamentoRecordDto>> listarAgendamentosMinificado(){
-    	List<AgendamentoModel> agendamentos = agendamentoRepository.findAll();
+    public ResponseEntity<List<ResponseAgendamentoRecordDto>> listarAgendamentosMinificado(Long barbeiro_id) {
+    	List<AgendamentoModel> agendamentos = agendamentoRepository.findAllByEmpresaId(barbeiro_id);
     	
     	List<ResponseAgendamentoRecordDto> dtos = agendamentos.stream().map(agendamento -> 
         new ResponseAgendamentoRecordDto(

@@ -21,4 +21,5 @@ public interface AgendamentoRepository extends JpaRepository<AgendamentoModel, L
 			+ "WHERE barbeiro_id = :barbeiroId " + "AND horario::date = :dia", nativeQuery = true)
 	List<Object[]> findAgendamentosComDuracao(@Param("barbeiroId") Long barbeiroId, @Param("dia") LocalDate dia);
 
+	List<AgendamentoModel> findAllByEmpresaId(Long empresaId);
 }
