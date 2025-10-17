@@ -6,10 +6,14 @@ import com.example.barberIO.dtos.ResponseAgendamentoRecordDto;
 import com.example.barberIO.enums.TipoFuncionario;
 import com.example.barberIO.exceptions.RecursoDuplicadoException;
 import com.example.barberIO.exceptions.RecursoNaoEncontradoException;
+import com.example.barberIO.models.EmpresaModel;
 import com.example.barberIO.models.FuncionarioModel;
 import com.example.barberIO.models.ServiceModel;
+import com.example.barberIO.repositories.EmpresaRepository;
 import com.example.barberIO.repositories.FuncionarioRepository;
 import com.example.barberIO.repositories.ServiceRepository;
+import com.example.barberIO.security.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,17 +36,18 @@ public class FuncionarioController {
 
 	@Autowired
 	private PasswordEncoder encoder;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+
+	@Autowired
+	private JwtUtil jwtUtil;
 
 	@GetMapping("/funcionarios")
 	public ResponseEntity<List<FuncionarioModel>> getAll() {
 		return ResponseEntity.status(HttpStatus.OK).body(funcionarioRepository.findAll());
 	}
 
-	@GetMapping("/public/funcionarios")
-    public ResponseEntity<List<FuncionarioPublicoRecordDto>> listarFuncionariosPublicos() {
-    	List<FuncionarioModel> funcionarios = funcionarioRepository.findAll();
+	@GetMapping("/public/funcionarios/{empresa_id}")
+    public ResponseEntity<List<FuncionarioPublicoRecordDto>> listarFuncionariosPublicos(@PathVariable Long empresa_id) {
+    	List<FuncionarioModel> funcionarios = funcionarioRepository.findAllByEmpresaId(empresa_id);
     	
     	List<FuncionarioPublicoRecordDto> dtos = funcionarios.stream().map(funcionario -> 
         new FuncionarioPublicoRecordDto(
@@ -56,7 +61,6 @@ public class FuncionarioController {
         		funcionario.isAtivo(),
 				funcionario.getAvatar()
     )).toList();
-        
         return ResponseEntity.status(HttpStatus.OK).body(dtos);
     }
 
@@ -73,12 +77,17 @@ public class FuncionarioController {
 
 	@PostMapping("/funcionarios")
 	public ResponseEntity<FuncionarioModel> addFuncionario(
-			@RequestBody @Valid FuncionarioRecordDto funcionarioRecordDto) {
+			@RequestBody @Valid FuncionarioRecordDto funcionarioRecordDto, HttpServletRequest req) {
 		try {
 			Optional<FuncionarioModel> funcionario = funcionarioRepository.findByEmail(funcionarioRecordDto.email());
 			if (funcionario.isPresent()) {
 				throw new RecursoDuplicadoException("Já existe um usuário cadastrado com o e-mail informado");
 			}
+			String authHeader = req.getHeader("Authorization");
+			String token = authHeader.substring(7);
+			String usuarioLogado = jwtUtil.extractUsername(token);
+
+			EmpresaModel empresaLogada = funcionarioRepository.findByEmail(usuarioLogado).get().getEmpresa();
 
 			FuncionarioModel funcionarioModel = new FuncionarioModel();
 			LocalDateTime now = LocalDateTime.now();
@@ -91,7 +100,11 @@ public class FuncionarioController {
 			}else{
 				funcionarioModel.setTipo(funcionarioRecordDto.tipo());
 			}
+			if(funcionarioRecordDto.empresa_id() == null){
+				funcionarioModel.setEmpresa(empresaLogada);
+			}
 			FuncionarioModel salvo = funcionarioRepository.save(funcionarioModel);
+
 
 			String[] servicosArray = funcionarioRecordDto.newServices();
 
@@ -125,16 +138,11 @@ public class FuncionarioController {
 		BeanUtils.copyProperties(funcionarioRecordDto, funcionarioModel);
 
 		if (funcionarioRecordDto.senha() != null && !funcionarioRecordDto.senha().isBlank()) {
-			if (!encoder.matches(funcionarioRecordDto.senha(), senhaAtual)) {
-				// Se a senha mudou, codifica a nova
+			if (!funcionarioRecordDto.senha().equals(senhaAtual)) {
 				funcionarioModel.setSenha(encoder.encode(funcionarioRecordDto.senha()));
 			} else {
-				// Se é a mesma senha, ou se não foi fornecida uma nova, garante que o hash antigo permaneça
 				funcionarioModel.setSenha(senhaAtual);
 			}
-		} else {
-			// Garante que a senha antiga seja mantida se nenhuma for enviada
-			funcionarioModel.setSenha(senhaAtual);
 		}
 
 		return ResponseEntity.status(HttpStatus.OK).body(funcionarioRepository.save(funcionarioModel));

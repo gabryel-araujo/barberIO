@@ -43,6 +43,10 @@ public class HorarioFuncionamentoModel implements Serializable{
 	@Column(nullable = false)
 	private LocalDateTime ultima_alteracao;
 
+	@ManyToOne
+	@JoinColumn(name = "empresa_id")
+	private EmpresaModel empresa;
+
 	public Long getId() {
 		return id;
 	}
@@ -106,5 +110,12 @@ public class HorarioFuncionamentoModel implements Serializable{
 	public void setUltima_alteracao(LocalDateTime ultima_alteracao) {
 		this.ultima_alteracao = ultima_alteracao;
 	}
-	
+
+	public EmpresaModel getEmpresa() {
+		return empresa;
+	}
+
+	public void setEmpresa(EmpresaModel empresa) {
+		this.empresa = empresa;
+	}
 }

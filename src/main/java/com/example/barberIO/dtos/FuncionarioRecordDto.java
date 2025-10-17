@@ -15,6 +15,7 @@ public record FuncionarioRecordDto(
         TipoFuncionario tipo,
         String[] newServices,
         String avatar,
+        Long empresa_id,
         boolean ativo) {
 }
 

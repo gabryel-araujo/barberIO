@@ -2,8 +2,12 @@ package com.example.barberIO.controllers;
 
 import com.example.barberIO.dtos.ServiceRecordDto;
 import com.example.barberIO.exceptions.RecursoNaoEncontradoException;
+import com.example.barberIO.models.EmpresaModel;
 import com.example.barberIO.models.ServiceModel;
+import com.example.barberIO.repositories.FuncionarioRepository;
 import com.example.barberIO.repositories.ServiceRepository;
+import com.example.barberIO.security.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +24,15 @@ public class ServicoController {
     @Autowired
     ServiceRepository serviceRepository;
 
-    @GetMapping("public/servico")
-    public ResponseEntity<List<ServiceModel>> getAll(){
-        return ResponseEntity.status(HttpStatus.OK).body(serviceRepository.findAll());
+    @Autowired
+    FuncionarioRepository funcionarioRepository;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @GetMapping("public/servico/{empresa_id}")
+    public ResponseEntity<List<ServiceModel>> getAllByEmpresaId(@PathVariable Long empresa_id){
+        return ResponseEntity.status(HttpStatus.OK).body(serviceRepository.findAllByEmpresaId(empresa_id));
     }
 
     @GetMapping("/servico/{id}")
@@ -37,11 +47,17 @@ public class ServicoController {
     }
 
     @PostMapping("/servico")
-    public ResponseEntity<Object> addServico(@RequestBody @Valid ServiceRecordDto serviceRecordDto){
+    public ResponseEntity<Object> addServico(@RequestBody @Valid ServiceRecordDto serviceRecordDto, HttpServletRequest req){
+        String authHeader = req.getHeader("Authorization");
+        String token = authHeader.substring(7);
+        String usuarioLogado = jwtUtil.extractUsername(token);
+        EmpresaModel empresaLogada = funcionarioRepository.findByEmail(usuarioLogado).get().getEmpresa();
+
         ServiceModel serviceModel = new ServiceModel();
         LocalDateTime now = LocalDateTime.now();
         BeanUtils.copyProperties(serviceRecordDto,serviceModel);
         serviceModel.setCreated_at(now);
+        serviceModel.setEmpresa(empresaLogada);
         serviceModel.setAtivo(true);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(serviceRepository.save(serviceModel));

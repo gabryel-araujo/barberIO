@@ -27,13 +27,13 @@ public class AgendamentoController {
     private AgendamentoService agendamentoService;
 
     @GetMapping("/admin/agendamentos")
-    public ResponseEntity<List<AgendamentoModel>> listarAgendamentos() {
-        return ResponseEntity.status(HttpStatus.OK).body(agendamentoRepository.findAll());
+    public ResponseEntity<List<AgendamentoModel>> listarAgendamentos(@PathVariable Long empresa_id) {
+        return ResponseEntity.status(HttpStatus.OK).body(agendamentoRepository.findAllByEmpresaId(empresa_id));
     }
     
-    @GetMapping("/agendamentos")
-    public ResponseEntity<List<ResponseAgendamentoRecordDto>> listarAgendamentosMin() {
-        return agendamentoService.listarAgendamentosMinificado();
+    @GetMapping("/agendamentos/{empresa_id}")
+    public ResponseEntity<List<ResponseAgendamentoRecordDto>> listarAgendamentosMin(@PathVariable Long empresa_id) {
+        return agendamentoService.listarAgendamentosMinificado(empresa_id);
     }
 
     @GetMapping("/admin/agendamentos/{id}")

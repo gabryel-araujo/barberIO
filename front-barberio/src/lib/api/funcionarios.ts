@@ -37,14 +37,11 @@ export const setGoogleFuncionario = async (nome: String, email: String) => {
 
 export const GETFuncionarios = cache(async (): Promise<Barbeiro[]> => {
   try {
-    const respose = await axiosInstance.get<Barbeiro[]>(
-      "/public/funcionarios",
-      {
-        headers: {
-          Authorization: `Bearer ${Cookies.get("authToken")}`,
-        },
-      }
-    );
+    const respose = await axiosInstance.get<Barbeiro[]>("/funcionarios", {
+      headers: {
+        Authorization: `Bearer ${Cookies.get("authToken")}`,
+      },
+    });
     return respose.data;
   } catch (error) {
     console.error("Erro ao listar funcionarios", error);
@@ -95,7 +92,8 @@ export const changeStatus = async (
   senha: string,
   disponivel: boolean,
   ativo: boolean,
-  tipo: string | undefined
+  avatar: string,
+  tipo: string
 ) => {
   try {
     const response = await axiosInstance.put(
