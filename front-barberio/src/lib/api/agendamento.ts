@@ -29,7 +29,7 @@ export const agendar = async (
 export const GETAgendamentos = cache(async (): Promise<AgendamentoPublic[]> => {
   try {
     const respose = await axiosInstance.get<AgendamentoPublic[]>(
-      "/agendamentos"
+      "/agendamentos/1"
     );
     return respose.data;
   } catch (error) {

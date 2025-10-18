@@ -1,5 +1,4 @@
 "use client";
-import { Calendar } from "@/components/ui/calendar";
 import { useCallback, useEffect, useState } from "react";
 import { ptBR } from "date-fns/locale";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
@@ -15,9 +14,11 @@ import { ErrorResponse } from "@/app/(pages)/configuracao/page";
 import { z } from "zod";
 import { toast } from "sonner";
 import Cookies from "js-cookie";
+import { Calendar } from "@/components/ui/calendar";
 
 export const Step1 = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
+  const [isMounted, setIsMounted] = useState(false);
   const { state, dispatch } = useForm();
   const [dadosEmpresa, setDadosEmpresa] =
     useState<z.infer<typeof empresaSchema>>();
@@ -123,6 +124,12 @@ export const Step1 = () => {
       });
     }
   }, []);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) return null;
 
   return (
     <div className="border rounded-lg md:mx-50 p-5 shadow bg-white">
