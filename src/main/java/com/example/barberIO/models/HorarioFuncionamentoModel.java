@@ -3,6 +3,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -45,6 +46,7 @@ public class HorarioFuncionamentoModel implements Serializable{
 
 	@ManyToOne
 	@JoinColumn(name = "empresa_id")
+	@JsonIgnore
 	private EmpresaModel empresa;
 
 	public Long getId() {

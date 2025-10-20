@@ -1,6 +1,7 @@
 package com.example.barberIO.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -37,6 +38,7 @@ public class ServiceModel implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "empresa_id")
+    @JsonIgnore
     private EmpresaModel empresa;
 
     public LocalDateTime getCreated_at() {

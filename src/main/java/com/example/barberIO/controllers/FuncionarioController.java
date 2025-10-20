@@ -41,8 +41,13 @@ public class FuncionarioController {
 	private JwtUtil jwtUtil;
 
 	@GetMapping("/funcionarios")
-	public ResponseEntity<List<FuncionarioModel>> getAll() {
-		return ResponseEntity.status(HttpStatus.OK).body(funcionarioRepository.findAll());
+	public ResponseEntity<List<FuncionarioModel>> getAll( HttpServletRequest req) {
+		String authHeader = req.getHeader("Authorization");
+		String token = authHeader.substring(7);
+		String usuarioLogado = jwtUtil.extractUsername(token);
+		EmpresaModel empresaLogada = funcionarioRepository.findByEmail(usuarioLogado).get().getEmpresa();
+
+		return ResponseEntity.status(HttpStatus.OK).body(funcionarioRepository.findAllByEmpresaId(empresaLogada.getId()));
 	}
 
 	@GetMapping("/public/funcionarios/{empresa_id}")
@@ -86,7 +91,6 @@ public class FuncionarioController {
 			String authHeader = req.getHeader("Authorization");
 			String token = authHeader.substring(7);
 			String usuarioLogado = jwtUtil.extractUsername(token);
-
 			EmpresaModel empresaLogada = funcionarioRepository.findByEmail(usuarioLogado).get().getEmpresa();
 
 			FuncionarioModel funcionarioModel = new FuncionarioModel();
