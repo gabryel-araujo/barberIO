@@ -40,6 +40,7 @@ public class FeriadoModel implements Serializable{
 
 	@ManyToOne
 	@JoinColumn(name = "empresa_id")
+	@JsonIgnore
 	private EmpresaModel empresa;
 
 	public Long getId() {

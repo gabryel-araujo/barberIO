@@ -32,11 +32,11 @@ const Hero = () => {
 
           <div className="animate-scale-in relative">
             <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full"></div>
-            {/* <img 
-              src={heroMockup} 
-              alt="Dashboard BarberiO" 
+            <img
+              src="/"
+              alt="Dashboard BarberiO"
               className="relative rounded-2xl shadow-2xl w-full"
-            /> */}
+            />
           </div>
         </div>
       </div>

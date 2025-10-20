@@ -39,6 +39,8 @@ public class FuncionarioController {
 
 	@Autowired
 	private JwtUtil jwtUtil;
+    @Autowired
+    private EmpresaRepository empresaRepository;
 
 	@GetMapping("/funcionarios")
 	public ResponseEntity<List<FuncionarioModel>> getAll( HttpServletRequest req) {
@@ -106,9 +108,11 @@ public class FuncionarioController {
 			}
 			if(funcionarioRecordDto.empresa_id() == null){
 				funcionarioModel.setEmpresa(empresaLogada);
+			}else{
+				EmpresaModel empresaNova = empresaRepository.findById(funcionarioRecordDto.empresa_id()).get();
+				funcionarioModel.setEmpresa(empresaNova);
 			}
 			FuncionarioModel salvo = funcionarioRepository.save(funcionarioModel);
-
 
 			String[] servicosArray = funcionarioRecordDto.newServices();
 

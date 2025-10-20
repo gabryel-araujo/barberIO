@@ -1,5 +1,6 @@
 package com.example.barberIO.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 
@@ -33,7 +34,7 @@ public class EmpresaModel implements Serializable {
 	private LocalDateTime created_at;
 	
 	@OneToOne(mappedBy = "empresa", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonManagedReference
+	@JsonIgnore
 	private EnderecoModel endereco;
 
 	@OneToOne(mappedBy = "config_empresa", cascade = CascadeType.ALL, orphanRemoval = true)

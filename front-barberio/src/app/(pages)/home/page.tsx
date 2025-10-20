@@ -11,6 +11,7 @@ import { AgendamentoClientes } from "../../../../components/AgendamentoClientes"
 
 const Home = () => {
   const gestorLogado = Cookies.get("authToken");
+  const empresaId = window.location.href.split("=")[1];
   return (
     <div className="w-full flex min-h-screen flex-col items-center justify-center space-y-7 px-7 pt-7 md:pt-0 bg-[#e6f0ff]">
       <PrefetchAgendar />
@@ -24,7 +25,7 @@ const Home = () => {
       <div className="flex flex-col md:flex-row gap-5 ">
         <div className="flex">
           <Button asChild className="rounded-sm bg-primary h-12 w-60">
-            <Link href="/agendar">
+            <Link href={`/agendar?ref=${empresaId}`}>
               <Calendar /> <p className="font-bold text-lg">Agendar Horário</p>
             </Link>
           </Button>

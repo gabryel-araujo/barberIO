@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ptBR } from "date-fns/locale";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
@@ -13,10 +13,11 @@ import { empresaSchema } from "@/app/(pages)/configuracao/schemas/schemas";
 import { ErrorResponse } from "@/app/(pages)/configuracao/page";
 import { z } from "zod";
 import { toast } from "sonner";
-import Cookies from "js-cookie";
 import { Calendar } from "@/components/ui/calendar";
+import { getEmpresaIdFromHref } from "@/utils/functions";
 
 export const Step1 = () => {
+  const empresaIdRef = useRef(getEmpresaIdFromHref());
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [isMounted, setIsMounted] = useState(false);
   const { state, dispatch } = useForm();
@@ -24,7 +25,7 @@ export const Step1 = () => {
     useState<z.infer<typeof empresaSchema>>();
   const { push } = useRouter();
   const irHome = () => {
-    push("/");
+    push(`/home?ref=${empresaIdRef.current}`);
   };
 
   const { data, error } = useQuery<
@@ -33,11 +34,9 @@ export const Step1 = () => {
   >({
     queryKey: ["empresas"],
     queryFn: async () => {
-      const response = await axios.get(`${baseUrl}/empresas/1`, {
-        headers: {
-          Authorization: `Bearer ${Cookies.get("authToken")}`,
-        },
-      });
+      const response = await axios.get(
+        `${baseUrl}/empresas/${empresaIdRef.current}`
+      );
       return response.data;
     },
     staleTime: 5 * (60 * 1000),
@@ -53,13 +52,6 @@ export const Step1 = () => {
     console.log(error);
     toast.error(error.response!.data!.message || "ops ocorreu um erro!");
   }
-
-  // type Feriado = {
-  //   id: number;
-  //   nome: string;
-  //   data: Date;
-  //   recorrente: boolean;
-  // };
 
   const diasFeriados = dadosEmpresa?.config_empresa?.feriados!;
   const arrayFeriados = (diasFeriados ?? [])

@@ -1,20 +1,22 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
 import { Award, Star } from "lucide-react";
 import { inicialData, useForm } from "@/contexts/AgendamentoContextProvider";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
-import { GETFuncionarios } from "@/lib/api/funcionarios";
+import { GETFuncionariosPublicos } from "@/lib/api/funcionarios";
+import { getEmpresaIdFromHref } from "@/utils/functions";
 
 export const Step2 = () => {
   const { state, dispatch } = useForm();
   const [barbeiro, setbarbeiro] = useState(state.barbeiro);
+  const empresaId = useRef(getEmpresaIdFromHref());
 
   const { data: barbeiros = [] } = useQuery({
     queryKey: ["barbeirosDisponivel"],
-    queryFn: GETFuncionarios,
+    queryFn: () => GETFuncionariosPublicos(empresaId.current),
     //staleTime: 3000,
   });
 

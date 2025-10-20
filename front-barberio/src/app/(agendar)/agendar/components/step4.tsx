@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
 import { Servico } from "@/types/servico";
@@ -19,10 +19,11 @@ import { agendar } from "@/lib/api/agendamento";
 import { findByTelefone, POSTCliente } from "@/lib/api/cliente";
 import { LoadingComponent } from "../../../../../components/LoadingComponent";
 import { format } from "date-fns";
-import { nomeCapitalizado } from "@/utils/functions";
+import { getEmpresaIdFromHref, nomeCapitalizado } from "@/utils/functions";
 import Cookies from "js-cookie";
 
 export const Step4 = () => {
+  const empresaId = useRef(getEmpresaIdFromHref());
   const { state, dispatch } = useForm();
   const [servicos, setServicos] = useState<Servico[]>([]);
   const [servicoSelecionado, setServicoSelecionado] = useState<Servico>(
@@ -43,7 +44,9 @@ export const Step4 = () => {
   useQuery({
     queryKey: ["servicos"],
     queryFn: async () => {
-      const response = await axios.get(`${baseUrl}/public/servico`);
+      const response = await axios.get(
+        `${baseUrl}/public/servico/${empresaId.current}`
+      );
       setServicos(response.data);
       return response.data;
     },
@@ -119,12 +122,13 @@ export const Step4 = () => {
 
     console.log(data.phone);
 
-    const response = await findByTelefone(data.phone);
+    const response = await findByTelefone(data.phone, empresaId.current);
     if (response.length == 0) {
-      console.log("entrou aqui");
+      console.log("entrou no if");
       const response = await POSTCliente(
         nomeCapitalizado(data.name),
-        data.phone
+        data.phone,
+        Number(empresaId.current)
       );
       console.log(response);
     }
@@ -151,7 +155,10 @@ export const Step4 = () => {
     try {
       const data = format(state.data, "yyyy-MM-dd'T'");
       const horario = data + state.horario;
-      const findCliente = await findByTelefone(state.telefone);
+      const findCliente = await findByTelefone(
+        state.telefone,
+        empresaId.current
+      );
       const fim = horario;
 
       const response = await agendar(
@@ -159,7 +166,8 @@ export const Step4 = () => {
         findCliente[0].id! as number,
         state.servico.id as number,
         horario,
-        fim
+        fim,
+        Number(empresaId.current)
       );
 
       Cookies.set("telefoneCliente", state.telefone);
@@ -183,7 +191,7 @@ export const Step4 = () => {
         // });
 
         setIsLoading(true);
-        push("/");
+        push(`/home?ref=${empresaId.current}`);
       }
       setOpenModalRevisao(!openModalRevisao);
     } catch (error) {

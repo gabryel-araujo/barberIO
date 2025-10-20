@@ -24,7 +24,7 @@ export const fazerLogin = async (
 
 export const GETFuncionarios = cache(async (): Promise<Barbeiro[]> => {
   try {
-    const respose = await axiosInstance.get<Barbeiro[]>("/funcionarios/1", {
+    const respose = await axiosInstance.get<Barbeiro[]>("/funcionarios", {
       headers: {
         Authorization: `Bearer ${Cookies.get("authToken")}`,
       },
@@ -35,6 +35,20 @@ export const GETFuncionarios = cache(async (): Promise<Barbeiro[]> => {
     throw error;
   }
 });
+
+export const GETFuncionariosPublicos = cache(
+  async (empresaId: string): Promise<Barbeiro[]> => {
+    try {
+      const respose = await axiosInstance.get<Barbeiro[]>(
+        `/public/funcionarios/${empresaId}`
+      );
+      return respose.data;
+    } catch (error) {
+      console.error("Erro ao listar funcionarios", error);
+      throw error;
+    }
+  }
+);
 
 export const POSTFuncionario = async (
   nome: string,
