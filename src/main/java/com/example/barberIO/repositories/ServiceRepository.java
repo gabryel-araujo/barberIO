@@ -12,4 +12,5 @@ import java.util.UUID;
 public interface ServiceRepository extends JpaRepository<ServiceModel, Long> {
 
     List<ServiceModel> findAllByEmpresaId(Long empresaId);
+
 }

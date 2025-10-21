@@ -47,7 +47,7 @@ const servicos = () => {
   const { data: servicos = [] } = useQuery({
     queryKey: ["servicos", exibirInativos],
     queryFn: async () => {
-      const response = await axios.get(`${baseUrl}/public/servico`, {
+      const response = await axios.get(`${baseUrl}/servico`, {
         headers: {
           Authorization: `Bearer ${Cookies.get("authToken")}`,
         },

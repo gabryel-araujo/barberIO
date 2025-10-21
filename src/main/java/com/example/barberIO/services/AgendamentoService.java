@@ -49,11 +49,12 @@ public class AgendamentoService {
     private HorarioFuncionamentoRepository horarioFuncionamentoRepository;
 
 
-    public ResponseEntity<Object> agendarHorario(AgendamentoRecordDto agendamentoRecordDto) {
+    public ResponseEntity<Object> agendarHorario(AgendamentoRecordDto agendamentoRecordDto, Long empresaId) {
         Optional<FuncionarioModel> funcionarioO = funcionarioRepository
                 .findById(agendamentoRecordDto.barbeiro().getId());
         Optional<ClienteModel> clienteO = clienteRepository.findById(agendamentoRecordDto.cliente().getId());
         Optional<ServiceModel> servicoO = serviceRepository.findById(agendamentoRecordDto.servico().getId());
+        Optional<EmpresaModel> empresaO = empresaRepository.findById(empresaId);
 
         if (funcionarioO.isEmpty() || clienteO.isEmpty() || servicoO.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -63,6 +64,7 @@ public class AgendamentoService {
         FuncionarioModel barbeiro = funcionarioO.get();
         ServiceModel servico = servicoO.get();
         ClienteModel cliente = clienteO.get();
+        EmpresaModel empresa = empresaO.get();
 
         LocalDateTime horarioAgendamento = agendamentoRecordDto.horario();
         LocalDateTime fimAgendamento = horarioAgendamento.plusMinutes(servico.getDuracao());
@@ -82,6 +84,7 @@ public class AgendamentoService {
             agendamentoModel.setHorario(horarioAgendamento);
             agendamentoModel.setFim(fimAgendamento);
             agendamentoModel.setFim(agendamentoModel.getFim());
+            agendamentoModel.setEmpresa(empresa);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(agendamentoRepository.save(agendamentoModel));
         }
@@ -102,7 +105,7 @@ public class AgendamentoService {
     public ResponseEntity<Object> editarAgendamento(AgendamentoRecordDto agendamentoRecordDto, Long id) {
         this.cancelarHorario(id);
 
-        return this.agendarHorario(agendamentoRecordDto);
+        return this.agendarHorario(agendamentoRecordDto, agendamentoRecordDto.empresa_id());
     }
 
     public ResponseEntity<Object> horarioDisponivel(LocalDateTime data, Long barbeiroId, int intervalo) {

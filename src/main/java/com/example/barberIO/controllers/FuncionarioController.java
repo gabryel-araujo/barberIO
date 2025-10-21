@@ -39,10 +39,17 @@ public class FuncionarioController {
 
 	@Autowired
 	private JwtUtil jwtUtil;
+    @Autowired
+    private EmpresaRepository empresaRepository;
 
 	@GetMapping("/funcionarios")
-	public ResponseEntity<List<FuncionarioModel>> getAll() {
-		return ResponseEntity.status(HttpStatus.OK).body(funcionarioRepository.findAll());
+	public ResponseEntity<List<FuncionarioModel>> getAll( HttpServletRequest req) {
+		String authHeader = req.getHeader("Authorization");
+		String token = authHeader.substring(7);
+		String usuarioLogado = jwtUtil.extractUsername(token);
+		EmpresaModel empresaLogada = funcionarioRepository.findByEmail(usuarioLogado).get().getEmpresa();
+
+		return ResponseEntity.status(HttpStatus.OK).body(funcionarioRepository.findAllByEmpresaId(empresaLogada.getId()));
 	}
 
 	@GetMapping("/public/funcionarios/{empresa_id}")
@@ -86,7 +93,6 @@ public class FuncionarioController {
 			String authHeader = req.getHeader("Authorization");
 			String token = authHeader.substring(7);
 			String usuarioLogado = jwtUtil.extractUsername(token);
-
 			EmpresaModel empresaLogada = funcionarioRepository.findByEmail(usuarioLogado).get().getEmpresa();
 
 			FuncionarioModel funcionarioModel = new FuncionarioModel();
@@ -102,9 +108,11 @@ public class FuncionarioController {
 			}
 			if(funcionarioRecordDto.empresa_id() == null){
 				funcionarioModel.setEmpresa(empresaLogada);
+			}else{
+				EmpresaModel empresaNova = empresaRepository.findById(funcionarioRecordDto.empresa_id()).get();
+				funcionarioModel.setEmpresa(empresaNova);
 			}
 			FuncionarioModel salvo = funcionarioRepository.save(funcionarioModel);
-
 
 			String[] servicosArray = funcionarioRecordDto.newServices();
 

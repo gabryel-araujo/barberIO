@@ -35,6 +35,15 @@ public class ServicoController {
         return ResponseEntity.status(HttpStatus.OK).body(serviceRepository.findAllByEmpresaId(empresa_id));
     }
 
+    @GetMapping("/servico")
+    public ResponseEntity<List<ServiceModel>> getAllByEmpresaLogada(HttpServletRequest req){
+        String authHeader = req.getHeader("Authorization");
+        String token = authHeader.substring(7);
+        String usuarioLogado = jwtUtil.extractUsername(token);
+        EmpresaModel empresaLogada = funcionarioRepository.findByEmail(usuarioLogado).get().getEmpresa();
+        return ResponseEntity.status(HttpStatus.OK).body(serviceRepository.findAllByEmpresaId(empresaLogada.getId()));
+    }
+
     @GetMapping("/servico/{id}")
     public ResponseEntity<ServiceModel> getAll(@PathVariable(value = "id")Long id){
         Optional<ServiceModel> serviceO = serviceRepository.findById(id);

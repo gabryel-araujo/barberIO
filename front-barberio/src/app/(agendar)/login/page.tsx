@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { fazerLogin } from "@/lib/api/funcionarios";
 import { LoginType } from "@/types/loginType";
+import { validarToken } from "@/utils/functions";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -47,10 +48,11 @@ const LoginPage = () => {
         secure: false, // só em HTTPS
         sameSite: "strict", // proteção contra CSRF
       });
+      const usuario = validarToken();
 
       form.formState.isSubmitted &&
         toast.success("Login realizado com sucesso!");
-      router.replace("/");
+      router.replace(`/home?ref=${usuario?.empresa_id}`);
     } catch (error: any) {
       toast.error("Email ou senha incorretos");
       console.error("Erro no Login: ", error.response?.data || error.message);

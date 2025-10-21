@@ -60,7 +60,7 @@ public class FuncionarioModel implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "empresa_id")
-    @JsonManagedReference
+    @JsonIgnore
     private EmpresaModel empresa;
 
     public LocalDateTime getCreated_at() {

@@ -47,9 +47,9 @@ public class AgendamentoController {
         return ResponseEntity.status(HttpStatus.OK).body(agendamentoO.get());
     }
 
-    @PostMapping("/public/agendamentos")
-    public ResponseEntity<Object> adicionarAgendamento(@RequestBody @Valid AgendamentoRecordDto agendamentoRecordDto) {
-        return agendamentoService.agendarHorario(agendamentoRecordDto);
+    @PostMapping("/public/agendamentos/{empresa_id}")
+    public ResponseEntity<Object> adicionarAgendamento(@RequestBody @Valid AgendamentoRecordDto agendamentoRecordDto, @PathVariable Long empresa_id) {
+        return agendamentoService.agendarHorario(agendamentoRecordDto, empresa_id);
     }
 
     @PutMapping("/admin/agendamentos/{id}")

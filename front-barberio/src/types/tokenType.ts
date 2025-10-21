@@ -4,5 +4,6 @@ export type tokenType = {
   nome: string;
   role: string;
   iat: bigint;
-  ext: bigint;
+  exp: bigint;
+  empresa_id: number;
 };

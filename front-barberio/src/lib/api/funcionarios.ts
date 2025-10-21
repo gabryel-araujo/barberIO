@@ -22,19 +22,6 @@ export const fazerLogin = async (
   }
 };
 
-export const setGoogleFuncionario = async (nome: String, email: String) => {
-  try {
-    const response = await axiosInstance.post("/admin/funcionarios", {
-      nome: nome,
-      email: email,
-    });
-    return response;
-  } catch (errorReg) {
-    console.error("Erro ao cadastrar funcionario", errorReg);
-    throw errorReg;
-  }
-};
-
 export const GETFuncionarios = cache(async (): Promise<Barbeiro[]> => {
   try {
     const respose = await axiosInstance.get<Barbeiro[]>("/funcionarios", {
@@ -48,6 +35,20 @@ export const GETFuncionarios = cache(async (): Promise<Barbeiro[]> => {
     throw error;
   }
 });
+
+export const GETFuncionariosPublicos = cache(
+  async (empresaId: string): Promise<Barbeiro[]> => {
+    try {
+      const respose = await axiosInstance.get<Barbeiro[]>(
+        `/public/funcionarios/${empresaId}`
+      );
+      return respose.data;
+    } catch (error) {
+      console.error("Erro ao listar funcionarios", error);
+      throw error;
+    }
+  }
+);
 
 export const POSTFuncionario = async (
   nome: string,

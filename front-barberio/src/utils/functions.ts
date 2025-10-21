@@ -67,3 +67,7 @@ export function validarToken() {
 
   return null;
 }
+
+export function getEmpresaIdFromHref(): string {
+  return window.location.href.split("=")[1];
+}

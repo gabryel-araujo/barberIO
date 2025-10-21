@@ -10,21 +10,32 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { findByTelefone } from "@/lib/api/cliente";
+import { getEmpresaIdFromHref } from "@/utils/functions";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 export const BotaoMeusAgendamentos = () => {
+  const empresaIdRef = useRef<any>(null);
   const clienteLogado = Cookies.get("telefoneCliente");
   const router = useRouter();
   const [openModal, setOpenModal] = useState(false);
   const telefoneRef = useRef<HTMLInputElement>(null);
 
-  const chegarCliente = async (telefone: string | undefined) => {
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      empresaIdRef.current = getEmpresaIdFromHref();
+    }
+  }, []);
+
+  const checarCliente = async (
+    telefone: string | undefined,
+    empresaId: string
+  ) => {
     if (telefone?.length! >= 11) {
       //função de consultar o telefone
-      const findCliente = await findByTelefone(telefone as string);
+      const findCliente = await findByTelefone(telefone as string, empresaId);
       if (findCliente.length === 0) {
         toast.error(
           "Cliente não encontrado na base de dados, verifique o número"
@@ -78,7 +89,10 @@ export const BotaoMeusAgendamentos = () => {
               </DialogClose>
               <Button
                 onClick={() => {
-                  chegarCliente(telefoneRef.current?.value);
+                  checarCliente(
+                    telefoneRef.current?.value,
+                    empresaIdRef.current
+                  );
                 }}
                 className="bg-green-700 hover:bg-green-600"
               >
