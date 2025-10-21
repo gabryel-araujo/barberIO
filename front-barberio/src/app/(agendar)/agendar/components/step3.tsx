@@ -10,10 +10,16 @@ import { format } from "date-fns";
 import { getEmpresaIdFromHref } from "@/utils/functions";
 
 export const Step3 = () => {
-  const empresaId = useRef(getEmpresaIdFromHref());
+  const empresaId = useRef<any>(null);
   const { state, dispatch } = useForm();
   const [hora, setHora] = useState<string | undefined>(state.horario);
   const [disponiveis, setDisponiveis] = useState([]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      empresaId.current = getEmpresaIdFromHref();
+    }
+  }, []);
 
   function proximoPasso() {
     if (state.horario === "") {

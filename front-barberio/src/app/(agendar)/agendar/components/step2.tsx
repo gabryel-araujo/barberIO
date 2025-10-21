@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
 import { Award, Star } from "lucide-react";
@@ -12,13 +12,19 @@ import { getEmpresaIdFromHref } from "@/utils/functions";
 export const Step2 = () => {
   const { state, dispatch } = useForm();
   const [barbeiro, setbarbeiro] = useState(state.barbeiro);
-  const empresaId = useRef(getEmpresaIdFromHref());
+  const empresaId = useRef<any>(null);
 
   const { data: barbeiros = [] } = useQuery({
     queryKey: ["barbeirosDisponivel"],
     queryFn: () => GETFuncionariosPublicos(empresaId.current),
     //staleTime: 3000,
   });
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      empresaId.current = getEmpresaIdFromHref();
+    }
+  }, []);
 
   const barbeiroDisponivel = barbeiros.filter((b) => b.disponivel && b.ativo);
 

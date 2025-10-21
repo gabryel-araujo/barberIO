@@ -13,15 +13,21 @@ import { findByTelefone } from "@/lib/api/cliente";
 import { getEmpresaIdFromHref } from "@/utils/functions";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 export const BotaoMeusAgendamentos = () => {
-  const empresaIdRef = useRef(getEmpresaIdFromHref());
+  const empresaIdRef = useRef<any>(null);
   const clienteLogado = Cookies.get("telefoneCliente");
   const router = useRouter();
   const [openModal, setOpenModal] = useState(false);
   const telefoneRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      empresaIdRef.current = getEmpresaIdFromHref();
+    }
+  }, []);
 
   const checarCliente = async (
     telefone: string | undefined,

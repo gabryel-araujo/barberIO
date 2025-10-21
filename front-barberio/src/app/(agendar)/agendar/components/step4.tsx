@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
 import { Servico } from "@/types/servico";
@@ -24,7 +24,7 @@ import Cookies from "js-cookie";
 import { Cliente } from "@/types/cliente";
 
 export const Step4 = () => {
-  const empresaId = useRef(getEmpresaIdFromHref());
+  const empresaId = useRef<any>(null);
   const clienteRef = useRef<any>(null);
   const { state, dispatch } = useForm();
   const [servicos, setServicos] = useState<Servico[]>([]);
@@ -36,6 +36,12 @@ export const Step4 = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { push } = useRouter();
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      empresaId.current = getEmpresaIdFromHref();
+    }
+  }, []);
 
   const {
     register,

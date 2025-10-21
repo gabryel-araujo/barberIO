@@ -18,7 +18,11 @@ type MenuItem = {
   permission: string | "";
 };
 
-const empresaId = getEmpresaIdFromHref();
+var empresaId = "";
+
+if (typeof window !== "undefined") {
+  empresaId = getEmpresaIdFromHref();
+}
 
 const menuItems: MenuItem[] = [
   {

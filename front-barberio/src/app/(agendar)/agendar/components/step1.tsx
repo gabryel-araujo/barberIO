@@ -17,7 +17,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { getEmpresaIdFromHref } from "@/utils/functions";
 
 export const Step1 = () => {
-  const empresaIdRef = useRef(getEmpresaIdFromHref());
+  const empresaIdRef = useRef<any>(null);
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [isMounted, setIsMounted] = useState(false);
   const { state, dispatch } = useForm();
@@ -27,6 +27,12 @@ export const Step1 = () => {
   const irHome = () => {
     push(`/home?ref=${empresaIdRef.current}`);
   };
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      empresaIdRef.current = getEmpresaIdFromHref();
+    }
+  }, []);
 
   const { data, error } = useQuery<
     z.infer<typeof empresaSchema>,
