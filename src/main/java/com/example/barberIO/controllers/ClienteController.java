@@ -45,6 +45,16 @@ public class ClienteController {
         return ResponseEntity.status(HttpStatus.OK).body(clienteRepository.findAllByEmpresaId(empresa_id));
     }
 
+    @GetMapping("/clientes")
+    public ResponseEntity<List<ClienteModel>> getAllClientsByEmpresa(HttpServletRequest req) {
+        String authHeader = req.getHeader("Authorization");
+        String token = authHeader.substring(7);
+        String usuarioLogado = jwtUtil.extractUsername(token);
+        EmpresaModel empresaLogada = funcionarioRepository.findByEmail(usuarioLogado).get().getEmpresa();
+
+        return ResponseEntity.status(HttpStatus.OK).body(clienteRepository.findAllByEmpresaId(empresaLogada.getId()));
+    }
+
     @PostMapping("public/clientes")
     public ResponseEntity<Object> addCliente(@RequestBody @Valid ClienteRecordDto clienteRecordDto, HttpServletRequest req) {
         Optional<ClienteModel> clienteO = clienteRepository.findByTelefone(clienteRecordDto.telefone());

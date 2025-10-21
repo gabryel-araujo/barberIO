@@ -21,9 +21,11 @@ import { LoadingComponent } from "../../../../../components/LoadingComponent";
 import { format } from "date-fns";
 import { getEmpresaIdFromHref, nomeCapitalizado } from "@/utils/functions";
 import Cookies from "js-cookie";
+import { Cliente } from "@/types/cliente";
 
 export const Step4 = () => {
   const empresaId = useRef(getEmpresaIdFromHref());
+  const clienteRef = useRef<any>(null);
   const { state, dispatch } = useForm();
   const [servicos, setServicos] = useState<Servico[]>([]);
   const [servicoSelecionado, setServicoSelecionado] = useState<Servico>(
@@ -120,17 +122,20 @@ export const Step4 = () => {
       payload: data.phone,
     });
 
-    console.log(data.phone);
+    const response: Cliente[] = await findByTelefone(
+      data.phone,
+      empresaId.current
+    );
 
-    const response = await findByTelefone(data.phone, empresaId.current);
     if (response.length == 0) {
-      console.log("entrou no if");
-      const response = await POSTCliente(
+      const novo = await POSTCliente(
         nomeCapitalizado(data.name),
         data.phone,
         Number(empresaId.current)
       );
-      console.log(response);
+      clienteRef.current = novo;
+    } else {
+      clienteRef.current = response[0];
     }
 
     setOpenModal(!openModal);
@@ -155,15 +160,11 @@ export const Step4 = () => {
     try {
       const data = format(state.data, "yyyy-MM-dd'T'");
       const horario = data + state.horario;
-      const findCliente = await findByTelefone(
-        state.telefone,
-        empresaId.current
-      );
       const fim = horario;
 
       const response = await agendar(
         state.barbeiro.id,
-        findCliente[0].id! as number,
+        clienteRef.current.id as number,
         state.servico.id as number,
         horario,
         fim,
@@ -173,7 +174,7 @@ export const Step4 = () => {
       Cookies.set("telefoneCliente", state.telefone);
 
       setIsLoading(true);
-      await handleSendEmail();
+      handleSendEmail();
 
       if (response.status === 201) {
         toast.success("Agendamento realizado com sucesso!");
