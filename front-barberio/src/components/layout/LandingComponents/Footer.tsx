@@ -1,5 +1,3 @@
-import logo from "@/assets/logo.png";
-
 const Footer = () => {
   return (
     <footer className="bg-secondary text-secondary-foreground py-12">
