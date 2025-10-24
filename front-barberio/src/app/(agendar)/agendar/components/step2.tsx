@@ -113,7 +113,6 @@ export const Step2 = () => {
                   <Award color="#3f89c5" />
                   <p className="text-sm text-slate-500">
                     <b>Quantidade de cortes:</b> {barber.atendimentos}
-                    {/* todo: fazer um trigger no back para ajustar */}
                   </p>
                 </section>
               </div>
