@@ -317,7 +317,7 @@ const barbeiros = () => {
   useQuery({
     queryKey: ["servicos"],
     queryFn: async () => {
-      const response = await axios.get(`${baseUrl}/public/servico`, {
+      const response = await axios.get(`${baseUrl}/servico`, {
         headers: {
           Authorization: `Bearer ${Cookies.get("authToken")}`,
         },
@@ -338,7 +338,7 @@ const barbeiros = () => {
       const response = await addServicoFuncionario(funcionarioId, servicoId);
 
       if (response.status === 200) {
-        toast.warning("Atualizando serviços...");
+        toast.success("Serviços atualizados");
       } else {
         toast.error("Oops ocorreu um erro!");
         console.log(response);

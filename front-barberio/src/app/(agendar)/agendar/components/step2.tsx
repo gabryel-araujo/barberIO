@@ -2,12 +2,13 @@
 import { useEffect, useRef, useState } from "react";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
-import { Award, Star } from "lucide-react";
+import { Award } from "lucide-react";
 import { inicialData, useForm } from "@/contexts/AgendamentoContextProvider";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { GETFuncionariosPublicos } from "@/lib/api/funcionarios";
 import { getEmpresaIdFromHref } from "@/utils/functions";
+import { Badge } from "@/components/ui/badge";
 
 export const Step2 = () => {
   const { state, dispatch } = useForm();
@@ -97,10 +98,16 @@ export const Step2 = () => {
               <div className="flex flex-col gap-2">
                 <p className="text-lg font-bold flex gap-3">{barber.nome}</p>
                 <section className="flex items-center gap-1">
-                  <Star color="orange" fill="orange" />
+                  {/* todo: colocar avaliações futuramente */}
+                  {/* <Star color="orange" fill="orange" />
                   <p className="text-sm text-slate-500">
                     <b>4.3</b> (123+ Avaliações)
-                  </p>
+                  </p> */}
+                  {barber.servicos!.map((servico) => (
+                    <Badge className="bg-[#3f89c5] rounded-sm">
+                      {servico.nome}
+                    </Badge>
+                  ))}
                 </section>
                 <section className="flex items-center gap-1">
                   <Award color="#3f89c5" />
@@ -123,7 +130,10 @@ export const Step2 = () => {
             </Button>
           )}
 
-          <Button className="cursor-pointer" onClick={proximoPasso}>
+          <Button
+            className="cursor-pointer bg-[#3f89c5]"
+            onClick={proximoPasso}
+          >
             Próximo
           </Button>
         </div>
