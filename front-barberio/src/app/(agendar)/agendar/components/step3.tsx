@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
 import { CalendarX2, Clock } from "lucide-react";
@@ -7,11 +7,19 @@ import { useForm } from "@/contexts/AgendamentoContextProvider";
 import { toast } from "sonner";
 import { GETHorarios } from "@/lib/api/agendamento";
 import { format } from "date-fns";
+import { getEmpresaIdFromHref } from "@/utils/functions";
 
 export const Step3 = () => {
+  const empresaId = useRef<any>(null);
   const { state, dispatch } = useForm();
   const [hora, setHora] = useState<string | undefined>(state.horario);
   const [disponiveis, setDisponiveis] = useState([]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      empresaId.current = getEmpresaIdFromHref();
+    }
+  }, []);
 
   function proximoPasso() {
     if (state.horario === "") {
@@ -27,6 +35,7 @@ export const Step3 = () => {
       });
     }
   }
+
   function anteriorPasso() {
     if (state.currentStep <= 1) return;
     else {
@@ -45,7 +54,8 @@ export const Step3 = () => {
   async function getHorarios() {
     const response = await GETHorarios(
       state.barbeiro.id,
-      format(state.data, "yyyy-MM-dd")
+      format(state.data, "yyyy-MM-dd"),
+      empresaId.current
     );
     setDisponiveis(response.data);
     return response.data;

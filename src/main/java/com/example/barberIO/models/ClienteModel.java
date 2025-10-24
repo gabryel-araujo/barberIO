@@ -17,8 +17,11 @@ public class ClienteModel implements Serializable {
 
     private boolean ativo = true;
 
-    @Column(unique = true)
     private String telefone;
+
+    @ManyToOne
+    @JoinColumn(name = "empresa_id")
+    private EmpresaModel empresa;
 
     @Column(nullable = true)
     private LocalDateTime created_at;
@@ -57,6 +60,14 @@ public class ClienteModel implements Serializable {
 
     public boolean isAtivo() {
         return ativo;
+    }
+
+    public EmpresaModel getEmpresa() {
+        return empresa;
+    }
+
+    public void setEmpresa(EmpresaModel empresa) {
+        this.empresa = empresa;
     }
 
     public void setAtivo(boolean ativo) {

@@ -1,39 +1,24 @@
 "use client";
-import { Button } from "../../components/ui/button";
-import { Calendar } from "lucide-react";
-import Link from "next/link";
-import { PrefetchAgendar } from "../../../components/PrefetchAgendar";
-import { BotaoMeusAgendamentos } from "../../../components/BotaoMeusAgendamentos";
-import { MensagemPadrao } from "../../../components/MensagemPadrao";
-import { AgendamentoClientes } from "../../../components/AgendamentoClientes";
-import Cookies from "js-cookie";
 
-const Home = () => {
-  const gestorLogado = Cookies.get("authToken");
+import Benefits from "@/components/layout/LandingComponents/Benefits";
+import CTA from "@/components/layout/LandingComponents/CTA";
+import Features from "@/components/layout/LandingComponents/Features";
+import Hero from "@/components/layout/LandingComponents/Hero";
+import Navbar from "@/components/layout/LandingComponents/NavBar";
+import Testimonials from "@/components/layout/LandingComponents/Testimonials";
+import { Footer } from "react-day-picker";
+
+const Main = () => {
   return (
-    <div className="w-full flex min-h-screen flex-col items-center justify-center space-y-7 px-7 pt-7 md:pt-0 bg-[#e6f0ff]">
-      <PrefetchAgendar />
-      <p className="text-5xl font-bold text-center ">
-        Bem-Vindo à <span className="text-primary">Barber</span>iO
-      </p>
-      <p className="text-slate-500 text-xl text-center">
-        Agende seu horário de forma rápida e fácil com os melhores barbeiros da
-        cidade.
-      </p>
-      <div className="flex flex-col md:flex-row gap-5 ">
-        <div className="flex">
-          <Button asChild className="rounded-sm bg-primary h-12 w-60">
-            <Link href="/agendar">
-              <Calendar /> <p className="font-bold text-lg">Agendar Horário</p>
-            </Link>
-          </Button>
-        </div>
-        <div className="flex">{!gestorLogado && <BotaoMeusAgendamentos />}</div>
-      </div>
-      <MensagemPadrao />
-      <AgendamentoClientes />
-      {/* <ImagemBarbearia /> */}
+    <div className="min-h-screen bg-[#e6f0ff] w-full">
+      <Navbar />
+      <Hero />
+      <Benefits />
+      <Features />
+      <Testimonials />
+      <CTA />
+      <Footer />
     </div>
   );
 };
-export default Home;
+export default Main;

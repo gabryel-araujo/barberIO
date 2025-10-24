@@ -86,7 +86,7 @@ const clientes = () => {
   const { data: clienteListado = [] } = useQuery({
     queryKey: ["clientes", exibirInativos],
     queryFn: async () => {
-      const response = await axios.get(`${baseUrl}/public/clientes`, {
+      const response = await axios.get(`${baseUrl}/clientes`, {
         headers: {
           Authorization: `Bearer ${Cookies.get("authToken")}`,
         },

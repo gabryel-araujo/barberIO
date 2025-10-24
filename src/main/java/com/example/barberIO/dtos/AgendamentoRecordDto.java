@@ -12,4 +12,6 @@ public record AgendamentoRecordDto (
 		@NotNull(message = "Deve ser atribuído um profissional para o agendamento") FuncionarioModel barbeiro, 
 		@NotNull(message = "Deve ser atribuído um serviço para o agendamento") ServiceModel servico, 
 		@NotNull(message = "Deve ser atribuído um cliente para o agendamento") ClienteModel cliente, 
-		@NotNull(message = "O tempo de finalização do atendimento deve ser estipulado") LocalDateTime fim){}
+		@NotNull(message = "O tempo de finalização do atendimento deve ser estipulado") LocalDateTime fim,
+		Long empresa_id
+		){}

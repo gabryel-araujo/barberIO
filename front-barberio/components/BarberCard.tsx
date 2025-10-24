@@ -11,7 +11,6 @@ import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import Image from "next/image";
 
 type BarbeiroFormData = {
   nome: string;
@@ -64,7 +63,7 @@ export function BarberCard({
       !barbeiro.disponivel,
       barbeiro.ativo!,
       barbeiro?.avatar!,
-      barbeiro.tipo
+      barbeiro.tipo!
     );
 
     dispatch({
@@ -89,10 +88,9 @@ export function BarberCard({
       <div className="rounded-t-md p-3 bg-slate-800 flex justify-start items-center gap-3">
         <div className="relative border rounded-full h-14 min-w-14 bg-slate-700 items-center justify-center flex text-white">
           {barbeiro.avatar !== null ? (
-            <Image
+            <img
               src={`${barbeiro?.avatar || "/imagens/default.png"}`}
               sizes="56px"
-              fill
               alt="avatar"
               //onError={() => setErroImagem(true)}
               className="absolute rounded-full inset-0 h-full w-full object-cover object-center"

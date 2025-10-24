@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
 import { Servico } from "@/types/servico";
@@ -19,10 +19,13 @@ import { agendar } from "@/lib/api/agendamento";
 import { findByTelefone, POSTCliente } from "@/lib/api/cliente";
 import { LoadingComponent } from "../../../../../components/LoadingComponent";
 import { format } from "date-fns";
-import { nomeCapitalizado } from "@/utils/functions";
+import { getEmpresaIdFromHref, nomeCapitalizado } from "@/utils/functions";
 import Cookies from "js-cookie";
+import { Cliente } from "@/types/cliente";
 
 export const Step4 = () => {
+  const empresaId = useRef<any>(null);
+  const clienteRef = useRef<any>(null);
   const { state, dispatch } = useForm();
   const [servicos, setServicos] = useState<Servico[]>([]);
   const [servicoSelecionado, setServicoSelecionado] = useState<Servico>(
@@ -34,6 +37,12 @@ export const Step4 = () => {
 
   const { push } = useRouter();
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      empresaId.current = getEmpresaIdFromHref();
+    }
+  }, []);
+
   const {
     register,
     formState: { errors },
@@ -43,7 +52,9 @@ export const Step4 = () => {
   useQuery({
     queryKey: ["servicos"],
     queryFn: async () => {
-      const response = await axios.get(`${baseUrl}/public/servico`);
+      const response = await axios.get(
+        `${baseUrl}/public/servico/${empresaId.current}`
+      );
       setServicos(response.data);
       return response.data;
     },
@@ -117,16 +128,20 @@ export const Step4 = () => {
       payload: data.phone,
     });
 
-    console.log(data.phone);
+    const response: Cliente[] = await findByTelefone(
+      data.phone,
+      empresaId.current
+    );
 
-    const response = await findByTelefone(data.phone);
     if (response.length == 0) {
-      console.log("entrou aqui");
-      const response = await POSTCliente(
+      const novo = await POSTCliente(
         nomeCapitalizado(data.name),
-        data.phone
+        data.phone,
+        Number(empresaId.current)
       );
-      console.log(response);
+      clienteRef.current = novo;
+    } else {
+      clienteRef.current = response[0];
     }
 
     setOpenModal(!openModal);
@@ -151,21 +166,21 @@ export const Step4 = () => {
     try {
       const data = format(state.data, "yyyy-MM-dd'T'");
       const horario = data + state.horario;
-      const findCliente = await findByTelefone(state.telefone);
       const fim = horario;
 
       const response = await agendar(
         state.barbeiro.id,
-        findCliente[0].id! as number,
+        clienteRef.current.id as number,
         state.servico.id as number,
         horario,
-        fim
+        fim,
+        Number(empresaId.current)
       );
 
       Cookies.set("telefoneCliente", state.telefone);
 
       setIsLoading(true);
-      await handleSendEmail();
+      handleSendEmail();
 
       if (response.status === 201) {
         toast.success("Agendamento realizado com sucesso!");
@@ -183,7 +198,7 @@ export const Step4 = () => {
         // });
 
         setIsLoading(true);
-        push("/");
+        push(`/home?ref=${empresaId.current}`);
       }
       setOpenModalRevisao(!openModalRevisao);
     } catch (error) {

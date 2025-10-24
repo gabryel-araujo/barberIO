@@ -38,6 +38,11 @@ public class FeriadoModel implements Serializable{
 	@JsonIgnore
 	private ConfigEmpresaModel config_empresa;
 
+	@ManyToOne
+	@JoinColumn(name = "empresa_id")
+	@JsonIgnore
+	private EmpresaModel empresa;
+
 	public Long getId() {
 		return id;
 	}
@@ -77,5 +82,12 @@ public class FeriadoModel implements Serializable{
 	public void setConfig_empresa(ConfigEmpresaModel config_empresa) {
 		this.config_empresa = config_empresa;
 	}
-	
+
+	public EmpresaModel getEmpresa() {
+		return empresa;
+	}
+
+	public void setEmpresa(EmpresaModel empresa) {
+		this.empresa = empresa;
+	}
 }

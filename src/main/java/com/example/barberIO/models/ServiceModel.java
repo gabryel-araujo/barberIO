@@ -1,5 +1,7 @@
 package com.example.barberIO.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -28,10 +30,16 @@ public class ServiceModel implements Serializable {
     private boolean ativo;
 
     @ManyToMany(mappedBy = "servicos")
+    @JsonIgnore
     private List<FuncionarioModel> barbeiros;
 
     @Column(nullable = true)
     private LocalDateTime created_at;
+
+    @ManyToOne
+    @JoinColumn(name = "empresa_id")
+    @JsonIgnore
+    private EmpresaModel empresa;
 
     public LocalDateTime getCreated_at() {
         return created_at;
@@ -87,5 +95,29 @@ public class ServiceModel implements Serializable {
 
     public void setDuracao(int duracao) {
         this.duracao = duracao;
+    }
+
+    public void setPreco(Float preco) {
+        this.preco = preco;
+    }
+
+    public void setDuracao(Integer duracao) {
+        this.duracao = duracao;
+    }
+
+    public List<FuncionarioModel> getBarbeiros() {
+        return barbeiros;
+    }
+
+    public void setBarbeiros(List<FuncionarioModel> barbeiros) {
+        this.barbeiros = barbeiros;
+    }
+
+    public EmpresaModel getEmpresa() {
+        return empresa;
+    }
+
+    public void setEmpresa(EmpresaModel empresa) {
+        this.empresa = empresa;
     }
 }
