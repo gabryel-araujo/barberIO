@@ -112,8 +112,7 @@ export const Step2 = () => {
                 <section className="flex items-center gap-1">
                   <Award color="#3f89c5" />
                   <p className="text-sm text-slate-500">
-                    <b>Quantidade de cortes:</b>
-                    {barber.atendimentos}
+                    <b>Quantidade de cortes:</b> {barber.atendimentos}
                     {/* todo: fazer um trigger no back para ajustar */}
                   </p>
                 </section>
