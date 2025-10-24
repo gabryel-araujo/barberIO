@@ -9,32 +9,16 @@ import { useQuery } from "@tanstack/react-query";
 import { GETFuncionariosPublicos } from "@/lib/api/funcionarios";
 import { getEmpresaIdFromHref } from "@/utils/functions";
 import { Badge } from "@/components/ui/badge";
-import axios from "axios";
-import { baseUrl } from "@/lib/baseUrl";
-import { Agendamento } from "@/types/agendamento";
 
 export const Step2 = () => {
   const { state, dispatch } = useForm();
   const [barbeiro, setbarbeiro] = useState(state.barbeiro);
-  const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
   const empresaId = useRef<any>(null);
 
   const { data: barbeiros = [] } = useQuery({
     queryKey: ["barbeirosDisponivel"],
     queryFn: () => GETFuncionariosPublicos(empresaId.current),
     //staleTime: 3000,
-  });
-
-  useQuery({
-    queryKey: ["agendamentos"],
-    queryFn: async () => {
-      const response = await axios.get(
-        `${baseUrl}/agendamentos/${empresaId.current}`
-      );
-      setAgendamentos(response.data);
-      console.log(response.data);
-      return response.data;
-    },
   });
 
   useEffect(() => {

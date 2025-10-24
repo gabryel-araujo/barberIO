@@ -12,9 +12,7 @@ import { DadosCliente, FormData, schema } from "./dadosCliente";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm as useFormZod } from "react-hook-form";
 import { useForm } from "@/contexts/AgendamentoContextProvider";
-import { useQuery } from "@tanstack/react-query";
-import { baseUrl } from "@/lib/baseUrl";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { agendar } from "@/lib/api/agendamento";
 import { findByTelefone, POSTCliente } from "@/lib/api/cliente";
 import { LoadingComponent } from "../../../../../components/LoadingComponent";
@@ -27,7 +25,6 @@ export const Step4 = () => {
   const empresaId = useRef<any>(null);
   const clienteRef = useRef<any>(null);
   const { state, dispatch } = useForm();
-  const [servicos, setServicos] = useState<Servico[]>([]);
 
   const [servicoSelecionado, setServicoSelecionado] = useState<Servico>(
     state.servico
@@ -49,17 +46,6 @@ export const Step4 = () => {
     formState: { errors },
     handleSubmit,
   } = useFormZod<FormData>({ resolver: zodResolver(schema) });
-
-  useQuery({
-    queryKey: ["servicos"],
-    queryFn: async () => {
-      const response = await axios.get(
-        `${baseUrl}/agendamentos/${empresaId.current}`
-      );
-      setServicos(response.data);
-      return response.data;
-    },
-  });
 
   const urlApi = "/api/send-email";
 
