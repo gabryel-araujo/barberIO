@@ -28,6 +28,7 @@ export const Step4 = () => {
   const clienteRef = useRef<any>(null);
   const { state, dispatch } = useForm();
   const [servicos, setServicos] = useState<Servico[]>([]);
+
   const [servicoSelecionado, setServicoSelecionado] = useState<Servico>(
     state.servico
   );
@@ -53,7 +54,7 @@ export const Step4 = () => {
     queryKey: ["servicos"],
     queryFn: async () => {
       const response = await axios.get(
-        `${baseUrl}/public/servico/${empresaId.current}`
+        `${baseUrl}/agendamentos/${empresaId.current}`
       );
       setServicos(response.data);
       return response.data;
@@ -226,7 +227,7 @@ export const Step4 = () => {
       </div>
       <div className="flex flex-col gap-5 items-center justify-center">
         <div className="grid grid-cols-1 gap-3 pt-5 w-full">
-          {servicos.map((servico) => (
+          {state.barbeiro.servicos!.map((servico) => (
             <Button
               key={servico.id}
               variant="ghost"
