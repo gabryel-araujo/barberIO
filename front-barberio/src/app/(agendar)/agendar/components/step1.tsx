@@ -176,7 +176,7 @@ export const Step1 = () => {
           </Button>
 
           <Button
-            className="cursor-pointer"
+            className="cursor-pointer bg-[#3f89c5]"
             onClick={() => proximoPasso(state.data)}
           >
             Próximo

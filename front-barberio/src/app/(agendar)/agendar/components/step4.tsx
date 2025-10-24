@@ -276,7 +276,10 @@ export const Step4 = () => {
             </Button>
           )}
 
-          <Button className="cursor-pointer" onClick={proximoPasso}>
+          <Button
+            className="cursor-pointer bg-[#3f89c5]"
+            onClick={proximoPasso}
+          >
             Próximo
           </Button>
         </div>
