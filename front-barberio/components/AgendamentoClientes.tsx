@@ -86,7 +86,6 @@ export const AgendamentoClientes = () => {
                         <TableHead>Barbeiro</TableHead>
                         <TableHead>Serviço</TableHead>
                         <TableHead>Valor</TableHead>
-                        <TableHead>Status</TableHead>
                         <TableHead>Ações</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -105,7 +104,6 @@ export const AgendamentoClientes = () => {
                             <TableCell>
                               R${agendamento.preco.toFixed(2)}
                             </TableCell>
-                            <TableCell>Implementando</TableCell>
                             <TableCell className="flex gap-2 items-center justify-center">
                               {/* <Button
                                 onClick={reagendar}
