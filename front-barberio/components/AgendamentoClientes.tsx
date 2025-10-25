@@ -45,14 +45,6 @@ export const AgendamentoClientes = () => {
       (a, b) => new Date(a.horario).getTime() - new Date(b.horario).getTime()
     );
 
-  function reagendar() {
-    toast.warning("Irá reagendar em breve");
-  }
-
-  function cancelar() {
-    toast.warning("Irá cancelar em breve");
-  }
-
   async function handleCancel() {
     const response = await DELETEAgendamento(idSelecionadoRef.current);
     console.log(response);
