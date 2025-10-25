@@ -29,7 +29,7 @@ export function Modal({
 }: ModalProps) {
   return (
     <Dialog open={open}>
-      <DialogContent>
+      <DialogContent className="max-h-[80vh] sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>

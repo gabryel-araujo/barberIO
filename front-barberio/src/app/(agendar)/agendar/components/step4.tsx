@@ -21,6 +21,7 @@ import { getEmpresaIdFromHref, nomeCapitalizado } from "@/utils/functions";
 import Cookies from "js-cookie";
 import { Cliente } from "@/types/cliente";
 import { CardServico } from "./cardServicos";
+import { RevisaoAgendamento } from "./revisaoAgendamento";
 
 export const Step4 = () => {
   const empresaId = useRef<any>(null);
@@ -303,26 +304,18 @@ export const Step4 = () => {
             </>
           }
         >
-          <Card className="my-5">
-            <CardContent>
-              <div className="grid grid-cols-2 gap-3 p-4">
-                {review.map((item, index) => {
-                  return (
-                    <div className="flex gap-3" key={index}>
-                      {item!.icon}
-                      {String(item?.value)}
-                    </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-          <div className="flex flex-row items-center gap-1">
-            <p className="font-extrabold ">Valor:</p>
-            <p className="text-sm">
-              R$ {Number(state.servico.preco).toFixed(2)}
-            </p>
-          </div>
+          <RevisaoAgendamento
+            nomeBarbeiro={state.barbeiro.nome}
+            qtdCortes={state.barbeiro.atendimentos!}
+            fotoBarbeiro={state.barbeiro.avatar!}
+            nomeServico={state.servico.nome}
+            duracaoServico={state.servico.duracao}
+            valorServico={state.servico.preco}
+            dataAgendamento={state.data}
+            horarioAgendamento={state.horario}
+            nomeCliente={state.nome}
+            telefoneCliente={state.telefone}
+          />
         </Modal>
       </div>
     </div>
