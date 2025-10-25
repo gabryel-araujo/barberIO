@@ -6,7 +6,7 @@ export const ResumoAgendamento = () => {
   const { state } = useForm();
 
   return (
-    <div className="border rounded-lg md:mx-50 p-5 shadow bg-white flex flex-col justify-center items-center">
+    <div className="border rounded-lg md:mx-36 lg:mx-50 p-5 shadow bg-white flex flex-col justify-center items-center">
       <p className="text-sm font-bold">Resumo Agendamento</p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-3">
         {state.data instanceof Date && !isNaN(state.data.getTime()) ? (
