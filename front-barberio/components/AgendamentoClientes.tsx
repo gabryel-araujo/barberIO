@@ -58,7 +58,7 @@ export const AgendamentoClientes = () => {
   }
 
   return (
-    <div className="w-full flex flex-col px-4 py-4 md:px-10 md:py-5 bg-[#e6f0ff]">
+    <div className="w-full flex flex-col bg-[#e6f0ff]">
       {clienteLogado && (
         <Card className={`p-4 md:p-6`}>
           <div className="mb-4">

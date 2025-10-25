@@ -5,6 +5,7 @@ import { tokenType } from "@/types/tokenType";
 
 export function formatarTelefone(telefone: string): string {
   // Remove tudo que não é número
+  if (!telefone) return "";
   const numeros = telefone.replace(/\D/g, "");
 
   // Aplica o padrão (99) 99999-9999
