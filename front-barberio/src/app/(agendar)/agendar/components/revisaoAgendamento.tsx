@@ -1,9 +1,7 @@
-import { Card } from "@/components/ui/card";
 import {
   dataFormatada,
   formatarTelefone,
   formatCurrency,
-  normalizarData,
 } from "@/utils/functions";
 import { Calendar, Clock, Scissors, Sparkles, User } from "lucide-react";
 
@@ -33,8 +31,8 @@ export const RevisaoAgendamento = ({
   telefoneCliente,
 }: RevisaoAgendamentoProps) => {
   return (
-    <Card className="max-h-[80vh] sm:max-w-2xl p-6">
-      <div className="w-full flex gap-3">
+    <div className="h-full sm:max-w-2xl space-y-3 md:space-y-3 overflow-auto">
+      <div className="w-full md:flex space-y-3 md:space-y-0 md:gap-3">
         <div className="space-y-3 flex-1 bg-primary/5 p-4 border border-primary/30 rounded-md">
           <p className="flex gap-2 text-sm font-semibold text-primary">
             <User size={20} /> BARBEIRO
@@ -74,7 +72,7 @@ export const RevisaoAgendamento = ({
         <p className="flex gap-2 text-sm font-semibold text-primary">
           <Calendar size={20} /> DATA E HORÁRIO
         </p>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between px-2">
           <div>
             <p className="text-sm text-muted-foreground">Data</p>
             <p className="text-lg font-bold">
@@ -83,7 +81,9 @@ export const RevisaoAgendamento = ({
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Horário</p>
-            <p className="text-lg font-bold">{horarioAgendamento}</p>
+            <p className="text-lg font-bold">
+              {horarioAgendamento.split(":").slice(0, 2).join(":")}
+            </p>
           </div>
         </div>
       </div>
@@ -113,6 +113,6 @@ export const RevisaoAgendamento = ({
           <Sparkles size={50} />
         </div>
       </div>
-    </Card>
+    </div>
   );
 };
