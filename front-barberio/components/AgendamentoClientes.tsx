@@ -182,16 +182,19 @@ export const AgendamentoClientes = () => {
                               R${agendamento.preco.toFixed(2)}
                             </span>
                             <div className="flex gap-2">
-                              <Button
+                              {/* <Button
                                 onClick={reagendar}
                                 variant={"ghost"}
                                 size="sm"
                                 className="text-xs"
                               >
                                 Reagendar
-                              </Button>
+                              </Button> */}
                               <Button
-                                onClick={cancelar}
+                                onClick={() => {
+                                  setOpen(!open);
+                                  idSelecionadoRef.current = agendamento.id;
+                                }}
                                 variant={"destructive"}
                                 size="sm"
                                 className="text-xs"
