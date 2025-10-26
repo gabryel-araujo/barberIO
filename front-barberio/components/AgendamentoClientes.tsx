@@ -45,14 +45,6 @@ export const AgendamentoClientes = () => {
       (a, b) => new Date(a.horario).getTime() - new Date(b.horario).getTime()
     );
 
-  function reagendar() {
-    toast.warning("Irá reagendar em breve");
-  }
-
-  function cancelar() {
-    toast.warning("Irá cancelar em breve");
-  }
-
   async function handleCancel() {
     const response = await DELETEAgendamento(idSelecionadoRef.current);
     console.log(response);
@@ -66,7 +58,7 @@ export const AgendamentoClientes = () => {
   }
 
   return (
-    <div className="w-full flex flex-col px-4 py-4 md:px-10 md:py-5 bg-[#e6f0ff]">
+    <div className="w-full flex flex-col bg-[#e6f0ff]">
       {clienteLogado && (
         <Card className={`p-4 md:p-6`}>
           <div className="mb-4">
@@ -86,7 +78,6 @@ export const AgendamentoClientes = () => {
                         <TableHead>Barbeiro</TableHead>
                         <TableHead>Serviço</TableHead>
                         <TableHead>Valor</TableHead>
-                        <TableHead>Status</TableHead>
                         <TableHead>Ações</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -105,7 +96,6 @@ export const AgendamentoClientes = () => {
                             <TableCell>
                               R${agendamento.preco.toFixed(2)}
                             </TableCell>
-                            <TableCell>Implementando</TableCell>
                             <TableCell className="flex gap-2 items-center justify-center">
                               {/* <Button
                                 onClick={reagendar}
@@ -158,9 +148,6 @@ export const AgendamentoClientes = () => {
                                 })}
                               </p>
                             </div>
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                              Implementando
-                            </span>
                           </div>
 
                           <div className="grid grid-cols-2 gap-2 text-sm">
@@ -187,16 +174,19 @@ export const AgendamentoClientes = () => {
                               R${agendamento.preco.toFixed(2)}
                             </span>
                             <div className="flex gap-2">
-                              <Button
+                              {/* <Button
                                 onClick={reagendar}
                                 variant={"ghost"}
                                 size="sm"
                                 className="text-xs"
                               >
                                 Reagendar
-                              </Button>
+                              </Button> */}
                               <Button
-                                onClick={cancelar}
+                                onClick={() => {
+                                  setOpen(!open);
+                                  idSelecionadoRef.current = agendamento.id;
+                                }}
                                 variant={"destructive"}
                                 size="sm"
                                 className="text-xs"
