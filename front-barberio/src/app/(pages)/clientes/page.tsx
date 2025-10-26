@@ -86,7 +86,7 @@ const clientes = () => {
   const { data: clienteListado = [] } = useQuery({
     queryKey: ["clientes", exibirInativos],
     queryFn: async () => {
-      const response = await axios.get(`${baseUrl}/public/clientes`, {
+      const response = await axios.get(`${baseUrl}/clientes`, {
         headers: {
           Authorization: `Bearer ${Cookies.get("authToken")}`,
         },
@@ -303,88 +303,132 @@ const clientes = () => {
         />
       </div>
       <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden m-5 p-3">
-        <Table className="">
-          <TableHeader>
-            <TableRow className="overflow-hidden">
-              {/* <TableHead>ID</TableHead> */}
-              <TableHead className="rounded-tl-2xl px-4 py-3 text-start">
-                Nome
-              </TableHead>
-              <TableHead className="px-4 py-3">Telefone</TableHead>
-              <TableHead className="text-center px-4 py-3">
-                Data de Cadastro
-              </TableHead>
-              <TableHead className="text-end px-6 py-3 rounded-tr-2xl">
-                Ações
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filtroCliente
-              .sort((a: { id: number }, b: { id: number }) => b.id - a.id)
-              .slice(inicio, fim)
-              .map((cliente: Cliente) => (
-                <TableRow
-                  key={cliente.id}
-                  className="hover:bg-gray-50 transition-colors duration-300 border-b last:border-none"
-                >
-                  {/* <TableCell>{cliente.id}</TableCell> */}
-                  <TableCell className="flex gap-3 px-4">
-                    <p>{cliente.nome}</p>
-                    <p>
+        {/* --- TABLE (desktop) --- */}
+        <div className="hidden md:block">
+          <Table className="">
+            <TableHeader>
+              <TableRow className="overflow-hidden">
+                <TableHead className="rounded-tl-2xl px-4 py-3 text-start">
+                  Nome
+                </TableHead>
+                <TableHead className="px-4 py-3">Telefone</TableHead>
+                <TableHead className="text-center px-4 py-3">
+                  Data de Cadastro
+                </TableHead>
+                <TableHead className="text-end px-6 py-3 rounded-tr-2xl">
+                  Ações
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filtroCliente
+                .sort((a: { id: number }, b: { id: number }) => b.id - a.id)
+                .slice(inicio, fim)
+                .map((cliente: Cliente) => (
+                  <TableRow
+                    key={cliente.id}
+                    className="hover:bg-gray-50 transition-colors duration-300 border-b last:border-none"
+                  >
+                    <TableCell className="flex gap-3 px-4">
+                      <p>{cliente.nome}</p>
                       {cliente.ativo === false && (
                         <Badge className="bg-red-500">Inativo</Badge>
                       )}
-                    </p>
-                  </TableCell>
-                  <TableCell className="px-4">
-                    <div className="flex w-full justify-center">
-                      <Link
-                        className="flex gap-3 max-w-[150px] "
-                        target="_blank"
-                        href={`${whatsapp}${cliente.telefone}`}
-                      >
-                        <Badge
-                          variant="default"
-                          className="group w-full items-center justify-center flex min-w-[150px] py-1 hover:bg-green-600 font-semibold hover:font-semibold hover:text-white transition-all duration-400"
+                    </TableCell>
+
+                    <TableCell className="px-4">
+                      <div className="flex w-full justify-center">
+                        <Link
+                          className="flex gap-3 max-w-[150px]"
+                          target="_blank"
+                          href={`${whatsapp}${cliente.telefone}`}
                         >
-                          {/* <div className="flex items-center justify-center gap-2"> */}
-                          <p className="flex items-center justify-center">
+                          <Badge
+                            variant="default"
+                            className="group w-full items-center justify-center flex min-w-[150px] py-1 hover:bg-green-600 font-semibold hover:text-white transition-all duration-400"
+                          >
                             {formatarTelefone(cliente.telefone)}
-                          </p>
+                            <div className="group-hover:animate-bounce group-hover:fill-green-200 fill-green-100">
+                              <Whatsapp height={15} width={15} />
+                            </div>
+                          </Badge>
+                        </Link>
+                      </div>
+                    </TableCell>
 
-                          <div className="group-hover:animate-bounce group-hover:fill-green-200 fill-green-100">
-                            <Whatsapp height={15} width={15} />
-                          </div>
-                          {/* </div> */}
-                        </Badge>
-                      </Link>
-                    </div>
-                  </TableCell>
+                    <TableCell className="text-center px-4">
+                      {ConversaoData(cliente.created_at)}
+                    </TableCell>
+                    <TableCell className="flex justify-end px-4">
+                      <Button
+                        onClick={() => {
+                          handleClienteDados(cliente);
+                          form.reset({
+                            nome: cliente.nome,
+                            telefone: cliente.telefone,
+                          });
+                          setOpenModal(true);
+                        }}
+                      >
+                        <Edit />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </div>
 
-                  <TableCell className="text-center px-4">
-                    {ConversaoData(cliente.created_at)}
-                  </TableCell>
-                  <TableCell className="flex justify-end px-4">
-                    <Button
-                      className=""
-                      onClick={() => {
-                        handleClienteDados(cliente);
-                        form.reset({
-                          // id: cliente.id,
-                          nome: cliente.nome,
-                          telefone: cliente.telefone,
-                        });
-                        setOpenModal(true);
-                      }}
-                    >
-                      <Edit />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
-        </Table>
+        {/* --- CARDS (mobile) --- */}
+        <div className="block md:hidden space-y-4">
+          {filtroCliente
+            .sort((a: { id: number }, b: { id: number }) => b.id - a.id)
+            .slice(inicio, fim)
+            .map((cliente: Cliente) => (
+              <div
+                key={cliente.id}
+                className="rounded-2xl border p-4 shadow-sm space-y-2 bg-white"
+              >
+                <div className="flex justify-between items-center">
+                  <h3 className="font-semibold text-lg">{cliente.nome}</h3>
+                  {cliente.ativo === false && (
+                    <Badge className="bg-red-500">Inativo</Badge>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Link
+                    target="_blank"
+                    href={`${whatsapp}${cliente.telefone}`}
+                    className="flex items-center gap-2 text-green-600 font-medium"
+                  >
+                    {formatarTelefone(cliente.telefone)}
+                    <Whatsapp height={15} width={15} />
+                  </Link>
+                </div>
+
+                <p className="text-sm text-gray-500">
+                  Cadastrado em: {ConversaoData(cliente.created_at)}
+                </p>
+
+                <div className="flex justify-end">
+                  <Button
+                    onClick={() => {
+                      handleClienteDados(cliente);
+                      form.reset({
+                        nome: cliente.nome,
+                        telefone: cliente.telefone,
+                      });
+                      setOpenModal(true);
+                    }}
+                  >
+                    <Edit />
+                  </Button>
+                </div>
+              </div>
+            ))}
+        </div>
+
         {/* incio de paginação */}
         <div className="py-3 text-sm flex items-center justify-between px-5 text-slate-600">
           <div className="flex items-center gap-2">

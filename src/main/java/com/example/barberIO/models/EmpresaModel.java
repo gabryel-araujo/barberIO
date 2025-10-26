@@ -1,5 +1,6 @@
 package com.example.barberIO.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 
@@ -9,6 +10,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 @Entity
 @Table(name = "empresa")
+
 public class EmpresaModel implements Serializable {
 
 	@Id
@@ -26,13 +28,13 @@ public class EmpresaModel implements Serializable {
 	
 	private String nacional_id;
 
-	private Long org_id;
+	//private Long org_id;
 
 	@Column(nullable = false)
 	private LocalDateTime created_at;
 	
 	@OneToOne(mappedBy = "empresa", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonManagedReference
+	@JsonIgnore
 	private EnderecoModel endereco;
 
 	@OneToOne(mappedBy = "config_empresa", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -73,7 +75,6 @@ public class EmpresaModel implements Serializable {
 		this.email = email;
 	}
 
-
 	public String getNacional_id() {
 		return nacional_id;
 	}
@@ -82,13 +83,13 @@ public class EmpresaModel implements Serializable {
 		this.nacional_id = nacional_id;
 	}
 
-	public Long getOrg_id() {
-		return org_id;
-	}
+	//public Long getOrg_id() {
+		//return org_id;
+	//}
 
-	public void setOrg_id(Long org_id) {
-		this.org_id = org_id;
-	}
+	//public void setOrg_id(Long org_id) {
+		//this.org_id = org_id;
+	//}
 
 	public LocalDateTime getCreated_at() {
 		return created_at;

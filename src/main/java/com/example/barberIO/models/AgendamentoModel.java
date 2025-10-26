@@ -1,5 +1,7 @@
 package com.example.barberIO.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -28,6 +30,11 @@ public class AgendamentoModel implements Serializable {
     @ManyToOne
     @JoinColumn(name = "cliente_id")
     private ClienteModel cliente;
+
+    @ManyToOne
+    @JoinColumn(name = "empresa_id")
+    @JsonIgnore
+    private EmpresaModel empresa;
 
     public LocalDateTime getFim() {
         return fim;
@@ -75,5 +82,13 @@ public class AgendamentoModel implements Serializable {
 
     public void setServico(ServiceModel servico) {
         this.servico = servico;
+    }
+
+    public EmpresaModel getEmpresa() {
+        return empresa;
+    }
+
+    public void setEmpresa(EmpresaModel empresa) {
+        this.empresa = empresa;
     }
 }

@@ -27,13 +27,13 @@ public class AgendamentoController {
     private AgendamentoService agendamentoService;
 
     @GetMapping("/admin/agendamentos")
-    public ResponseEntity<List<AgendamentoModel>> listarAgendamentos() {
-        return ResponseEntity.status(HttpStatus.OK).body(agendamentoRepository.findAll());
+    public ResponseEntity<List<AgendamentoModel>> listarAgendamentos(@PathVariable Long empresa_id) {
+        return ResponseEntity.status(HttpStatus.OK).body(agendamentoRepository.findAllByEmpresaId(empresa_id));
     }
     
-    @GetMapping("/agendamentos")
-    public ResponseEntity<List<ResponseAgendamentoRecordDto>> listarAgendamentosMin() {
-        return agendamentoService.listarAgendamentosMinificado();
+    @GetMapping("/agendamentos/{empresa_id}")
+    public ResponseEntity<List<ResponseAgendamentoRecordDto>> listarAgendamentosMin(@PathVariable Long empresa_id) {
+        return agendamentoService.listarAgendamentosMinificado(empresa_id);
     }
 
     @GetMapping("/admin/agendamentos/{id}")
@@ -47,9 +47,9 @@ public class AgendamentoController {
         return ResponseEntity.status(HttpStatus.OK).body(agendamentoO.get());
     }
 
-    @PostMapping("/public/agendamentos")
-    public ResponseEntity<Object> adicionarAgendamento(@RequestBody @Valid AgendamentoRecordDto agendamentoRecordDto) {
-        return agendamentoService.agendarHorario(agendamentoRecordDto);
+    @PostMapping("/public/agendamentos/{empresa_id}")
+    public ResponseEntity<Object> adicionarAgendamento(@RequestBody @Valid AgendamentoRecordDto agendamentoRecordDto, @PathVariable Long empresa_id) {
+        return agendamentoService.agendarHorario(agendamentoRecordDto, empresa_id);
     }
 
     @PutMapping("/admin/agendamentos/{id}")
@@ -65,6 +65,11 @@ public class AgendamentoController {
 
     @DeleteMapping("/admin/agendamentos/{id}")
     public ResponseEntity<Object> removerAgendamento(@PathVariable(name = "id") Long id) {
+        return agendamentoService.cancelarHorario(id);
+    }
+
+    @DeleteMapping("/public/agendamentos/{id}")
+    public ResponseEntity<Object> removerAgendamentoPublic(@PathVariable(name = "id") Long id) {
         return agendamentoService.cancelarHorario(id);
     }
 

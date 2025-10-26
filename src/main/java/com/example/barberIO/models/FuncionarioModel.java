@@ -1,5 +1,7 @@
 package com.example.barberIO.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 
@@ -39,7 +41,9 @@ public class FuncionarioModel implements Serializable {
     private float experiencia;
 
     private int atendimentos = 0;
-    
+
+    private String avatar;
+
     @Enumerated(EnumType.STRING)
     private TipoFuncionario tipo;
 
@@ -53,6 +57,11 @@ public class FuncionarioModel implements Serializable {
 
     @Column(nullable = true)
     private LocalDateTime created_at;
+
+    @ManyToOne
+    @JoinColumn(name = "empresa_id")
+    @JsonIgnore
+    private EmpresaModel empresa;
 
     public LocalDateTime getCreated_at() {
         return created_at;
@@ -154,12 +163,27 @@ public class FuncionarioModel implements Serializable {
         this.atendimentos = atendimentos;
     }
 
-	public TipoFuncionario getTipo() {
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public TipoFuncionario getTipo() {
 		return tipo;
 	}
 
 	public void setTipo(TipoFuncionario tipo) {
 		this.tipo = tipo;
 	}
-    
+
+    public EmpresaModel getEmpresa() {
+        return empresa;
+    }
+
+    public void setEmpresa(EmpresaModel empresa) {
+        this.empresa = empresa;
+    }
 }

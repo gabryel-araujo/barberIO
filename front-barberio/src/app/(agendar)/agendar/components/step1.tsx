@@ -1,6 +1,5 @@
 "use client";
-import { Calendar } from "@/components/ui/calendar";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ptBR } from "date-fns/locale";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
@@ -14,17 +13,26 @@ import { empresaSchema } from "@/app/(pages)/configuracao/schemas/schemas";
 import { ErrorResponse } from "@/app/(pages)/configuracao/page";
 import { z } from "zod";
 import { toast } from "sonner";
-import Cookies from "js-cookie";
+import { Calendar } from "@/components/ui/calendar";
+import { getEmpresaIdFromHref } from "@/utils/functions";
 
 export const Step1 = () => {
+  const empresaIdRef = useRef<any>(null);
   const [date, setDate] = useState<Date | undefined>(new Date());
+  const [isMounted, setIsMounted] = useState(false);
   const { state, dispatch } = useForm();
   const [dadosEmpresa, setDadosEmpresa] =
     useState<z.infer<typeof empresaSchema>>();
   const { push } = useRouter();
   const irHome = () => {
-    push("/");
+    push(`/home?ref=${empresaIdRef.current}`);
   };
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      empresaIdRef.current = getEmpresaIdFromHref();
+    }
+  }, []);
 
   const { data, error } = useQuery<
     z.infer<typeof empresaSchema>,
@@ -32,11 +40,9 @@ export const Step1 = () => {
   >({
     queryKey: ["empresas"],
     queryFn: async () => {
-      const response = await axios.get(`${baseUrl}/public/empresas/1`, {
-        headers: {
-          Authorization: `Bearer ${Cookies.get("authToken")}`,
-        },
-      });
+      const response = await axios.get(
+        `${baseUrl}/empresas/${empresaIdRef.current}`
+      );
       return response.data;
     },
     staleTime: 5 * (60 * 1000),
@@ -53,23 +59,22 @@ export const Step1 = () => {
     toast.error(error.response!.data!.message || "ops ocorreu um erro!");
   }
 
-  // type Feriado = {
-  //   id: number;
-  //   nome: string;
-  //   data: Date;
-  //   recorrente: boolean;
-  // };
-
   const diasFeriados = dadosEmpresa?.config_empresa?.feriados!;
   const arrayFeriados = (diasFeriados ?? [])
     .map((f) => f.data)
     .filter((d): d is string => Boolean(d));
   const arrayFeriadoData = arrayFeriados.map((data) => {
     const [ano, mes, dia] = data.split("-").map(Number);
-    const localDate = new Date(ano, mes - 1, dia);
+    const localDate = new Date(ano, mes - 1, dia + 1);
     return localDate.toISOString().slice(0, 10);
   });
   console.log(arrayFeriados);
+
+  const diasFechados =
+    dadosEmpresa?.config_empresa?.horarios
+      ?.filter((dia) => dia.aberto === false)
+      .map((dia) => dia.codigo_dia) || [];
+  console.log("dias fechados: ", diasFechados);
 
   const isDataInvalida = (date: Date) => {
     const hoje = new Date();
@@ -79,18 +84,20 @@ export const Step1 = () => {
     dateSemHoras.setHours(0, 0, 0, 0);
 
     const isBeforeToday = dateSemHoras < hoje;
-    const isSunday = dateSemHoras.getDay() === 0;
+    const codigoDia = dateSemHoras.getDay();
 
-    const isFeriado = arrayFeriadoData.some((feriadoStr) => {
-      const feriado = new Date(feriadoStr); // conversão aqui
-      return (
-        feriado.getFullYear() === date.getFullYear() &&
-        feriado.getMonth() === date.getMonth() &&
-        feriado.getDate() === date.getDate()
-      );
-    });
+    const isCloset = diasFechados.includes(codigoDia);
+    const isFeriado =
+      arrayFeriadoData.some((feriadoStr) => {
+        const feriado = new Date(feriadoStr); // conversão aqui
+        return (
+          feriado.getFullYear() === date.getFullYear() &&
+          feriado.getMonth() === date.getMonth() &&
+          feriado.getDate() === date.getDate()
+        );
+      }) || false;
 
-    return isBeforeToday || isSunday || isFeriado;
+    return isBeforeToday || isFeriado || isCloset;
   };
 
   const proximoPasso = useCallback((data: Date) => {
@@ -115,6 +122,12 @@ export const Step1 = () => {
       });
     }
   }, []);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) return null;
 
   return (
     <div className="border rounded-lg md:mx-50 p-5 shadow bg-white">
@@ -141,14 +154,6 @@ export const Step1 = () => {
           }}
           disabled={(date) => {
             return isDataInvalida(date);
-
-            // const hoje = new Date();
-            // hoje.setHours(0, 0, 0, 0);
-            // const isBeforeToday = date < hoje;
-            // const isSunday = date.getDay() === 0;
-            // const dataStr = date.toISOString().slice(0, 10);
-            // const isFeriados = arrayFeriadoData.includes(dataStr);
-            // return isBeforeToday || isSunday || isFeriados;
           }}
           className="w-[250px] rounded-md border shadow"
         />
@@ -171,7 +176,7 @@ export const Step1 = () => {
           </Button>
 
           <Button
-            className="cursor-pointer"
+            className="cursor-pointer bg-[#3f89c5]"
             onClick={() => proximoPasso(state.data)}
           >
             Próximo

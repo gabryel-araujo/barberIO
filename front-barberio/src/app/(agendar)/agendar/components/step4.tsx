@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
 import { Servico } from "@/types/servico";
@@ -12,18 +12,22 @@ import { DadosCliente, FormData, schema } from "./dadosCliente";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm as useFormZod } from "react-hook-form";
 import { useForm } from "@/contexts/AgendamentoContextProvider";
-import { useQuery } from "@tanstack/react-query";
-import { baseUrl } from "@/lib/baseUrl";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { agendar } from "@/lib/api/agendamento";
 import { findByTelefone, POSTCliente } from "@/lib/api/cliente";
 import { LoadingComponent } from "../../../../../components/LoadingComponent";
 import { format } from "date-fns";
-import { nomeCapitalizado } from "@/utils/functions";
+import { getEmpresaIdFromHref, nomeCapitalizado } from "@/utils/functions";
+import Cookies from "js-cookie";
+import { Cliente } from "@/types/cliente";
+import { CardServico } from "./cardServicos";
+import { RevisaoAgendamento } from "./revisaoAgendamento";
 
 export const Step4 = () => {
+  const empresaId = useRef<any>(null);
+  const clienteRef = useRef<any>(null);
   const { state, dispatch } = useForm();
-  const [servicos, setServicos] = useState<Servico[]>([]);
+
   const [servicoSelecionado, setServicoSelecionado] = useState<Servico>(
     state.servico
   );
@@ -33,20 +37,17 @@ export const Step4 = () => {
 
   const { push } = useRouter();
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      empresaId.current = getEmpresaIdFromHref();
+    }
+  }, []);
+
   const {
     register,
     formState: { errors },
     handleSubmit,
   } = useFormZod<FormData>({ resolver: zodResolver(schema) });
-
-  useQuery({
-    queryKey: ["servicos"],
-    queryFn: async () => {
-      const response = await axios.get(`${baseUrl}/public/servico`);
-      setServicos(response.data);
-      return response.data;
-    },
-  });
 
   const urlApi = "/api/send-email";
 
@@ -116,15 +117,24 @@ export const Step4 = () => {
       payload: data.phone,
     });
 
-    console.log(data.phone);
+    const response: Cliente[] = await findByTelefone(
+      data.phone,
+      empresaId.current
+    );
 
-    const response = await findByTelefone(data.phone);
     if (response.length == 0) {
+<<<<<<< HEAD
       const response = await POSTCliente(
+=======
+      const novo = await POSTCliente(
+>>>>>>> 3cd3750bcc961ab132d169e1a1f7cff37c54a0c8
         nomeCapitalizado(data.name),
-        data.phone
+        data.phone,
+        Number(empresaId.current)
       );
-      console.log(response);
+      clienteRef.current = novo;
+    } else {
+      clienteRef.current = response[0];
     }
 
     setOpenModal(!openModal);
@@ -149,19 +159,21 @@ export const Step4 = () => {
     try {
       const data = format(state.data, "yyyy-MM-dd'T'");
       const horario = data + state.horario;
-      const findCliente = await findByTelefone(state.telefone);
       const fim = horario;
 
       const response = await agendar(
         state.barbeiro.id,
-        findCliente[0].id! as number,
+        clienteRef.current.id as number,
         state.servico.id as number,
         horario,
-        fim
+        fim,
+        Number(empresaId.current)
       );
 
+      Cookies.set("telefoneCliente", state.telefone);
+
       setIsLoading(true);
-      await handleSendEmail();
+      handleSendEmail();
 
       if (response.status === 201) {
         toast.success("Agendamento realizado com sucesso!");
@@ -179,9 +191,13 @@ export const Step4 = () => {
         // });
 
         setIsLoading(true);
+<<<<<<< HEAD
         push("/");
         // setTimeout(() => {
         // }, 2000);
+=======
+        push(`/home?ref=${empresaId.current}`);
+>>>>>>> 3cd3750bcc961ab132d169e1a1f7cff37c54a0c8
       }
       setOpenModalRevisao(!openModalRevisao);
     } catch (error) {
@@ -200,7 +216,7 @@ export const Step4 = () => {
   }
 
   return (
-    <div className="border rounded-lg md:mx-50 p-5 shadow bg-white">
+    <div className="border rounded-lg p-5 md:mx-36 lg:mx-50 shadow bg-white">
       <div>
         <p className="text-2xl font-bold">Escolha um serviço</p>
         <span className="text-xs text-slate-500">
@@ -208,11 +224,15 @@ export const Step4 = () => {
         </span>
       </div>
       <div className="flex flex-col gap-5 items-center justify-center">
-        <div className="grid grid-cols-1 gap-3 pt-5 w-full">
-          {servicos.map((servico) => (
-            <Button
+        <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-3 pt-5 w-full">
+          {state.barbeiro.servicos!.map((servico) => (
+            <CardServico
               key={servico.id}
-              variant="ghost"
+              nome={servico.nome}
+              descricao={servico.descricao}
+              valor={servico.preco}
+              duracao={servico.duracao}
+              selecionado={servicoSelecionado.id === servico.id ? true : false}
               onClick={() => {
                 setServicoSelecionado(servico);
                 dispatch({
@@ -220,31 +240,7 @@ export const Step4 = () => {
                   payload: servico,
                 });
               }}
-              className={`h-auto flex flex-col border-2 items-start p-4 justify-start text-left cursor-pointer${
-                servicoSelecionado?.nome == servico.nome
-                  ? "border-2 border-[#3f89c5]"
-                  : ""
-              }`}
-            >
-              <div className="flex items-center w-full justify-between">
-                <div className="flex gap-3 items-center justify-center">
-                  <Scissors />
-                  {servico.nome}
-                </div>
-                <div>
-                  {servico.preco.toLocaleString("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  })}
-                </div>
-              </div>
-              <div className="flex justify-between w-full mt-1 gap-2">
-                <div className="text-slate-500 truncate">
-                  {servico.descricao}
-                </div>
-                <div className="text-slate-500">{servico.duracao}min</div>
-              </div>
-            </Button>
+            />
           ))}
         </div>
 
@@ -259,7 +255,10 @@ export const Step4 = () => {
             </Button>
           )}
 
-          <Button className="cursor-pointer" onClick={proximoPasso}>
+          <Button
+            className="cursor-pointer bg-[#3f89c5]"
+            onClick={proximoPasso}
+          >
             Próximo
           </Button>
         </div>
@@ -315,26 +314,18 @@ export const Step4 = () => {
             </>
           }
         >
-          <Card className="my-5">
-            <CardContent>
-              <div className="grid grid-cols-2 gap-3 p-4">
-                {review.map((item, index) => {
-                  return (
-                    <div className="flex gap-3" key={index}>
-                      {item!.icon}
-                      {String(item?.value)}
-                    </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-          <div className="flex flex-row items-center gap-1">
-            <p className="font-extrabold ">Valor:</p>
-            <p className="text-sm">
-              R$ {Number(state.servico.preco).toFixed(2)}
-            </p>
-          </div>
+          <RevisaoAgendamento
+            nomeBarbeiro={state.barbeiro.nome}
+            qtdCortes={state.barbeiro.atendimentos!}
+            fotoBarbeiro={state.barbeiro.avatar!}
+            nomeServico={state.servico.nome}
+            duracaoServico={state.servico.duracao}
+            valorServico={state.servico.preco}
+            dataAgendamento={state.data}
+            horarioAgendamento={state.horario}
+            nomeCliente={state.nome}
+            telefoneCliente={state.telefone}
+          />
         </Modal>
       </div>
     </div>

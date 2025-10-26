@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.example.barberIO.models.EmpresaModel;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -52,7 +53,7 @@ public class HorarioFuncionamentoService {
 	}
 
 	public ResponseEntity<HorarioFuncionamentoModel> cadastrarHorario(
-			HorarioFuncionamentoRecordDto horarioFuncionamento, Long config_empresa_id) {
+			HorarioFuncionamentoRecordDto horarioFuncionamento, Long config_empresa_id,EmpresaModel empresaLogada) {
 		Optional<ConfigEmpresaModel> configO = configEmpresaRepository.findById(config_empresa_id);
 
 		if (configO.isEmpty()) {
@@ -72,10 +73,15 @@ public class HorarioFuncionamentoService {
 		horarioNew.setUltima_alteracao(LocalDateTime.now());
 		horarioNew.setConfig_empresa(configO.get());
 		horarioNew.setCodigo_dia(codigo_dia);
+		horarioNew.setEmpresa(empresaLogada);
 		return ResponseEntity.status(HttpStatus.CREATED).body(horarioFuncionamentoRepository.save(horarioNew));
 	}
 
-	public ResponseEntity<List<HorarioFuncionamentoModel>> cadastrarVariosHorarios(List<HorarioFuncionamentoRecordDto> horarioFuncionamento, Long config_empresa_id){
+	public ResponseEntity<List<HorarioFuncionamentoModel>> cadastrarVariosHorarios(
+			List<HorarioFuncionamentoRecordDto> horarioFuncionamento,
+			Long config_empresa_id,
+			EmpresaModel empresaLogada
+		){
 		Optional<ConfigEmpresaModel> configO = configEmpresaRepository.findById(config_empresa_id);
 
 		if (configO.isEmpty()) {
@@ -98,7 +104,7 @@ public class HorarioFuncionamentoService {
 			horarioNew.setUltima_alteracao(LocalDateTime.now());
 			horarioNew.setConfig_empresa(configO.get());
 			horarioNew.setCodigo_dia(horario.codigo_dia());
-
+			horarioNew.setEmpresa(empresaLogada);
 			horariosNew.add(horarioNew);
 		}
 

@@ -5,6 +5,7 @@ import { tokenType } from "@/types/tokenType";
 
 export function formatarTelefone(telefone: string): string {
   // Remove tudo que não é número
+  if (!telefone) return "";
   const numeros = telefone.replace(/\D/g, "");
 
   // Aplica o padrão (99) 99999-9999
@@ -67,3 +68,15 @@ export function validarToken() {
 
   return null;
 }
+
+export function getEmpresaIdFromHref(): string {
+  return window.location.href.split("=")[1];
+}
+
+export const formatCurrency = (value: number | string) => {
+  const numero = typeof value === "string" ? Number(value) : value;
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(numero);
+};

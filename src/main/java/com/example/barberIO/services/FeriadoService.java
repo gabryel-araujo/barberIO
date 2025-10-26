@@ -4,6 +4,7 @@ import com.example.barberIO.dtos.FeriadoRecordDto;
 import com.example.barberIO.exceptions.DadosVioladosException;
 import com.example.barberIO.exceptions.RecursoNaoEncontradoException;
 import com.example.barberIO.models.ConfigEmpresaModel;
+import com.example.barberIO.models.EmpresaModel;
 import com.example.barberIO.models.FeriadoModel;
 import com.example.barberIO.repositories.ConfigEmpresaRepository;
 import com.example.barberIO.repositories.FeriadoRepository;
@@ -41,7 +42,7 @@ public class FeriadoService {
         return ResponseEntity.status(HttpStatus.OK).body(feriados);
     }
 
-    public ResponseEntity<FeriadoModel> cadastrarFeriado(FeriadoRecordDto dto, Long configEmpresaId) {
+    public ResponseEntity<FeriadoModel> cadastrarFeriado(FeriadoRecordDto dto, Long configEmpresaId, EmpresaModel empresaLogada) {
         Optional<ConfigEmpresaModel> configO = configEmpresaRepository.findById(configEmpresaId);
 
         if (configO.isEmpty()) {
@@ -51,6 +52,7 @@ public class FeriadoService {
         FeriadoModel feriado = new FeriadoModel();
         BeanUtils.copyProperties(dto, feriado);
         feriado.setConfig_empresa(configO.get());
+        feriado.setEmpresa(empresaLogada);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(feriadoRepository.save(feriado));
     }

@@ -13,9 +13,13 @@ export const MobileSidebar = () => {
   }
 
   return (
-    <div className="flex items-center justify-between px-5 py-5 bg-[#1a1f2c]">
+    <div className="flex items-center justify-between px-5 py-3 bg-[#1a1f2c]">
       <p className=" text-center font-bold text-2xl text-white">
-        <span className="text-[#3f88c5]">Barber</span>iO
+        <img
+          src="/vibrante.png"
+          alt="logo da empresa barberiO"
+          className="w-40"
+        />
       </p>
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger>

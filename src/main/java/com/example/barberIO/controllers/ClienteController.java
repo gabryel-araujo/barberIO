@@ -3,8 +3,14 @@ package com.example.barberIO.controllers;
 import com.example.barberIO.dtos.ClienteRecordDto;
 import com.example.barberIO.exceptions.RecursoNaoEncontradoException;
 import com.example.barberIO.models.ClienteModel;
+import com.example.barberIO.models.EmpresaModel;
 import com.example.barberIO.repositories.ClienteRepository;
+import com.example.barberIO.repositories.EmpresaRepository;
+import com.example.barberIO.repositories.FuncionarioRepository;
+import com.example.barberIO.security.JwtUtil;
 import com.example.barberIO.services.ClienteService;
+import com.example.barberIO.services.EmpresaService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,16 +28,39 @@ public class ClienteController {
     ClienteRepository clienteRepository;
 
     @Autowired
+    FuncionarioRepository funcionarioRepository;
+
+    @Autowired
     ClienteService clienteService;
 
-    @GetMapping("public/clientes")
-    public ResponseEntity<List<ClienteModel>> getAllClients() {
-        return ResponseEntity.status(HttpStatus.OK).body(clienteRepository.findAll());
+    @Autowired
+    EmpresaRepository empresaRepository;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @GetMapping("public/clientes/{empresa_id}")
+    public ResponseEntity<List<ClienteModel>> getAllClients(@PathVariable Long empresa_id ) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(clienteRepository.findAllByEmpresaId(empresa_id));
+    }
+
+    @GetMapping("/clientes")
+    public ResponseEntity<List<ClienteModel>> getAllClientsByEmpresa(HttpServletRequest req) {
+        String authHeader = req.getHeader("Authorization");
+        String token = authHeader.substring(7);
+        String usuarioLogado = jwtUtil.extractUsername(token);
+        EmpresaModel empresaLogada = funcionarioRepository.findByEmail(usuarioLogado).get().getEmpresa();
+
+        return ResponseEntity.status(HttpStatus.OK).body(clienteRepository.findAllByEmpresaId(empresaLogada.getId()));
     }
 
     @PostMapping("public/clientes")
-    public ResponseEntity<Object> addCliente(@RequestBody @Valid ClienteRecordDto clienteRecordDto) {
+    public ResponseEntity<Object> addCliente(@RequestBody @Valid ClienteRecordDto clienteRecordDto, HttpServletRequest req) {
         Optional<ClienteModel> clienteO = clienteRepository.findByTelefone(clienteRecordDto.telefone());
+
+        String authHeader = req.getHeader("Authorization");
+
 
         if (clienteO.isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Cliente já cadastrado");
@@ -42,6 +71,15 @@ public class ClienteController {
         BeanUtils.copyProperties(clienteRecordDto, clienteModel);
         clienteModel.setAtivo(true);
         clienteModel.setCreated_at(now);
+
+        if(clienteRecordDto.empresa_id() != null){
+            clienteModel.setEmpresa(empresaRepository.findById(clienteRecordDto.empresa_id()).orElseThrow());
+        }else if(authHeader != null) {
+            String token = authHeader.substring(7);
+            String usuarioLogado = jwtUtil.extractUsername(token);
+            EmpresaModel empresaLogada = funcionarioRepository.findByEmail(usuarioLogado).get().getEmpresa();
+            clienteModel.setEmpresa(empresaLogada);
+        }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(clienteRepository.save(clienteModel));
     }

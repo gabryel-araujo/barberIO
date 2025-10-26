@@ -22,7 +22,6 @@ export const Sidebar = ({ onClick }: SideBarProps) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [user, setUser] = useState<tokenType | null>(null);
 
-  // Lida com login/logout
   const handleAuthClick = () => {
     setShowDropdown(false);
 
@@ -30,6 +29,7 @@ export const Sidebar = ({ onClick }: SideBarProps) => {
       Cookies.remove("authToken");
       setUser(null);
       setIsLoggedIn(false);
+      router.replace("/");
     } else {
       router.replace("/login");
     }
@@ -84,7 +84,7 @@ export const Sidebar = ({ onClick }: SideBarProps) => {
 
           if (!podeExibir) return null;
 
-          const isActive = pathname === menu.path;
+          const isActive = pathname === menu.ref;
 
           return (
             <Link

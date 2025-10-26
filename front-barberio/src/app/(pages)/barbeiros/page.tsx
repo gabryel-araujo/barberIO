@@ -12,7 +12,7 @@ import {
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Form,
   FormControl,
@@ -52,8 +52,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
 import Cookies from "js-cookie";
+
+import Image from "next/image";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { validarToken } from "@/utils/functions";
+// import axiosInstance from "@/lib/axios";
 
 const barbeiros = () => {
   const { state, dispatch } = useFormReducer();
@@ -64,6 +69,9 @@ const barbeiros = () => {
   const [servicos, setServicos] = useState<Servico[]>([]);
   const [servicoSelecionado, setServicoSelecionado] = useState<string[]>([]);
   const [exibirInativos, setExibirInativos] = useState(false);
+  const avatarRef = useRef<HTMLInputElement>(null);
+
+  const usuario = validarToken();
 
   const formSchema = z.object({
     nome: z
@@ -91,6 +99,14 @@ const barbeiros = () => {
       ),
     servico: z.array(z.any()).nullable(),
     disponivel: z.boolean(),
+    avatar: z
+      .string()
+      .url("URL inválida")
+      .or(z.literal(""))
+      .nullable()
+      .optional(),
+    tipo: z.string(),
+
     //ativo: z.boolean(),
   });
 
@@ -130,6 +146,13 @@ const barbeiros = () => {
       ),
     servico: z.array(z.any()).nullable(),
     disponivel: z.boolean(),
+    avatar: z
+      .string()
+      .url("URL inválida")
+      .or(z.literal(""))
+      .nullable()
+      .optional(),
+    tipo: z.string(),
   });
 
   const schema = useMemo(() => {
@@ -149,9 +172,11 @@ const barbeiros = () => {
       data_nascimento: "",
       disponivel: true,
       servico: [],
+      avatar: "",
+      tipo: "BARBEIRO",
     },
   });
-
+  console.log(form.formState.errors);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -167,8 +192,20 @@ const barbeiros = () => {
     }
     fetchData();
   }, [state.barbeiro, exibirInativos]);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [imagemSelecionada, setImagemSelecionada] = useState<File | null>(null);
 
   const onSubmit = async (barbeiro: BarbeiroFormData) => {
+    let urlPublica = barbeiroSelecionado?.avatar ?? "";
+    if (imagemSelecionada) {
+      const base64 = await fileToBase64(imagemSelecionada);
+      const resUpload = await axios.post("/api/avatar-upload", {
+        base64,
+        NomeBarbeiro: barbeiro.nome,
+        idBarbeiro: barbeiroSelecionado?.id,
+      });
+      urlPublica = resUpload.data.publicUrl;
+    }
     if (!barbeiroSelecionado) {
       // Cadastro
       const response = await POSTFuncionario(
@@ -177,7 +214,9 @@ const barbeiros = () => {
         barbeiro.senha!,
         barbeiro.data_nascimento!,
         barbeiro.disponivel,
-        servicoSelecionado
+        servicoSelecionado,
+        undefined,
+        barbeiro.tipo
       );
 
       if (response.status === 201) {
@@ -201,7 +240,9 @@ const barbeiros = () => {
         barbeiro.data_nascimento!,
         barbeiro.disponivel,
         barbeiro.senha ? barbeiro.senha : barbeiroSelecionado.senha,
-        barbeiroSelecionado.ativo
+        barbeiroSelecionado.ativo,
+        urlPublica,
+        barbeiro.tipo
       );
 
       if (response.status === 200) {
@@ -217,7 +258,8 @@ const barbeiros = () => {
         payload: [response.data],
       });
     }
-
+    setPreview(null);
+    setImagemSelecionada(null);
     queryClient.invalidateQueries({ queryKey: ["servicos"] });
     setOpenModal(false);
     form.reset();
@@ -230,6 +272,7 @@ const barbeiros = () => {
       senha: "",
       data_nascimento: "",
       disponivel: true,
+      tipo: "BARBEIRO",
     });
     setBarbeiroSelecionado(undefined);
     setOpenModal(true);
@@ -274,7 +317,7 @@ const barbeiros = () => {
   useQuery({
     queryKey: ["servicos"],
     queryFn: async () => {
-      const response = await axios.get(`${baseUrl}/public/servico`, {
+      const response = await axios.get(`${baseUrl}/servico`, {
         headers: {
           Authorization: `Bearer ${Cookies.get("authToken")}`,
         },
@@ -295,7 +338,7 @@ const barbeiros = () => {
       const response = await addServicoFuncionario(funcionarioId, servicoId);
 
       if (response.status === 200) {
-        toast.warning("Atualizando serviços...");
+        toast.success("Serviços atualizados");
       } else {
         toast.error("Oops ocorreu um erro!");
         console.log(response);
@@ -312,6 +355,18 @@ const barbeiros = () => {
         console.log(response);
       }
     }
+  }
+
+  // LÓGICA PARA PEGAR IMAGEM E JOGAR NO LOCALSTORAGE, PRONTO PARA
+  /// JOGAR NO REPOSITORIO CORRETO.
+
+  function fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
   }
 
   return (
@@ -370,6 +425,51 @@ const barbeiros = () => {
               Preencha todos os dados necessários
             </DialogDescription>
           </DialogHeader>
+
+          <div className="relative flex items-center justify-center">
+            <input
+              type="file"
+              ref={avatarRef}
+              className="absolute w-0 h-0 opacity-0"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  setImagemSelecionada(file);
+                  const previewUrl = URL.createObjectURL(file);
+                  setPreview(previewUrl);
+                }
+              }}
+            />
+
+            <button
+              onClick={() => avatarRef.current?.click()}
+              type="button"
+              className="relative h-28 w-28 rounded-full border-2 border-green-400 hover:border-green-400 shadow shadow-primary hover:shadow-primary/20 transition-all duration-300 cursor-pointer bg-primary text-white overflow-hidden"
+            >
+              {preview ? (
+                <Image
+                  src={preview}
+                  sizes="112px"
+                  alt="avatar preview"
+                  fill
+                  className="absolute inset-0 h-full w-full object-cover object-center"
+                />
+              ) : barbeiroSelecionado?.avatar ? (
+                <Image
+                  src={barbeiroSelecionado.avatar}
+                  sizes="112px"
+                  alt="avatar"
+                  fill
+                  className="absolute inset-0 h-full w-full object-cover object-center"
+                />
+              ) : (
+                <p className="font-bold text-3xl">
+                  {barbeiroSelecionado?.nome.split("")[0]}
+                </p>
+              )}
+            </button>
+          </div>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
               <FormField
@@ -440,6 +540,35 @@ const barbeiros = () => {
                   />
                 </div>
               </div>
+              {usuario?.role === "GESTOR" && (
+                <FormField
+                  control={form.control}
+                  name="tipo"
+                  render={({ field }) => (
+                    <FormItem className="border p-2 rounded-md">
+                      <FormLabel>Tipo:</FormLabel>
+                      <FormControl>
+                        <RadioGroup
+                          defaultValue="BARBEIRO"
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          className="flex gap-6"
+                        >
+                          <div className="flex items-center gap-3">
+                            <RadioGroupItem value="BARBEIRO" id="barbeiro" />
+                            <Label htmlFor="barbeiro">Barbeiro</Label>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <RadioGroupItem value="GESTOR" id="gestor" />
+                            <Label htmlFor="gestor">Gestor</Label>
+                          </div>
+                        </RadioGroup>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
               <FormField
                 control={form.control}
                 name="servico"

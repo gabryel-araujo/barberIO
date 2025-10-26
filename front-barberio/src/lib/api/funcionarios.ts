@@ -22,19 +22,6 @@ export const fazerLogin = async (
   }
 };
 
-export const setGoogleFuncionario = async (nome: String, email: String) => {
-  try {
-    const response = await axiosInstance.post("/admin/funcionarios", {
-      nome: nome,
-      email: email,
-    });
-    return response;
-  } catch (errorReg) {
-    console.error("Erro ao cadastrar funcionario", errorReg);
-    throw errorReg;
-  }
-};
-
 export const GETFuncionarios = cache(async (): Promise<Barbeiro[]> => {
   try {
     const respose = await axiosInstance.get<Barbeiro[]>("/funcionarios", {
@@ -49,6 +36,7 @@ export const GETFuncionarios = cache(async (): Promise<Barbeiro[]> => {
   }
 });
 
+<<<<<<< HEAD
 export const GETFuncionariosPublic = cache(async (): Promise<Barbeiro[]> => {
   try {
     const respose = await axiosInstance.get<Barbeiro[]>(
@@ -61,6 +49,21 @@ export const GETFuncionariosPublic = cache(async (): Promise<Barbeiro[]> => {
     throw error;
   }
 });
+=======
+export const GETFuncionariosPublicos = cache(
+  async (empresaId: string): Promise<Barbeiro[]> => {
+    try {
+      const respose = await axiosInstance.get<Barbeiro[]>(
+        `/public/funcionarios/${empresaId}`
+      );
+      return respose.data;
+    } catch (error) {
+      console.error("Erro ao listar funcionarios", error);
+      throw error;
+    }
+  }
+);
+>>>>>>> 3cd3750bcc961ab132d169e1a1f7cff37c54a0c8
 
 export const POSTFuncionario = async (
   nome: string,
@@ -69,7 +72,8 @@ export const POSTFuncionario = async (
   data_nascimento: string,
   disponivel: boolean,
   servicos?: string[],
-  ativo?: boolean
+  ativo?: boolean,
+  tipo?: string
 ) => {
   try {
     const response = await axiosInstance.post(
@@ -82,6 +86,7 @@ export const POSTFuncionario = async (
         disponivel,
         newServices: servicos,
         ativo,
+        tipo,
       },
       {
         headers: {
@@ -102,7 +107,9 @@ export const changeStatus = async (
   email: string,
   senha: string,
   disponivel: boolean,
-  ativo: boolean
+  ativo: boolean,
+  avatar: string,
+  tipo: string
 ) => {
   try {
     const response = await axiosInstance.put(
@@ -113,6 +120,8 @@ export const changeStatus = async (
         senha,
         disponivel,
         ativo,
+        avatar,
+        tipo,
       },
       {
         headers: {
@@ -134,7 +143,9 @@ export const PUTFuncionario = async (
   data_nascimento: string,
   disponivel: boolean,
   senha?: string,
-  ativo?: boolean
+  ativo?: boolean,
+  avatar?: string,
+  tipo?: string
 ) => {
   try {
     const response = await axiosInstance.put(
@@ -146,6 +157,8 @@ export const PUTFuncionario = async (
         data_nascimento,
         disponivel,
         ativo,
+        avatar,
+        tipo,
       },
       {
         headers: {

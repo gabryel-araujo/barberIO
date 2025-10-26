@@ -47,7 +47,7 @@ const servicos = () => {
   const { data: servicos = [] } = useQuery({
     queryKey: ["servicos", exibirInativos],
     queryFn: async () => {
-      const response = await axios.get(`${baseUrl}/public/servico`, {
+      const response = await axios.get(`${baseUrl}/servico`, {
         headers: {
           Authorization: `Bearer ${Cookies.get("authToken")}`,
         },
@@ -240,48 +240,113 @@ const servicos = () => {
         {servicos
           .sort((a: { id: any }, b: { id: any }) => Number(b.id) - Number(a.id))
           .map((servico: Servico) => (
-            <Card className={`p-5`} key={servico.id}>
-              <div className="flex items-center justify-between">
-                <div className="text-2xl font-semibold flex items-center justify-center gap-3">
-                  <p className="flex items-center">{servico.nome}</p>
+            <Card
+              key={servico.id}
+              className={`group relative shadow-md hover:shadow-lg transition-all duration-300 ${
+                !servico.ativo ? "opacity-60" : ""
+              }`}
+            >
+              {/* Barra superior decorativa azul */}
+              {/* <div className="h-1 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 rounded-t-lg"></div> */}
+
+              <div className="p-4">
+                {/* Header: Nome, Preço e Status */}
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 bg-gradient-to-br from-primary to-primary rounded-md">
+                      <svg
+                        className="w-4 h-4 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z"
+                        />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-800">
+                      {servico.nome}
+                    </h3>
+                  </div>
+
+                  <p className="text-primary text-xl font-bold">
+                    {servico.preco.toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}
+                  </p>
                 </div>
-                <p className="texto-azul text-2xl font-semibold">
-                  {servico.preco.toLocaleString("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  })}
-                </p>
-              </div>
-              <div>
-                <p className="text-slate-500">{servico.descricao}</p>
-                <p>
-                  <span className="font-semibold">Duração:</span>{" "}
-                  {servico.duracao} minutos
-                </p>
-              </div>
-              <div className="flex justify-between">
-                <p className="flex items-center">
-                  {servico.ativo === false && (
-                    <Badge className="bg-red-500">Inativo</Badge>
-                  )}
-                </p>
-                <Button
-                  onClick={() => {
-                    setServicoSelecionado(servico);
-                    form.reset({
-                      nome: servico.nome,
-                      descricao: servico.descricao,
-                      duracao: servico.duracao,
-                      preco: servico.preco,
-                    });
-                    setOpenModal(true);
-                  }}
-                  variant="secondary"
-                  type="button"
-                  className="border rounded-sm bg-slate-50 hover:bg-slate-100 cursor-pointer"
-                >
-                  Editar
-                </Button>
+
+                {/* Descrição e Duração */}
+                <div className="mb-3 space-y-3">
+                  <p className="text-slate-600 text-sm mb-1">
+                    {servico.descricao}
+                  </p>
+                  <div className="flex items-center gap-1.5 text-slate-600">
+                    <svg
+                      className="w-4 h-4 text-primary"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span className="text-xs font-medium">
+                      {servico.duracao} minutos
+                    </span>
+                  </div>
+                </div>
+
+                {/* Footer: Status e Botão */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    {servico.ativo === false && (
+                      <Badge className="bg-red-100 text-red-700 text-xs font-semibold">
+                        INATIVO
+                      </Badge>
+                    )}
+                  </div>
+
+                  <Button
+                    onClick={() => {
+                      setServicoSelecionado(servico);
+                      form.reset({
+                        nome: servico.nome,
+                        descricao: servico.descricao,
+                        duracao: servico.duracao,
+                        preco: servico.preco,
+                      });
+                      setOpenModal(true);
+                    }}
+                    variant="secondary"
+                    type="button"
+                    className="bg-slate-800 text-white hover:bg-slate-700 rounded-md px-4 py-1.5 text-sm font-medium transition-all duration-200 flex items-center gap-1.5"
+                  >
+                    <svg
+                      className="w-3.5 h-3.5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                      />
+                    </svg>
+                    Editar
+                  </Button>
+                </div>
               </div>
             </Card>
           ))}
