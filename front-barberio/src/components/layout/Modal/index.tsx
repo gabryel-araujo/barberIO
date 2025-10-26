@@ -25,35 +25,16 @@ export function Modal({
   title,
   description,
   footerButtons,
-  buttonLabel,
 }: ModalProps) {
   return (
     <Dialog open={open}>
-      <DialogContent>
+      <DialogContent className="max-h-[90vh] sm:max-w-2xl overflow-auto">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-
         {children}
-        <div className="flex items-center justify-between">
-          {footerButtons}
-          {/* <Button
-            className="w-[150px] cursor-pointer"
-            variant="secondary"
-            onClick={() => setOpen(!open)}
-          >
-            Cancelar
-          </Button>
-          <Button
-            className="w-[150px] cursor-pointer"
-            onClick={handleSubmit ? handleSubmit : schedule}
-          >
-            Finalizar
-          </Button> 
-            {buttonLabel ? buttonLabel : "Finalizar"}
-          </Button> */}
-        </div>
+        <div className="flex items-center justify-between">{footerButtons}</div>
       </DialogContent>
     </Dialog>
   );

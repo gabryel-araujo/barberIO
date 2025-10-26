@@ -20,6 +20,8 @@ import { format } from "date-fns";
 import { getEmpresaIdFromHref, nomeCapitalizado } from "@/utils/functions";
 import Cookies from "js-cookie";
 import { Cliente } from "@/types/cliente";
+import { CardServico } from "./cardServicos";
+import { RevisaoAgendamento } from "./revisaoAgendamento";
 
 export const Step4 = () => {
   const empresaId = useRef<any>(null);
@@ -204,7 +206,7 @@ export const Step4 = () => {
   }
 
   return (
-    <div className="border rounded-lg md:mx-50 p-5 shadow bg-white">
+    <div className="border rounded-lg p-5 md:mx-36 lg:mx-50 shadow bg-white">
       <div>
         <p className="text-2xl font-bold">Escolha um serviço</p>
         <span className="text-xs text-slate-500">
@@ -212,11 +214,15 @@ export const Step4 = () => {
         </span>
       </div>
       <div className="flex flex-col gap-5 items-center justify-center">
-        <div className="grid grid-cols-1 gap-3 pt-5 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-3 pt-5 w-full">
           {state.barbeiro.servicos!.map((servico) => (
-            <Button
+            <CardServico
               key={servico.id}
-              variant="ghost"
+              nome={servico.nome}
+              descricao={servico.descricao}
+              valor={servico.preco}
+              duracao={servico.duracao}
+              selecionado={servicoSelecionado.id === servico.id ? true : false}
               onClick={() => {
                 setServicoSelecionado(servico);
                 dispatch({
@@ -224,31 +230,7 @@ export const Step4 = () => {
                   payload: servico,
                 });
               }}
-              className={`h-auto flex flex-col border-2 items-start p-4 justify-start text-left cursor-pointer${
-                servicoSelecionado?.nome == servico.nome
-                  ? "border-2 border-[#3f89c5]"
-                  : ""
-              }`}
-            >
-              <div className="flex items-center w-full justify-between">
-                <div className="flex gap-3 items-center justify-center">
-                  <Scissors />
-                  {servico.nome}
-                </div>
-                <div>
-                  {servico.preco.toLocaleString("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  })}
-                </div>
-              </div>
-              <div className="flex justify-between w-full mt-1 gap-2">
-                <div className="text-slate-500 truncate">
-                  {servico.descricao}
-                </div>
-                <div className="text-slate-500">{servico.duracao}min</div>
-              </div>
-            </Button>
+            />
           ))}
         </div>
 
@@ -322,26 +304,18 @@ export const Step4 = () => {
             </>
           }
         >
-          <Card className="my-5">
-            <CardContent>
-              <div className="grid grid-cols-2 gap-3 p-4">
-                {review.map((item, index) => {
-                  return (
-                    <div className="flex gap-3" key={index}>
-                      {item!.icon}
-                      {String(item?.value)}
-                    </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-          <div className="flex flex-row items-center gap-1">
-            <p className="font-extrabold ">Valor:</p>
-            <p className="text-sm">
-              R$ {Number(state.servico.preco).toFixed(2)}
-            </p>
-          </div>
+          <RevisaoAgendamento
+            nomeBarbeiro={state.barbeiro.nome}
+            qtdCortes={state.barbeiro.atendimentos!}
+            fotoBarbeiro={state.barbeiro.avatar!}
+            nomeServico={state.servico.nome}
+            duracaoServico={state.servico.duracao}
+            valorServico={state.servico.preco}
+            dataAgendamento={state.data}
+            horarioAgendamento={state.horario}
+            nomeCliente={state.nome}
+            telefoneCliente={state.telefone}
+          />
         </Modal>
       </div>
     </div>

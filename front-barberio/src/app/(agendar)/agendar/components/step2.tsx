@@ -103,11 +103,13 @@ export const Step2 = () => {
                   <p className="text-sm text-slate-500">
                     <b>4.3</b> (123+ Avaliações)
                   </p> */}
-                  {barber.servicos!.map((servico) => (
-                    <Badge className="bg-[#3f89c5] rounded-sm">
-                      {servico.nome}
-                    </Badge>
-                  ))}
+                  <p className="w-full space-x-1 space-y-1">
+                    {barber.servicos!.map((servico) => (
+                      <Badge className="bg-[#3f89c5] rounded-sm">
+                        {servico.nome}
+                      </Badge>
+                    ))}
+                  </p>
                 </section>
                 <section className="flex items-center gap-1">
                   <Award color="#3f89c5" />
