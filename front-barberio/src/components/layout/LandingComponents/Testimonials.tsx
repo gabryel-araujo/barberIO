@@ -27,14 +27,17 @@ const testimonials = [
 
 const Testimonials = () => {
   return (
-    <section className="py-24 bg-gradient-to-b from-muted/30 to-background">
+    <section
+      className="py-24 bg-gradient-to-b from-muted/30 to-background"
+      id="depoimentos"
+    >
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 animate-fade-in">
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             O que dizem nossos clientes
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Centenas de barbearias já confiam no BarberiO
+            Dezenas de barbearias já confiam no BarberiO
           </p>
         </div>
 
@@ -57,9 +60,9 @@ const Testimonials = () => {
                 <p className="font-semibold text-foreground">
                   {testimonial.name}
                 </p>
-                <p className="text-sm text-muted-foreground">
+                {/* <p className="text-sm text-muted-foreground">
                   {testimonial.role}
-                </p>
+                </p> */}
               </div>
             </Card>
           ))}

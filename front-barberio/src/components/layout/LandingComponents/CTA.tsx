@@ -1,7 +1,10 @@
 import { Button } from "@/components/ui/button";
+import { whatsapp } from "@/lib/whstsapp";
 import { ArrowRight } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const CTA = () => {
+  const router = useRouter();
   return (
     <section className="py-24 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-10"></div>
@@ -12,10 +15,16 @@ const CTA = () => {
             Leve sua barbearia para o próximo nível com o BarberiO
           </h2>
           <p className="text-xl text-muted-foreground mb-8">
-            Junte-se a centenas de barbearias que já otimizaram sua gestão
+            Junte-se a dezenas de barbearias que já otimizaram sua gestão
           </p>
-          <Button className="group">
-            Comece grátis agora
+          <Button
+            className="group"
+            onClick={() => {
+              router.push(`${whatsapp}83987482651`);
+              //  href={`${whatsapp}${cliente.telefone}`}
+            }}
+          >
+            Comece agora
             <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
           </Button>
           <p className="text-sm text-muted-foreground mt-4">

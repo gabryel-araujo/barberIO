@@ -20,8 +20,13 @@ export const CardServico = ({
   onClick,
 }: CardServicoProps) => {
   return (
-    <Card className="p-6" onClick={onClick}>
-      <div className="flex text-xl font-bold items-center justify-between px-3">
+    <Card
+      className={`p-6 ${selecionado && "border-3 border-primary"}`}
+      onClick={onClick}
+    >
+      <div
+        className={`flex text-xl font-bold items-center justify-between px-3`}
+      >
         <p className="text-2xl flex gap-3 items-center justify-center">
           <span className="bg-primary/30 p-2 rounded-lg">
             <Scissors className="text-primary" />
