@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import "../globals.css";
+import "@/app/globals.css";
 import { AgendamentoProvider } from "@/contexts/AgendamentoContextProvider";
 import { Toaster } from "sonner";
 import { Providers } from "@/utils/providers";
@@ -10,9 +10,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="pt-BR">
       <body className={`antialiased bg-[#e6f0ff] min-h-screen`}>
