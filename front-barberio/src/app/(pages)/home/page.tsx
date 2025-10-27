@@ -16,6 +16,7 @@ import { z } from "zod";
 import axios, { AxiosError } from "axios";
 import { ErrorResponse } from "../configuracao/page";
 import { baseUrl } from "@/lib/baseUrl";
+import { SalvarEmpresaCookie } from "../../../../components/salvarEmpresaCookie";
 
 const Home = () => {
   const gestorLogado = Cookies.get("authToken");
@@ -40,6 +41,7 @@ const Home = () => {
   return (
     <div className="w-full flex min-h-screen flex-col items-center justify-center space-y-7 px-7 pt-7 md:pt-0 bg-[#e6f0ff]">
       <PrefetchAgendar />
+      <SalvarEmpresaCookie />
 
       {/* <p className="text-5xl font-bold text-center ">
         Bem-Vindo à <span className="text-primary">Barber</span>iO
@@ -53,10 +55,10 @@ const Home = () => {
         imagemBarbaria="/imagens/barbeariaBeta.png"
         emailBarbearia={data?.email!}
         telefoneBarbearia={formatarTelefone(data?.telefone!)}
-        ruaBarbearia="Rua Coronel Joaquim P. Santos" //{data?.endereco?.rua!}
-        numeroBarbearia="399" //{data?.endereco?.numero!}
-        bairroBarbearia="Valantina" //{data?.endereco?.bairro!}
-        cidadeBarbearia="João Pessoa - PB" //{data?.endereco?.cidade!}
+        ruaBarbearia={data?.endereco?.rua!}
+        numeroBarbearia={data?.endereco?.numero!}
+        bairroBarbearia={data?.endereco?.bairro!}
+        cidadeBarbearia={data?.endereco?.cidade!}
       />
       <div className="flex flex-col items-center md:flex-row ">
         <div className="flex items-center">

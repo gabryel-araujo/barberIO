@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import "../globals.css";
+import "@/app/globals.css";
 import { LayoutResponsivo } from "@/components/layout/layoutResponsivo";
 import { AgendamentoProvider } from "@/contexts/AgendamentoContextProvider";
 import { Toaster } from "sonner";

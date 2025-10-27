@@ -22,7 +22,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-// import { Checkbox } from "@/components/ui/checkbox";
 import { Barbeiro } from "@/types/barbeiro";
 import {
   GETFuncionarios,
@@ -58,6 +57,8 @@ import Image from "next/image";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { validarToken } from "@/utils/functions";
+import { format } from "date-fns";
+import { Card } from "@/components/ui/card";
 // import axiosInstance from "@/lib/axios";
 
 const barbeiros = () => {
@@ -106,7 +107,8 @@ const barbeiros = () => {
       .nullable()
       .optional(),
     tipo: z.string(),
-
+    fechamento_ini: z.string().optional(),
+    fechamento_fim: z.string().optional(),
     //ativo: z.boolean(),
   });
 
@@ -153,6 +155,8 @@ const barbeiros = () => {
       .nullable()
       .optional(),
     tipo: z.string(),
+    fechamento_ini: z.string().optional(),
+    fechamento_fim: z.string().optional(),
   });
 
   const schema = useMemo(() => {
@@ -174,6 +178,8 @@ const barbeiros = () => {
       servico: [],
       avatar: "",
       tipo: "BARBEIRO",
+      fechamento_ini: undefined,
+      fechamento_fim: undefined,
     },
   });
   console.log(form.formState.errors);
@@ -194,6 +200,24 @@ const barbeiros = () => {
   }, [state.barbeiro, exibirInativos]);
   const [preview, setPreview] = useState<string | null>(null);
   const [imagemSelecionada, setImagemSelecionada] = useState<File | null>(null);
+  const [inicioData, setInicioData] = useState<Date>();
+  const [fimData, setFimData] = useState<Date>();
+  const [inicioHora, setInicioHora] = useState<string>("");
+  const [fimHora, setFimHora] = useState<string>("");
+
+  useEffect(() => {
+    if (inicioData && inicioHora) {
+      const dataFormatada = format(inicioData, "yyyy-MM-dd");
+      form.setValue("fechamento_ini", `${dataFormatada}T${inicioHora}`);
+    }
+  }, [inicioData, inicioHora]);
+
+  useEffect(() => {
+    if (fimData && fimHora) {
+      const dataFormatada = format(fimData, "yyyy-MM-dd");
+      form.setValue("fechamento_fim", `${dataFormatada}T${fimHora}`);
+    }
+  }, [fimData, fimHora]);
 
   const onSubmit = async (barbeiro: BarbeiroFormData) => {
     let urlPublica = barbeiroSelecionado?.avatar ?? "";
@@ -242,7 +266,9 @@ const barbeiros = () => {
         barbeiro.senha ? barbeiro.senha : barbeiroSelecionado.senha,
         barbeiroSelecionado.ativo,
         urlPublica,
-        barbeiro.tipo
+        barbeiro.tipo,
+        barbeiro.fechamento_ini,
+        barbeiro.fechamento_fim
       );
 
       if (response.status === 200) {
@@ -416,7 +442,7 @@ const barbeiros = () => {
           ))}
       </div>
       <Dialog open={openModal} onOpenChange={setOpenModal}>
-        <DialogContent>
+        <DialogContent className="h-full overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {barbeiroSelecionado ? "Editar Barbeiro" : "Cadastro de Barbeiro"}
@@ -630,6 +656,93 @@ const barbeiros = () => {
                   );
                 }}
               />
+
+              <Card className="p-3">
+                <p className="font-semibold text-sm text-center">
+                  Fechar Horário
+                </p>
+                <div className="w-full flex items-center justify-center gap-3">
+                  {/* CAMPO INÍCIO */}
+                  <FormField
+                    control={form.control}
+                    name="fechamento_ini"
+                    render={() => (
+                      <FormItem className="flex flex-col gap-2">
+                        <FormLabel>Início</FormLabel>
+                        <div className="flex flex-col gap-2">
+                          <Input
+                            type="date"
+                            className="w-[150px]"
+                            placeholder="dd/MM/aaaa"
+                            value={
+                              inicioData ? format(inicioData, "yyyy-MM-dd") : ""
+                            }
+                            min={new Date().toISOString().split("T")[0]}
+                            onChange={(e) => {
+                              const inicioDataSelecionada = new Date(
+                                e.target.value
+                              );
+                              inicioDataSelecionada.setDate(
+                                inicioDataSelecionada.getDate() + 1
+                              );
+                              setInicioData(inicioDataSelecionada);
+                            }}
+                          />
+
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="time"
+                              value={inicioHora}
+                              onChange={(e) => setInicioHora(e.target.value)}
+                              className="border border-input rounded-md px-2 py-1 text-sm w-[150px] bg-background"
+                            />
+                          </div>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* CAMPO FIM */}
+                  <FormField
+                    control={form.control}
+                    name="fechamento_fim"
+                    render={() => (
+                      <FormItem className="flex flex-col gap-2">
+                        <FormLabel>Fim</FormLabel>
+                        <div className="flex flex-col gap-2">
+                          <Input
+                            type="date"
+                            className="w-[150px]"
+                            placeholder="dd/MM/aaaa"
+                            value={fimData ? format(fimData, "yyyy-MM-dd") : ""}
+                            min={new Date().toISOString().split("T")[0]}
+                            onChange={(e) => {
+                              const fimDataSelecionada = new Date(
+                                e.target.value
+                              );
+                              fimDataSelecionada.setDate(
+                                fimDataSelecionada.getDate() + 1
+                              );
+                              setFimData(fimDataSelecionada);
+                            }}
+                          />
+
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="time"
+                              value={fimHora}
+                              onChange={(e) => setFimHora(e.target.value)}
+                              className="border border-input rounded-md px-2 py-1 text-sm w-[150px] bg-background"
+                            />
+                          </div>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </Card>
               <FormField
                 control={form.control}
                 name="disponivel"
@@ -650,7 +763,7 @@ const barbeiros = () => {
                   </FormItem>
                 )}
               />
-              <div className="flex items-center justify-end gap-3">
+              <div className="flex items-center justify-between gap-3">
                 {barbeiroSelecionado && barbeiroSelecionado.ativo === false && (
                   <div>
                     <Button
@@ -678,24 +791,18 @@ const barbeiros = () => {
                     Excluir
                   </Button>
                 )}
-
-                <Button
-                  onClick={() => setOpenModal(false)}
-                  variant={"secondary"}
-                  type="button"
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  type="submit"
-                  // onClick={() => {
-                  //   if (barbeiroSelecionado) {
-                  //     handleEditBarbeiro(barbeiroSelecionado);
-                  //   }
-                  // }}
-                >
-                  {barbeiroSelecionado ? "Atualizar" : "Cadastrar"}
-                </Button>
+                <div>
+                  <Button
+                    onClick={() => setOpenModal(false)}
+                    variant={"secondary"}
+                    type="button"
+                  >
+                    Cancelar
+                  </Button>
+                  <Button type="submit">
+                    {barbeiroSelecionado ? "Atualizar" : "Cadastrar"}
+                  </Button>
+                </div>
               </div>
             </form>
           </Form>
