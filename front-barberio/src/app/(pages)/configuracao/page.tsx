@@ -13,7 +13,15 @@ import {
 } from "@/components/ui/form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Building2, Calendar, Clock, Edit, Plus, Trash2 } from "lucide-react";
+import {
+  Building2,
+  Calendar,
+  Clock,
+  Copy,
+  Edit,
+  Plus,
+  Trash2,
+} from "lucide-react";
 import { useForm, useWatch } from "react-hook-form";
 import { empresaSchema, formSchemaFeriado } from "./schemas/schemas";
 import { z } from "zod";
@@ -32,7 +40,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { baseUrl } from "@/lib/baseUrl";
+import { baseUrl, linkBarberio } from "@/lib/baseUrl";
 import { useMutations } from "./mutations/configuracoes";
 import { AxiosError } from "axios";
 import { DialogComponent } from "@/components/layout/DialogComponent";
@@ -261,6 +269,12 @@ const configuracao = () => {
 
     console.log("Editando Feriado: ", feriado);
   };
+
+  function copiarLink() {
+    const LinkInstagram = `${linkBarberio}/home?ref=${empresaId}`;
+    navigator.clipboard.writeText(LinkInstagram);
+    toast.success("Copiado!");
+  }
   return (
     <div className="w-screen min-h-screen bg-[#e6f0ff] p-2">
       <div className="w-full flex justify-between items-center md:px-8 px-2 py-3">
@@ -299,10 +313,19 @@ const configuracao = () => {
               <TabsContent value="geral" className="space-y-4 pb-4">
                 {/* Aqui será colocado o conteudo da tab Geral */}
                 <Card className="min-h-[250px] p-4 space-y-4">
-                  <TitulosCards
-                    Titulos="Informações da Barbearia"
-                    subtitulo="Configure as informações básicas do seu estabelecimento"
-                  />
+                  <div className="flex items-center justify-between">
+                    <TitulosCards
+                      Titulos="Informações da Barbearia"
+                      subtitulo="Configure as informações básicas do seu estabelecimento"
+                    />
+                    <Button
+                      onClick={copiarLink}
+                      type="button"
+                      className="cursor-pointer bg-primary text-sm flex gap-3 items-center"
+                    >
+                      <Copy size={20} /> Link de agendamento
+                    </Button>
+                  </div>
                   <div className=" grid grid-cols-2 gap-4 items-center">
                     <FormField
                       control={form.control}
