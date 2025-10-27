@@ -1,21 +1,23 @@
 const features = [
   {
-    image: "/barberio.png",
+    image: "/iPhone.png",
     title: "Agendamento Inteligente",
     description:
       "Sistema completo de agendamento com notificações automáticas, lembretes por SMS/WhatsApp e integração com calendário.",
+    class: "relative rounded-4xl shadow-2xl w-64",
   },
   {
-    image: "/barberio.png",
+    image: "/Macbook.png",
     title: "Gestão Completa de Clientes",
     description:
       "Cadastro detalhado, histórico de serviços, preferências e ferramentas de fidelização para aumentar o retorno dos clientes.",
+    class: "relative w-128",
   },
 ];
 
 const Features = () => {
   return (
-    <section className="py-24 bg-background">
+    <section className="py-24 bg-background" id="como-funciona">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 animate-fade-in">
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
@@ -52,13 +54,13 @@ const Features = () => {
                   index % 2 === 1 ? "lg:order-1" : ""
                 }`}
               >
-                <div className="relative group">
-                  <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-3xl group-hover:bg-primary/30 transition-all"></div>
-                  {/* <img 
-                    src={feature.image} 
+                <div className="relative group flex justify-center">
+                  <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-3xl group-hover:bg-primary/30 transition-all "></div>
+                  <img
+                    src={feature.image}
                     alt={feature.title}
-                    className="relative rounded-2xl shadow-2xl w-full"
-                  /> */}
+                    className={feature.class}
+                  />
                 </div>
               </div>
             </div>

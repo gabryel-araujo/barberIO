@@ -43,7 +43,6 @@ public class FeriadoController {
     public ResponseEntity<FeriadoModel> cadastrar(
             @RequestBody @Valid FeriadoRecordDto dto,
             @PathVariable Long configEmpresaId,
-            @PathVariable(name = "empresa_id") Long empresa_id,
             HttpServletRequest req
     ) {
         String authHeader = req.getHeader("Authorization");

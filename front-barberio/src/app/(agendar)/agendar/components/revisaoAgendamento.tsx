@@ -46,7 +46,7 @@ export const RevisaoAgendamento = ({
             <div className="space-y-1">
               <p className="font-bold">{nomeBarbeiro}</p>
               <p className="text-sm font-semibold text-muted-foreground">
-                Quantidade de Corte: {qtdCortes}
+                Quantidade de Cortes: {qtdCortes}
               </p>
             </div>
           </div>

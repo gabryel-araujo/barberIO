@@ -125,6 +125,7 @@ public class AgendamentoService {
         }
 
         EmpresaModel empresa = empresaO.get();
+        FuncionarioModel funcionario = funcionarioRepository.findById(barbeiroId).get();
 
         ZoneId zone = ZoneId.of("America/Sao_Paulo");
         LocalDate hoje = LocalDate.now(zone);
@@ -132,6 +133,9 @@ public class AgendamentoService {
         Duration intervalo = Duration.ofMinutes(empresa.getConfig_empresa().getIntervalo());
         LocalTime abertura = horarioFuncionamentoRepository.verificarAbertura(dia.getDayOfWeek().getValue());
         LocalTime fechamento = horarioFuncionamentoRepository.verificarFechamento(dia.getDayOfWeek().getValue());
+        LocalDateTime fechamento_ini = funcionario.getFechamento_ini();
+        LocalDateTime fechamento_fim = funcionario.getFechamento_fim();
+        boolean disponivel = true;
 
         if (abertura == null || fechamento == null) {
             throw new RuntimeException("Não é possível agendar: a empresa está fechada no dia e horário selecionado.");
@@ -159,7 +163,13 @@ public class AgendamentoService {
             boolean ocupado = periodosOcupados.stream()
                     .anyMatch(periodo -> !horario.isBefore(periodo[0]) && horario.isBefore(periodo[1]));
 
-            if (!ocupado) {
+            if(fechamento_ini != null && fechamento_fim != null) {
+                if(fechamento_ini.getDayOfWeek() == dia.getDayOfWeek()) {
+                    disponivel = horario.isBefore(LocalTime.from(fechamento_ini)) || horario.isAfter(LocalTime.from(fechamento_fim));
+                }
+            }
+
+            if (!ocupado && disponivel) {
                 horariosDisponiveis.add(horario);
             }
         }

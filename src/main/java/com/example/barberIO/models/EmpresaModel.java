@@ -34,7 +34,6 @@ public class EmpresaModel implements Serializable {
 	private LocalDateTime created_at;
 	
 	@OneToOne(mappedBy = "empresa", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonIgnore
 	private EnderecoModel endereco;
 
 	@OneToOne(mappedBy = "config_empresa", cascade = CascadeType.ALL, orphanRemoval = true)
