@@ -12,4 +12,6 @@ export interface Barbeiro {
   servicos?: any[];
   avatar?: string;
   tipo: string;
+  fechamento_ini?: Date;
+  fechamento_fim?: Date;
 }
