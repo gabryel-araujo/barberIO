@@ -1,7 +1,7 @@
 {
   "name": "BarberiO",
   "short_name": "BarberiO",
-  "start_url": "/",
+  "start_url": "/pwa-launcher.html",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",

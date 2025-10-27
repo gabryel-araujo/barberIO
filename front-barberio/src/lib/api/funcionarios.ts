@@ -130,7 +130,9 @@ export const PUTFuncionario = async (
   senha?: string,
   ativo?: boolean,
   avatar?: string,
-  tipo?: string
+  tipo?: string,
+  fechamento_ini?: string,
+  fechamento_fim?: string
 ) => {
   try {
     const response = await axiosInstance.put(
@@ -144,6 +146,8 @@ export const PUTFuncionario = async (
         ativo,
         avatar,
         tipo,
+        fechamento_ini,
+        fechamento_fim,
       },
       {
         headers: {
