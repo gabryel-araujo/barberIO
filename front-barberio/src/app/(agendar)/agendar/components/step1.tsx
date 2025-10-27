@@ -18,7 +18,7 @@ import { getEmpresaIdFromHref } from "@/utils/functions";
 
 export const Step1 = () => {
   const empresaIdRef = useRef<any>(null);
-  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [date, setDate] = useState<Date | undefined>(undefined);
   const [isMounted, setIsMounted] = useState(false);
   const { state, dispatch } = useForm();
   const [dadosEmpresa, setDadosEmpresa] =
@@ -68,13 +68,11 @@ export const Step1 = () => {
     const localDate = new Date(ano, mes - 1, dia + 1);
     return localDate.toISOString().slice(0, 10);
   });
-  console.log(arrayFeriados);
 
   const diasFechados =
     dadosEmpresa?.config_empresa?.horarios
       ?.filter((dia) => dia.aberto === false)
       .map((dia) => dia.codigo_dia) || [];
-  console.log("dias fechados: ", diasFechados);
 
   const isDataInvalida = (date: Date) => {
     const hoje = new Date();
@@ -177,7 +175,7 @@ export const Step1 = () => {
 
           <Button
             className="cursor-pointer bg-[#3f89c5]"
-            onClick={() => proximoPasso(state.data)}
+            onClick={() => proximoPasso(state.data as Date)}
           >
             Próximo
           </Button>
