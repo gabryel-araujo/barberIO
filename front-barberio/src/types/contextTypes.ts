@@ -8,7 +8,7 @@ export type AgendamentoProviderProps = {
 
 export type State = {
   currentStep: number;
-  data: Date;
+  data: Date | string;
   horario: string;
   barbeiro: Barbeiro;
   servico: Servico;

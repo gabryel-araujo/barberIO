@@ -12,7 +12,7 @@ import { AgendamentoReducer } from "./AgendamentoReducer";
 //Dados iniciais
 export const inicialData: State = {
   currentStep: 1,
-  data: new Date(),
+  data: "",
   horario: "",
   barbeiro: {
     id: 0,

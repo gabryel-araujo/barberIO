@@ -283,7 +283,7 @@ export const Step4 = () => {
             nomeServico={state.servico.nome}
             duracaoServico={state.servico.duracao}
             valorServico={state.servico.preco}
-            dataAgendamento={state.data}
+            dataAgendamento={state.data as Date}
             horarioAgendamento={state.horario}
             nomeCliente={state.nome}
             telefoneCliente={state.telefone}
