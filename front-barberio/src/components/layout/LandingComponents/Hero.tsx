@@ -5,7 +5,10 @@ import { ArrowRight, Play } from "lucide-react";
 
 const Hero = () => {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-background via-muted/30 to-background">
+    <section
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-background via-muted/30 to-background"
+      id="home"
+    >
       <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
 
       <div className="container mx-auto px-4 py-20 relative z-10">

@@ -130,3 +130,7 @@
     background-color: #3f88c599;
   }
 }
+
+html {
+  scroll-behavior: smooth;
+}
