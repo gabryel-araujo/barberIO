@@ -11,8 +11,15 @@ const Navbar = () => {
     <nav className="fixed top-0 w-full bg-[#1a1f2c] backdrop-blur-lg border-b border-border z-50 ">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center">
-            <img src={"/vibrante.png"} alt="BarberiO" className="h-8" />
+          <div className="flex items-center cursor-pointer">
+            <img
+              src={"/vibrante.png"}
+              alt="BarberiO"
+              className="h-8"
+              onClick={() => {
+                router.push("#home");
+              }}
+            />
           </div>
 
           <div className="hidden md:flex items-center space-x-8 ">
@@ -34,6 +41,12 @@ const Navbar = () => {
             >
               Depoimentos
             </a>
+            <a
+              href="#precos"
+              className="text-white hover:text-slate-300 transition-colors"
+            >
+              Preços
+            </a>
           </div>
 
           <div className="flex items-center gap-4">
@@ -51,7 +64,6 @@ const Navbar = () => {
               className="bg-linear-to-r from-[#575BEA] via-[#3184E7] to-[#08B0E5] hover:opacity-80"
               onClick={() => {
                 router.push(`${whatsapp}83987482651`);
-                //  href={`${whatsapp}${cliente.telefone}`}
               }}
             >
               Começar
