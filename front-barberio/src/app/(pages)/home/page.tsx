@@ -53,10 +53,10 @@ const Home = () => {
         imagemBarbaria="/imagens/barbeariaBeta.png"
         emailBarbearia={data?.email!}
         telefoneBarbearia={formatarTelefone(data?.telefone!)}
-        ruaBarbearia="Rua Coronel Joaquim P. Santos" //{data?.endereco?.rua!}
-        numeroBarbearia="399" //{data?.endereco?.numero!}
-        bairroBarbearia="Valantina" //{data?.endereco?.bairro!}
-        cidadeBarbearia="João Pessoa - PB" //{data?.endereco?.cidade!}
+        ruaBarbearia={data?.endereco?.rua!}
+        numeroBarbearia={data?.endereco?.numero!}
+        bairroBarbearia={data?.endereco?.bairro!}
+        cidadeBarbearia={data?.endereco?.cidade!}
       />
       <div className="flex flex-col items-center md:flex-row ">
         <div className="flex items-center">
