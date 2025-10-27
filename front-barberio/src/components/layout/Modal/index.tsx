@@ -28,7 +28,10 @@ export function Modal({
 }: ModalProps) {
   return (
     <Dialog open={open}>
-      <DialogContent className="max-h-[90vh] sm:max-w-2xl overflow-auto">
+      <DialogContent
+        className="max-h-[90vh] sm:max-w-2xl overflow-auto"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
