@@ -63,6 +63,12 @@ public class FuncionarioModel implements Serializable {
     @JsonIgnore
     private EmpresaModel empresa;
 
+    @Column(nullable = true)
+    private LocalDateTime fechamento_ini;
+
+    @Column(nullable = true)
+    private LocalDateTime fechamento_fim;
+
     public LocalDateTime getCreated_at() {
         return created_at;
     }
@@ -185,5 +191,21 @@ public class FuncionarioModel implements Serializable {
 
     public void setEmpresa(EmpresaModel empresa) {
         this.empresa = empresa;
+    }
+
+    public LocalDateTime getFechamento_ini() {
+        return fechamento_ini;
+    }
+
+    public void setFechamento_ini(LocalDateTime fechamento_ini) {
+        this.fechamento_ini = fechamento_ini;
+    }
+
+    public LocalDateTime getFechamento_fim() {
+        return fechamento_fim;
+    }
+
+    public void setFechamento_fim(LocalDateTime fechamento_fim) {
+        this.fechamento_fim = fechamento_fim;
     }
 }
