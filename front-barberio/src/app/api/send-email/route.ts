@@ -29,7 +29,7 @@ export async function POST(req: Request) {
   try {
     await transporter.sendMail({
       from: "BarberIO Notificações",
-      to: "gabryelaraujo71@gmail.com",
+      to: barbeiroObj.email,
       subject: "✂️ NOVO AGENDAMENTO",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9f9f9; padding: 20px;">
