@@ -36,20 +36,6 @@ export const GETFuncionarios = cache(async (): Promise<Barbeiro[]> => {
   }
 });
 
-<<<<<<< HEAD
-export const GETFuncionariosPublic = cache(async (): Promise<Barbeiro[]> => {
-  try {
-    const respose = await axiosInstance.get<Barbeiro[]>(
-      "/public/funcionarios",
-      {}
-    );
-    return respose.data;
-  } catch (error) {
-    console.error("Erro ao listar funcionarios", error);
-    throw error;
-  }
-});
-=======
 export const GETFuncionariosPublicos = cache(
   async (empresaId: string): Promise<Barbeiro[]> => {
     try {
@@ -63,7 +49,6 @@ export const GETFuncionariosPublicos = cache(
     }
   }
 );
->>>>>>> 3cd3750bcc961ab132d169e1a1f7cff37c54a0c8
 
 export const POSTFuncionario = async (
   nome: string,

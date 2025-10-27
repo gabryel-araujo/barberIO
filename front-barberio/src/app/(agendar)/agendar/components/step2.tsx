@@ -6,13 +6,9 @@ import { Award } from "lucide-react";
 import { inicialData, useForm } from "@/contexts/AgendamentoContextProvider";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
-<<<<<<< HEAD
-import { GETFuncionariosPublic } from "@/lib/api/funcionarios";
-=======
 import { GETFuncionariosPublicos } from "@/lib/api/funcionarios";
 import { getEmpresaIdFromHref } from "@/utils/functions";
 import { Badge } from "@/components/ui/badge";
->>>>>>> 3cd3750bcc961ab132d169e1a1f7cff37c54a0c8
 
 export const Step2 = () => {
   const { state, dispatch } = useForm();
@@ -21,11 +17,7 @@ export const Step2 = () => {
 
   const { data: barbeiros = [] } = useQuery({
     queryKey: ["barbeirosDisponivel"],
-<<<<<<< HEAD
-    queryFn: GETFuncionariosPublic,
-=======
     queryFn: () => GETFuncionariosPublicos(empresaId.current),
->>>>>>> 3cd3750bcc961ab132d169e1a1f7cff37c54a0c8
     //staleTime: 3000,
   });
 

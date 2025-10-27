@@ -1,5 +1,6 @@
 package com.example.barberIO.security;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -53,7 +54,29 @@ public class SecurityConfig {
                     .anyRequest().authenticated()
             )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(ex -> ex
+                        // Quando o usuário não está autenticado
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"error\":\"Usuário não autenticado\"}");
+                        })
+                        // Quando o usuário está autenticado, mas sem permissão
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"error\":\"Acesso negado\"}");
+                        })
+                )
+                // 🔥 ESSA LINHA É ESSENCIAL
+                .exceptionHandling(ex -> ex
+                        .accessDeniedHandler((req, res, e) -> {
+                            // Deixa o erro subir — NÃO trata aqui
+                            throw e;
+                        })
+                );
+        ;
 
 
         return http.build();

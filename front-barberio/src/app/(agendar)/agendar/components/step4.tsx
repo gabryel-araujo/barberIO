@@ -3,9 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
 import { Servico } from "@/types/servico";
-import { Calendar, Clock, Scissors, User } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Modal } from "@/components/layout/Modal";
 import { DadosCliente, FormData, schema } from "./dadosCliente";
@@ -50,32 +48,6 @@ export const Step4 = () => {
   } = useFormZod<FormData>({ resolver: zodResolver(schema) });
 
   const urlApi = "/api/send-email";
-
-  // const queryClient = useQueryClient();
-
-  const review = [
-    {
-      icon: <Calendar className="texto-azul" />,
-      value: state.data.toLocaleDateString("pt-BR", {
-        day: "2-digit",
-        month: "long",
-      }),
-    },
-    {
-      icon: <User className="texto-azul" />,
-      value: state.barbeiro.nome,
-    },
-    ,
-    {
-      icon: <Clock className="texto-azul" />,
-      value: state.horario,
-    },
-    ,
-    {
-      icon: <Scissors className="texto-azul" />,
-      value: state.servico.nome,
-    },
-  ];
 
   function proximoPasso() {
     //gabryel: removi o dispatch daqui para assim que clicar já atualizar o estado no componente
@@ -123,11 +95,7 @@ export const Step4 = () => {
     );
 
     if (response.length == 0) {
-<<<<<<< HEAD
-      const response = await POSTCliente(
-=======
       const novo = await POSTCliente(
->>>>>>> 3cd3750bcc961ab132d169e1a1f7cff37c54a0c8
         nomeCapitalizado(data.name),
         data.phone,
         Number(empresaId.current)
@@ -191,13 +159,7 @@ export const Step4 = () => {
         // });
 
         setIsLoading(true);
-<<<<<<< HEAD
-        push("/");
-        // setTimeout(() => {
-        // }, 2000);
-=======
         push(`/home?ref=${empresaId.current}`);
->>>>>>> 3cd3750bcc961ab132d169e1a1f7cff37c54a0c8
       }
       setOpenModalRevisao(!openModalRevisao);
     } catch (error) {
