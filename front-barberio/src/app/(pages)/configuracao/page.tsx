@@ -63,8 +63,6 @@ const configuracao = () => {
     useState<z.infer<typeof empresaSchema>>();
   const [openModalExcluir, setOpenModalExcluir] = useState(false);
 
-  const empresaId = window.location.href.split("=")[1];
-
   const { data, error } = useQuery<
     z.infer<typeof empresaSchema>,
     AxiosError<ErrorResponse>
