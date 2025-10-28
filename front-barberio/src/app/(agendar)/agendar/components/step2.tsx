@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
 import { Award } from "lucide-react";
@@ -13,17 +13,19 @@ import { Badge } from "@/components/ui/badge";
 export const Step2 = () => {
   const { state, dispatch } = useForm();
   const [barbeiro, setbarbeiro] = useState(state.barbeiro);
-  const empresaId = useRef<any>(null);
+  //const empresaId = useRef<any>(null);
+
+  const empresaId = getEmpresaIdFromHref();
 
   const { data: barbeiros = [] } = useQuery({
     queryKey: ["barbeirosDisponivel"],
-    queryFn: () => GETFuncionariosPublicos(empresaId.current),
+    queryFn: () => GETFuncionariosPublicos(empresaId),
     //staleTime: 3000,
   });
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      empresaId.current = getEmpresaIdFromHref();
+      //empresaId.current = getEmpresaIdFromHref();
     }
   }, []);
 
@@ -90,9 +92,11 @@ export const Step2 = () => {
                   className="h-20 w-20 rounded-full border-4 border-[#3f89c5] object-cover"
                 />
               ) : (
-                <div className="h-20 w-20 rounded-full bg-slate-700 flex items-center justify-center text-white font-bold text-3xl border border-slate-700">
-                  {barber.nome[0]}
-                </div>
+                <img
+                  src={"/imagens/default.png"}
+                  alt="imagem do barbeiro"
+                  className="h-20 w-20 rounded-full border-4 border-[#3f89c5] object-cover"
+                />
               )}
 
               <div className="flex flex-col gap-2">

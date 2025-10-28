@@ -14,7 +14,7 @@ const Hero = () => {
       <div className="container mx-auto px-4 py-20 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="animate-fade-in">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 leading-tight">
+            <h1 className="text-5xl md:text-6xl font-black lg:text-7xl text-[#1A1F2C]  mb-6 leading-tight">
               Simplifique a gestão da sua{" "}
               <span className="text-primary">barbearia</span> com o BarberiO
             </h1>
@@ -36,9 +36,9 @@ const Hero = () => {
           <div className="animate-scale-in relative">
             <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full"></div>
             <img
-              src="/landing.png"
+              src="/imagens/Morckup2.png"
               alt="Dashboard BarberiO"
-              className="relative rounded-2xl shadow-2xl w-full"
+              className="relative rounded-2xl  w-full"
             />
           </div>
         </div>
