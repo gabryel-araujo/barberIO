@@ -15,7 +15,7 @@ import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { CalendarX2 } from "lucide-react";
 import { ptBR } from "date-fns/locale";
-import { normalizarData } from "@/utils/functions";
+import { getEmpresaIdFromHref, normalizarData } from "@/utils/functions";
 import { toast } from "sonner";
 import { DialogComponent } from "@/components/layout/DialogComponent";
 
@@ -24,9 +24,14 @@ export const AgendamentoClientes = () => {
   const clienteLogado = Cookies.get("telefoneCliente");
   const [open, setOpen] = useState(false);
   const idSelecionadoRef = useRef(0);
+  const empresaIdRef = useRef("");
+
+  if (typeof window !== "undefined") {
+    empresaIdRef.current = getEmpresaIdFromHref();
+  }
 
   async function fetchData() {
-    const response = await GETAgendamentos();
+    const response = await GETAgendamentos(empresaIdRef.current);
     setAgendamentos(response);
   }
 
