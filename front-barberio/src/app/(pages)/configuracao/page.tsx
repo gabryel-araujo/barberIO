@@ -71,7 +71,7 @@ const configuracao = () => {
   >({
     queryKey: ["empresas"],
     queryFn: async () => {
-      const response = await axios.get(`${baseUrl}/empresas/${empresaId}`, {
+      const response = await axios.get(`${baseUrl}/empresa`, {
         headers: {
           Authorization: `Bearer ${Cookies.get("authToken")}`,
         },
@@ -271,7 +271,7 @@ const configuracao = () => {
   };
 
   function copiarLink() {
-    const LinkInstagram = `${linkBarberio}/home?ref=${empresaId}`;
+    const LinkInstagram = `${linkBarberio}/home?ref=${data?.id}`;
     navigator.clipboard.writeText(LinkInstagram);
     toast.success("Copiado!");
   }
