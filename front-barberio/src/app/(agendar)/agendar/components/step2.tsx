@@ -13,17 +13,19 @@ import { Badge } from "@/components/ui/badge";
 export const Step2 = () => {
   const { state, dispatch } = useForm();
   const [barbeiro, setbarbeiro] = useState(state.barbeiro);
-  const empresaId = useRef<any>(null);
+  //const empresaId = useRef<any>(null);
+
+  const empresaId = getEmpresaIdFromHref();
 
   const { data: barbeiros = [] } = useQuery({
     queryKey: ["barbeirosDisponivel"],
-    queryFn: () => GETFuncionariosPublicos(empresaId.current),
+    queryFn: () => GETFuncionariosPublicos(empresaId),
     //staleTime: 3000,
   });
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      empresaId.current = getEmpresaIdFromHref();
+      //empresaId.current = getEmpresaIdFromHref();
     }
   }, []);
 
