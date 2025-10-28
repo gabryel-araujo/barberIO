@@ -14,6 +14,7 @@ public record FuncionarioPublicoRecordDto(
         boolean disponivel,
         List<ServiceModel> servicos,
         boolean ativo,
-		String avatar) {
+		String avatar,
+        String email) {
 }
 
