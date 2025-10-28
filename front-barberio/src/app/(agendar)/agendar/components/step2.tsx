@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
-import { Award } from "lucide-react";
+import { Award, Sparkles } from "lucide-react";
 import { inicialData, useForm } from "@/contexts/AgendamentoContextProvider";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
@@ -99,8 +99,17 @@ export const Step2 = () => {
                 />
               )}
 
-              <div className="flex flex-col gap-2">
-                <p className="text-lg font-bold flex gap-3">{barber.nome}</p>
+              <div className="w-full flex flex-col gap-2">
+                <div className="w-full flex items-center justify-between">
+                  <p className="text-lg font-bold flex gap-3">{barber.nome}</p>
+                  {barber.nome === barbeiro.nome ? (
+                    <Badge>
+                      <Sparkles /> Selecionado
+                    </Badge>
+                  ) : (
+                    ""
+                  )}
+                </div>
                 <section className="flex items-center gap-1">
                   {/* todo: colocar avaliações futuramente */}
                   {/* <Star color="orange" fill="orange" />

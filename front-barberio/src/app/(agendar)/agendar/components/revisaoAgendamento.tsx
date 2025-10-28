@@ -39,7 +39,9 @@ export const RevisaoAgendamento = ({
           </p>
           <div className="flex gap-2 items-center">
             <img
-              src={fotoBarbeiro}
+              src={`${
+                fotoBarbeiro === "" ? "/imagens/default.png" : fotoBarbeiro
+              }`}
               alt="imagem do barbeiro"
               className="h-16 w-16 rounded-full border-4 border-[#3f89c5] object-cover"
             />
