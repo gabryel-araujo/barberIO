@@ -1,9 +1,9 @@
-import { getEmpresaIdFromHref } from "@/utils/functions";
+import Cookies from "js-cookie";
 import {
   Calendar,
   Users,
   Scissors,
-  BarChart,
+  //BarChart,
   User,
   Home,
   Settings,
@@ -18,11 +18,8 @@ type MenuItem = {
   permission: string | "";
 };
 
-var empresaId = "";
-
-if (typeof window !== "undefined") {
-  empresaId = getEmpresaIdFromHref();
-}
+let empresaId;
+empresaId = Cookies.get("ref");
 
 const menuItems: MenuItem[] = [
   {
@@ -32,43 +29,43 @@ const menuItems: MenuItem[] = [
     label: "Home",
     permission: "",
   },
+  // {
+  //   path: `/dashboard`,
+  //   ref: "/dashboard",
+  //   icon: <BarChart className="h-5 w-5" />,
+  //   label: "Dashboard",
+  //   permission: "GESTOR",
+  // },
   {
-    path: `/dashboard?ref=${empresaId}`,
-    ref: "/dashboard",
-    icon: <BarChart className="h-5 w-5" />,
-    label: "Dashboard",
-    permission: "GESTOR",
-  },
-  {
-    path: `/agendamentos?ref=${empresaId}`,
+    path: `/agendamentos`,
     ref: "/agendamentos",
     icon: <Calendar className="h-5 w-5" />,
     label: "Agendamentos",
     permission: "GESTOR",
   },
   {
-    path: `/clientes?ref=${empresaId}`,
+    path: `/clientes`,
     ref: "/clientes",
     icon: <User className="h-5 w-5" />,
     label: "Clientes",
     permission: "GESTOR",
   },
   {
-    path: `/barbeiros?ref=${empresaId}`,
+    path: `/barbeiros`,
     ref: "/barbeiros",
     icon: <Users className="h-5 w-5" />,
     label: "Barbeiros",
     permission: "GESTOR",
   },
   {
-    path: `/servicos?ref=${empresaId}`,
+    path: `/servicos`,
     ref: "/servicos",
     icon: <Scissors className="h-5 w-5" />,
     label: "Serviços",
     permission: "GESTOR",
   },
   {
-    path: `/configuracao?ref=${empresaId}`,
+    path: `/configuracao`,
     ref: "/configuracao",
     icon: <Settings className="h-5 w-5" />,
     label: "Configuração",
