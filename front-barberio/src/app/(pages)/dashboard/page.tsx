@@ -17,7 +17,11 @@ import { ConversaoData, obterHoras, obterNomeMes } from "@/lib/utils";
 import { AgendamentoPublic } from "@/types/agendamento";
 import { Barbeiro } from "@/types/barbeiro";
 import { Servico } from "@/types/servico";
-import { formatarTelefone, normalizarData } from "@/utils/functions";
+import {
+  formatarTelefone,
+  getEmpresaIdFromHref,
+  normalizarData,
+} from "@/utils/functions";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Calendar, Scissors, Users2 } from "lucide-react";
@@ -31,6 +35,7 @@ const dashboard = () => {
   const [hoje] = useState(new Date());
   const [expandido, setExpandido] = useState<number | null>(null);
   const [expandidoProximo, setExpandidoProximo] = useState<number | null>(null);
+  const empresaId = getEmpresaIdFromHref();
 
   useQuery({
     queryKey: ["agendamentos", "serviços"],
@@ -40,11 +45,14 @@ const dashboard = () => {
           Authorization: `Bearer ${Cookies.get("authToken")}`,
         },
       });
-      const responseServico = await axios.get(`${baseUrl}/public/servico`, {
-        headers: {
-          Authorization: `Bearer ${Cookies.get("authToken")}`,
-        },
-      });
+      const responseServico = await axios.get(
+        `${baseUrl}/public/servico/${empresaId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("authToken")}`,
+          },
+        }
+      );
       const responseBarbeiro = await axios.get(
         `${baseUrl}/public/funcionarios`,
         {
