@@ -132,7 +132,8 @@ export const PUTFuncionario = async (
   avatar?: string,
   tipo?: string,
   fechamento_ini?: string,
-  fechamento_fim?: string
+  fechamento_fim?: string,
+  atendimentos?: number
 ) => {
   try {
     const response = await axiosInstance.put(
@@ -148,6 +149,7 @@ export const PUTFuncionario = async (
         tipo,
         fechamento_ini,
         fechamento_fim,
+        atendimentos,
       },
       {
         headers: {

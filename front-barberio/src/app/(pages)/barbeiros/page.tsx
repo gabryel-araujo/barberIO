@@ -268,7 +268,8 @@ const barbeiros = () => {
         urlPublica,
         barbeiro.tipo,
         barbeiro.fechamento_ini,
-        barbeiro.fechamento_fim
+        barbeiro.fechamento_fim,
+        barbeiroSelecionado.atendimentos
       );
 
       if (response.status === 200) {
