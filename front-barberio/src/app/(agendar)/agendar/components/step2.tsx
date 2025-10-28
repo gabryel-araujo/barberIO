@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
 import { Award } from "lucide-react";
@@ -92,9 +92,11 @@ export const Step2 = () => {
                   className="h-20 w-20 rounded-full border-4 border-[#3f89c5] object-cover"
                 />
               ) : (
-                <div className="h-20 w-20 rounded-full bg-slate-700 flex items-center justify-center text-white font-bold text-3xl border border-slate-700">
-                  {barber.nome[0]}
-                </div>
+                <img
+                  src={"/imagens/default.png"}
+                  alt="imagem do barbeiro"
+                  className="h-20 w-20 rounded-full border-4 border-[#3f89c5] object-cover"
+                />
               )}
 
               <div className="flex flex-col gap-2">
