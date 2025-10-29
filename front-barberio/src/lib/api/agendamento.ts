@@ -28,17 +28,19 @@ export const agendar = async (
   }
 };
 
-export const GETAgendamentos = cache(async (): Promise<AgendamentoPublic[]> => {
-  try {
-    const respose = await axiosInstance.get<AgendamentoPublic[]>(
-      "/agendamentos/1"
-    );
-    return respose.data;
-  } catch (error) {
-    console.error("Erro ao listar agendamentos", error);
-    throw error;
+export const GETAgendamentos = cache(
+  async (empresaId: string): Promise<AgendamentoPublic[]> => {
+    try {
+      const respose = await axiosInstance.get<AgendamentoPublic[]>(
+        `/agendamentos/${empresaId}`
+      );
+      return respose.data;
+    } catch (error) {
+      console.error("Erro ao listar agendamentos", error);
+      throw error;
+    }
   }
-});
+);
 
 export const DELETEAgendamento = cache(
   async (id: number): Promise<AxiosResponse<any, any>> => {

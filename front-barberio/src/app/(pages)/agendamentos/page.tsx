@@ -19,7 +19,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { CalendarX2, Clock, User, Scissors, DollarSign } from "lucide-react";
 import { DialogComponent } from "@/components/layout/DialogComponent";
 import { toast } from "sonner";
-import { normalizarData } from "@/utils/functions";
+import { getEmpresaIdFromHref, normalizarData } from "@/utils/functions";
 
 const agendamentos = () => {
   const [open, setOpen] = useState(false);
@@ -33,6 +33,11 @@ const agendamentos = () => {
   const [selecionada, setSelecionada] = useState(
     format(Date.now(), "dd 'de' MMMM, yyyy", { locale: ptBR })
   );
+  const empresaIdRef = useRef("");
+
+  if (typeof window !== "undefined") {
+    empresaIdRef.current = getEmpresaIdFromHref();
+  }
 
   const agendamentosFiltradosHoje = agendamentos
     .filter(
@@ -59,7 +64,7 @@ const agendamentos = () => {
   //usePlaySom(agendamentosFiltradosHoje ?? []);
 
   async function fetchData() {
-    const response = await GETAgendamentos();
+    const response = await GETAgendamentos(empresaIdRef.current);
     setAgendamentos(response);
   }
 

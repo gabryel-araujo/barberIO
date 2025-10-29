@@ -66,7 +66,8 @@ public class FuncionarioController {
         		funcionario.isDisponivel(),
         		funcionario.getServicos(),
         		funcionario.isAtivo(),
-				funcionario.getAvatar()
+				funcionario.getAvatar(),
+                funcionario.getEmail()
     )).toList();
         return ResponseEntity.status(HttpStatus.OK).body(dtos);
     }
