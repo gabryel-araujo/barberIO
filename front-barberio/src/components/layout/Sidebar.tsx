@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import MenuItems from "./ItemMenu";
+
 import { usePathname, useRouter } from "next/navigation";
 import InstallButton from "../../../components/InstallButton";
 import { useState, useRef, useEffect } from "react";
@@ -8,6 +8,7 @@ import { User, LogOut, LogIn, EllipsisVertical } from "lucide-react";
 import { validarToken } from "@/utils/functions";
 import { tokenType } from "@/types/tokenType";
 import Cookies from "js-cookie";
+import { useMenuItems } from "./ItemMenu";
 
 interface SideBarProps {
   onClick?: () => void;
@@ -17,6 +18,7 @@ export const Sidebar = ({ onClick }: SideBarProps) => {
   const pathname = usePathname();
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const menuItems = useMenuItems();
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -77,7 +79,7 @@ export const Sidebar = ({ onClick }: SideBarProps) => {
         {/* <span className="text-[#3f88c5]">Barber</span>iO */}
         {/* </p> */}
 
-        {MenuItems.map((menu) => {
+        {menuItems.map((menu) => {
           // Exibe item se permission === "" (público) ou se bate com role do usuário
           const podeExibir =
             menu.permission === "" || user?.role === menu.permission;
