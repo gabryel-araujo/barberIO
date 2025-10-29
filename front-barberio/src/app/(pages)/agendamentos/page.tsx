@@ -19,8 +19,9 @@ import { Calendar } from "@/components/ui/calendar";
 import { CalendarX2, Clock, User, Scissors, DollarSign } from "lucide-react";
 import { DialogComponent } from "@/components/layout/DialogComponent";
 import { toast } from "sonner";
-import { getEmpresaIdFromHref, normalizarData } from "@/utils/functions";
-
+import { normalizarData } from "@/utils/functions";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 const agendamentos = () => {
   const [open, setOpen] = useState(false);
   const idSelecionadoRef = useRef(0);
@@ -33,11 +34,43 @@ const agendamentos = () => {
   const [selecionada, setSelecionada] = useState(
     format(Date.now(), "dd 'de' MMMM, yyyy", { locale: ptBR })
   );
-  const empresaIdRef = useRef("");
+  // const empresaIdRef = useRef("");
 
-  if (typeof window !== "undefined") {
-    empresaIdRef.current = getEmpresaIdFromHref();
+  // if (typeof window !== "undefined") {
+  //   empresaIdRef.current = getEmpresaIdFromHref();
+  // }
+  const [empresaId, setEmpresaId] = useState<string | null>(null);
+  const router = useRouter();
+
+  // 🔥 Captura o empresaId (URL ou cookie)
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const refFromUrl = urlParams.get("ref");
+    const refFromCookie = Cookies.get("ref");
+
+    if (refFromUrl) {
+      Cookies.set("ref", refFromUrl, { expires: 7 });
+      setEmpresaId(refFromUrl);
+    } else if (refFromCookie) {
+      router.replace(`/agendamentos?ref=${refFromCookie}`);
+      setEmpresaId(refFromCookie);
+    }
+  }, [router]);
+
+  // 🔄 Busca dados somente após empresaId estar pronto
+  async function fetchData() {
+    if (!empresaId) return;
+    try {
+      const response = await GETAgendamentos(empresaId);
+      setAgendamentos(response);
+    } catch (error) {
+      console.error("Erro ao carregar agendamentos:", error);
+    }
   }
+
+  useEffect(() => {
+    fetchData();
+  }, [empresaId]);
 
   const agendamentosFiltradosHoje = agendamentos
     .filter(
@@ -63,14 +96,14 @@ const agendamentos = () => {
   //EFEITO SONORO
   //usePlaySom(agendamentosFiltradosHoje ?? []);
 
-  async function fetchData() {
-    const response = await GETAgendamentos(empresaIdRef.current);
-    setAgendamentos(response);
-  }
+  // async function fetchData() {
+  //   const response = await GETAgendamentos(empresaIdRef.current);
+  //   setAgendamentos(response);
+  // }
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
 
   async function handleCancel() {
     console.log(idSelecionadoRef.current);

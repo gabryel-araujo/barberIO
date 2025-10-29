@@ -57,6 +57,11 @@ export const Sidebar = ({ onClick }: SideBarProps) => {
     if (tokenValido) {
       setUser(tokenValido);
       setIsLoggedIn(true);
+
+      // 🔥 Garante que o ref é persistente no cookie
+      if (tokenValido.empresa_id) {
+        Cookies.set("ref", String(tokenValido.empresa_id), { expires: 7 });
+      }
     }
 
     document.addEventListener("mousedown", handleClickOutside);
