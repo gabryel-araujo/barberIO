@@ -57,6 +57,7 @@ import { Label } from "@/components/ui/label";
 import { validarToken } from "@/utils/functions";
 import { format } from "date-fns";
 import { Card } from "@/components/ui/card";
+import { redirect, useRouter } from "next/navigation";
 // import axiosInstance from "@/lib/axios";
 
 const barbeiros = () => {
@@ -71,7 +72,7 @@ const barbeiros = () => {
   const avatarRef = useRef<HTMLInputElement>(null);
 
   const usuario = validarToken();
-
+  const router = useRouter();
   const formSchema = z.object({
     nome: z
       .string()
@@ -276,6 +277,13 @@ const barbeiros = () => {
         toast.error("Erro na requisição! Verifique os dados");
       } else {
         toast.error("Oops, ocorreu um erro!");
+      }
+
+      if (barbeiroSelecionado.id === usuario?.id) {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        toast.warning("Faça Login para validação");
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        router.replace("/login");
       }
 
       dispatch({
