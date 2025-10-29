@@ -329,7 +329,7 @@ const servicos = () => {
                     }}
                     variant="secondary"
                     type="button"
-                    className="bg-slate-800 text-white hover:bg-slate-700 rounded-md px-4 py-1.5 text-sm font-medium transition-all duration-200 flex items-center gap-1.5"
+                    className=" bg-slate-700 hover:bg-slate-600 text-white  rounded-md px-4 py-1.5 text-sm font-medium transition-all duration-200 flex items-center gap-1.5"
                   >
                     <svg
                       className="w-3.5 h-3.5"

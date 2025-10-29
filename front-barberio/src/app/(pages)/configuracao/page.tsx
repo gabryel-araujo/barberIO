@@ -13,15 +13,7 @@ import {
 } from "@/components/ui/form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Building2,
-  Calendar,
-  Clock,
-  Copy,
-  Edit,
-  Plus,
-  Trash2,
-} from "lucide-react";
+import { Building2, Calendar, Clock, Edit, Plus, Trash2 } from "lucide-react";
 import { useForm, useWatch } from "react-hook-form";
 import { empresaSchema, formSchemaFeriado } from "./schemas/schemas";
 import { z } from "zod";
@@ -315,14 +307,9 @@ const configuracao = () => {
                     <TitulosCards
                       Titulos="Informações da Barbearia"
                       subtitulo="Configure as informações básicas do seu estabelecimento"
-                    />
-                    <Button
+                      tituloButton="Link de agendamento"
                       onClick={copiarLink}
-                      type="button"
-                      className="cursor-pointer bg-primary text-sm flex gap-3 items-center"
-                    >
-                      <Copy size={20} /> Link de agendamento
-                    </Button>
+                    />
                   </div>
                   <div className=" grid grid-cols-2 gap-4 items-center">
                     <FormField
