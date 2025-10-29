@@ -86,7 +86,7 @@ export function BarberCard({
   return (
     <Card key={barbeiro.id}>
       <div className="rounded-t-md p-3 bg-slate-800 flex justify-start items-center gap-3">
-        <div className="relative border rounded-full h-14 min-w-14 bg-slate-700 items-center justify-center flex text-white">
+        <div className="relative border-2 border-[#3f89c5]  rounded-full h-14 min-w-14 bg-slate-700 items-center justify-center flex text-white">
           {barbeiro.avatar !== null ? (
             <img
               src={`${barbeiro?.avatar || "/imagens/default.png"}`}
