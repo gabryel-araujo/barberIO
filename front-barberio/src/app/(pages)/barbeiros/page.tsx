@@ -57,7 +57,7 @@ import { Label } from "@/components/ui/label";
 import { validarToken } from "@/utils/functions";
 import { format } from "date-fns";
 import { Card } from "@/components/ui/card";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 // import axiosInstance from "@/lib/axios";
 
 const barbeiros = () => {
