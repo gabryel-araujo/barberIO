@@ -42,6 +42,25 @@ export const GETAgendamentos = cache(
   }
 );
 
+export const GETAgendamentosAdmin = cache(
+  async (): Promise<AgendamentoPublic[]> => {
+    try {
+      const respose = await axiosInstance.get<AgendamentoPublic[]>(
+        `/admin/agendamentos/`,
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("authToken")}`,
+          },
+        }
+      );
+      return respose.data;
+    } catch (error) {
+      console.error("Erro ao listar agendamentos", error);
+      throw error;
+    }
+  }
+);
+
 export const DELETEAgendamento = cache(
   async (id: number): Promise<AxiosResponse<any, any>> => {
     try {
