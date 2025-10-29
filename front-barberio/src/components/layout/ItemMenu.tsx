@@ -1,14 +1,6 @@
 import Cookies from "js-cookie";
-import {
-  Calendar,
-  Users,
-  Scissors,
-  //BarChart,
-  User,
-  Home,
-  Settings,
-} from "lucide-react";
-import { ReactNode, useMemo, useRef } from "react";
+import { Calendar, Users, Scissors, User, Home, Settings } from "lucide-react";
+import { ReactNode, useMemo } from "react";
 
 export type MenuItem = {
   path: string;
@@ -19,25 +11,17 @@ export type MenuItem = {
 };
 
 export function useMenuItems() {
-  const empresaId = useRef<string | undefined>("");
-  empresaId.current = Cookies.get("ref");
-  console.log(empresaId.current);
+  const empresaId = Cookies.get("ref") || ""; // lê direto do cookie
+
   return useMemo(
     () => [
       {
-        path: `/home?ref=${empresaId.current}`,
+        path: `/home?ref=${empresaId}`,
         ref: "/home",
         icon: <Home className="h-5 w-5" />,
         label: "Home",
         permission: "",
       },
-      // {
-      //   path: `/dashboard`,
-      //   ref: "/dashboard",
-      //   icon: <BarChart className="h-5 w-5" />,
-      //   label: "Dashboard",
-      //   permission: "GESTOR",
-      // },
       {
         path: `/agendamentos`,
         ref: "/agendamentos",

@@ -16,17 +16,38 @@ import { z } from "zod";
 import axios, { AxiosError } from "axios";
 import { ErrorResponse } from "../configuracao/page";
 import { baseUrl } from "@/lib/baseUrl";
-import { SalvarEmpresaCookie } from "../../../../components/salvarEmpresaCookie";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const Home = () => {
-  const gestorLogado = Cookies.get("authToken");
-  const empresaId = window.location.href.split("=")[1];
+  const router = useRouter();
+  const [empresaId, setEmpresaId] = useState<string | null>(null);
 
+  const gestorLogado = Cookies.get("authToken");
+
+  // 🔥 Captura o empresaId de forma segura
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const refFromUrl = urlParams.get("ref");
+    const refFromCookie = Cookies.get("ref");
+
+    if (refFromUrl) {
+      // Garante que o cookie também tem o ref
+      Cookies.set("ref", refFromUrl, { expires: 7 });
+      setEmpresaId(refFromUrl);
+    } else if (refFromCookie) {
+      // Se não tem ref na URL, redireciona pra incluir
+      router.replace(`/home?ref=${refFromCookie}`);
+      setEmpresaId(refFromCookie);
+    }
+  }, [router]);
+
+  // 🚫 Só faz a requisição se o empresaId estiver pronto
   const { data } = useQuery<
     z.infer<typeof empresaSchema>,
     AxiosError<ErrorResponse>
   >({
-    queryKey: ["empresas"],
+    queryKey: ["empresas", empresaId],
     queryFn: async () => {
       const response = await axios.get(`${baseUrl}/empresas/${empresaId}`, {
         headers: {
@@ -35,13 +56,21 @@ const Home = () => {
       });
       return response.data;
     },
-    staleTime: 5 * (60 * 1000),
+    enabled: !!empresaId, // só executa quando empresaId estiver definido
+    staleTime: 5 * 60 * 1000,
   });
 
+  if (!empresaId || !data) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[#e6f0ff]">
+        <p>Carregando...</p>
+      </div>
+    );
+  }
   return (
     <div className="w-full flex min-h-screen flex-col items-center justify-center space-y-7 px-7 pt-7 md:pt-0 bg-[#e6f0ff]">
       <PrefetchAgendar />
-      <SalvarEmpresaCookie />
+
       {/* <p className="text-5xl font-bold text-center ">
         Bem-Vindo à <span className="text-primary">Barber</span>iO
       </p>
