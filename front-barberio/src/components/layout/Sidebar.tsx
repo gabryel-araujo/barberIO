@@ -4,7 +4,13 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import InstallButton from "../../../components/InstallButton";
 import { useState, useRef, useEffect } from "react";
-import { User, LogOut, LogIn, EllipsisVertical } from "lucide-react";
+import {
+  User,
+  LogOut,
+  LogIn,
+  EllipsisVertical,
+  MonitorCog,
+} from "lucide-react";
 import { validarToken } from "@/utils/functions";
 import { tokenType } from "@/types/tokenType";
 import Cookies from "js-cookie";
@@ -35,6 +41,10 @@ export const Sidebar = ({ onClick }: SideBarProps) => {
     } else {
       router.replace("/login");
     }
+  };
+
+  const redirectAdm = () => {
+    router.replace("/administracao");
   };
 
   // Alterna menu dropdown
@@ -87,7 +97,8 @@ export const Sidebar = ({ onClick }: SideBarProps) => {
         {menuItems.map((menu) => {
           // Exibe item se permission === "" (público) ou se bate com role do usuário
           const podeExibir =
-            menu.permission === "" || user?.role === menu.permission;
+            menu.permission === "" ||
+            menu.permission.includes(user?.role ?? "");
 
           if (!podeExibir) return null;
 
@@ -135,6 +146,15 @@ export const Sidebar = ({ onClick }: SideBarProps) => {
 
             {showDropdown && (
               <div className="absolute bottom-full left-0 right-0 mb-2 bg-[#2a2f3c] rounded-md shadow-lg border border-gray-600 z-50">
+                {user.role === "DEV" && (
+                  <button
+                    onClick={redirectAdm}
+                    className="flex items-center gap-3 w-full py-3 px-4 hover:bg-primary/20 text-primary hover:text-primary transition-colors"
+                  >
+                    <MonitorCog size={18} />
+                    Administracão
+                  </button>
+                )}
                 <button
                   onClick={handleAuthClick}
                   className="flex items-center gap-3 w-full py-3 px-4 hover:bg-red-600/20 text-red-400 hover:text-red-300 transition-colors"

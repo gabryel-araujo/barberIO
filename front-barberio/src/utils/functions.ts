@@ -69,6 +69,18 @@ export function validarToken() {
   return null;
 }
 
+export function validarTokenServer(token: string | undefined) {
+  if (!token) return null;
+
+  try {
+    const decoded = jose.decodeJwt(token);
+    return decoded; // deve conter { role: "DEV" | "USER" | ... }
+  } catch (error) {
+    console.error("Erro ao decodificar token:", error);
+    return null;
+  }
+}
+
 export function getEmpresaIdFromHref(): string {
   return window.location.href.split("=")[1];
 }
