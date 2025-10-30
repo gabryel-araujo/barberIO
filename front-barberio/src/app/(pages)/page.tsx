@@ -3,11 +3,12 @@
 import Benefits from "@/components/layout/LandingComponents/Benefits";
 import CTA from "@/components/layout/LandingComponents/CTA";
 import Features from "@/components/layout/LandingComponents/Features";
+import Footer from "@/components/layout/LandingComponents/Footer";
+// import FuturasImplementacoes from "@/components/layout/LandingComponents/futurasImplementacoes";
 import Hero from "@/components/layout/LandingComponents/Hero";
 import Navbar from "@/components/layout/LandingComponents/NavBar";
 import Prices from "@/components/layout/LandingComponents/Prices";
 import Testimonials from "@/components/layout/LandingComponents/Testimonials";
-import { Footer } from "react-day-picker";
 
 const Main = () => {
   return (
@@ -19,6 +20,7 @@ const Main = () => {
       <Testimonials />
       <Prices />
       <CTA />
+      {/* <FuturasImplementacoes /> */}
       <Footer />
     </div>
   );
