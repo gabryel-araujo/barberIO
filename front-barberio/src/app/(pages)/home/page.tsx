@@ -78,6 +78,7 @@ const Home = () => {
         Agende seu horário de forma rápida e fácil com os melhores barbeiros da
         cidade.
       </p> */}
+
       <BannerHome
         nomeBarbearia={data?.nome!}
         imagemBarbaria="/imagens/barbeariaBeta.png"
@@ -88,6 +89,7 @@ const Home = () => {
         bairroBarbearia={data?.endereco?.bairro!}
         cidadeBarbearia={data?.endereco?.cidade!}
       />
+
       <div className="flex flex-col items-center md:flex-row ">
         <div className="flex items-center">
           <Button asChild className="rounded-sm bg-primary h-12 w-60">
@@ -105,7 +107,6 @@ const Home = () => {
       </div>
       <MensagemPadrao />
       <AgendamentoClientes />
-      {/* <ImagemBarbearia /> */}
     </div>
   );
 };
