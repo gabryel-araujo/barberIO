@@ -4,6 +4,7 @@ import { MobileSidebar } from "@/components/layout/MobileSidebar";
 import useIsMobile from "@/app/hooks/useIsMobile";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation"; // 👈 importa o hook
+import { MenuConfig } from "./menuConfig";
 
 interface Props {
   children: React.ReactNode;
@@ -12,7 +13,7 @@ interface Props {
 export function LayoutResponsivo({ children }: Props) {
   const isMobile = useIsMobile();
   const [montado, setMontado] = useState(false);
-  const pathname = usePathname(); // 👈 pega a rota atual
+  const pathname = usePathname();
 
   useEffect(() => {
     setMontado(true);
@@ -22,11 +23,15 @@ export function LayoutResponsivo({ children }: Props) {
 
   // 👇 aqui você verifica se está na rota "/"
   const isHomePage = pathname === "/";
+  const isAdmin =
+    pathname === "/administracao" || pathname.startsWith("/administracao/");
 
   return (
     <div className={`${isMobile ? "flex flex-col" : "flex"} min-h-screen`}>
-      {!isHomePage && // 👈 só mostra sidebar se não estiver na home
+      {!isHomePage &&
+        !isAdmin && // 👈 só mostra sidebar se não estiver na home
         (isMobile ? <MobileSidebar /> : <Sidebar />)}
+      {isAdmin && <MenuConfig />}
       {children}
     </div>
   );

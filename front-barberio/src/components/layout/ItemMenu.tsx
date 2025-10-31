@@ -7,7 +7,7 @@ export type MenuItem = {
   ref?: string;
   icon: ReactNode;
   label: string;
-  permission: string | "";
+  permission: ("GESTOR" | "BARBERO" | "DEV" | "")[];
 };
 
 export function useMenuItems() {
@@ -27,35 +27,35 @@ export function useMenuItems() {
         ref: "/agendamentos",
         icon: <Calendar className="h-5 w-5" />,
         label: "Agendamentos",
-        permission: "GESTOR",
+        permission: ["GESTOR", "DEV"],
       },
       {
         path: `/clientes`,
         ref: "/clientes",
         icon: <User className="h-5 w-5" />,
         label: "Clientes",
-        permission: "GESTOR",
+        permission: ["GESTOR", "DEV"],
       },
       {
         path: `/barbeiros`,
         ref: "/barbeiros",
         icon: <Users className="h-5 w-5" />,
         label: "Barbeiros",
-        permission: "GESTOR",
+        permission: ["GESTOR", "DEV"],
       },
       {
         path: `/servicos`,
         ref: "/servicos",
         icon: <Scissors className="h-5 w-5" />,
         label: "Serviços",
-        permission: "GESTOR",
+        permission: ["GESTOR", "DEV"],
       },
       {
         path: `/configuracao`,
         ref: "/configuracao",
         icon: <Settings className="h-5 w-5" />,
         label: "Configuração",
-        permission: "GESTOR",
+        permission: ["GESTOR", "DEV"],
       },
     ],
     [empresaId]

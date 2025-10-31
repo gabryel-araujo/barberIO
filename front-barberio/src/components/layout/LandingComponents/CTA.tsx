@@ -12,9 +12,16 @@ const CTA = () => {
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center animate-fade-in">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6">
-            Leve sua barbearia para o próximo nível com o BarberiO
+            Leve sua{" "}
+            <span className="bg-gradient-to-r font-black from-primary to-blue-400 bg-clip-text text-transparent">
+              barbearia
+            </span>{" "}
+            para o próximo nível com o{" "}
+            <span className="bg-gradient-to-r font-black from-primary to-blue-400 bg-clip-text text-transparent">
+              BarberiO
+            </span>
           </h2>
-          <p className="text-xl text-muted-foreground mb-8">
+          <p className="text-xl text-muted-foreground mb-8 font-semibold">
             Junte-se a dezenas de barbearias que já otimizaram sua gestão
           </p>
           <Button
@@ -27,7 +34,7 @@ const CTA = () => {
             Comece agora
             <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
           </Button>
-          <p className="text-sm text-muted-foreground mt-4">
+          <p className="text-sm font-semibold text-muted-foreground mt-4">
             Sem cartão de crédito • Configuração em minutos
           </p>
         </div>
