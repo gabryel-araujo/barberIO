@@ -32,6 +32,7 @@ import {
   Filter,
   CalendarDays,
   X,
+  MessageCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { GETAgendamentosAdmin, DELETEAgendamento } from "@/lib/api/agendamento";
@@ -48,6 +49,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { formatarTelefone, formatCurrency } from "@/utils/functions";
+import Link from "next/link";
+import { whatsapp } from "@/lib/whstsapp";
 
 export default function Agendamentos() {
   const [agendamentos, setAgendamentos] = useState<AgendamentoPublic[]>([]);
@@ -125,12 +128,15 @@ export default function Agendamentos() {
       <div className="flex justify-between items-center border-b pb-2">
         <div className="flex flex-col">
           <span className="text-gray-900 font-semibold text-base flex items-center gap-2">
-            <User size={16} className="text-blue-500" />
+            <User size={20} className="text-blue-500" />
             {agendamento.cliente}
           </span>
-          <span className="text-sm text-gray-500">
-            📞 {formatarTelefone(agendamento.telefone) || "Sem telefone"}
-          </span>
+          <Link href={`${whatsapp}${agendamento.telefone}`}>
+            <span className="text-sm text-green-600 flex gap-2 items-center font-bold">
+              <MessageCircle size={20} className="text-green-600" />{" "}
+              {formatarTelefone(agendamento.telefone) || "Sem telefone"}
+            </span>
+          </Link>
         </div>
 
         <div className="flex items-center gap-2 text-green-600 font-semibold bg-green-50 px-3 py-1 rounded-full">
@@ -360,7 +366,12 @@ export default function Agendamentos() {
                           {format(a.horario, "p", { locale: ptBR })}
                         </TableCell>
                         <TableCell>{a.cliente}</TableCell>
-                        <TableCell>{formatarTelefone(a.telefone)}</TableCell>
+                        <TableCell>
+                          <Link href={`${whatsapp}${a.telefone}`}>
+                            {" "}
+                            {formatarTelefone(a.telefone)}
+                          </Link>
+                        </TableCell>
                         <TableCell>{a.barbeiro}</TableCell>
                         <TableCell>{a.servico}</TableCell>
                         <TableCell>
