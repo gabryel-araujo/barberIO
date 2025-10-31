@@ -1,4 +1,3 @@
-import { Card } from "@/components/ui/card";
 import { Mail, MapPin, Phone } from "lucide-react";
 
 interface BannerHomeProps {
