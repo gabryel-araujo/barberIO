@@ -1,9 +1,8 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { whatsapp } from "@/lib/whstsapp";
-import { TrendingUp } from "lucide-react";
+
 import { useRouter } from "next/navigation";
 
 const Navbar = () => {
