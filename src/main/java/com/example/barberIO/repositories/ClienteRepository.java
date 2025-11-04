@@ -14,8 +14,7 @@ import java.util.UUID;
 public interface ClienteRepository extends JpaRepository<ClienteModel, Long> {
 
     Optional<ClienteModel> findByTelefone(String telefone);
-
     List<ClienteModel> findAllByEmpresaId(Long empresa_id);
+    //Optional<ClienteModel> findClienteByTelefoneAndEmpresaId(String telefone, Long empresa_id);
 
-    Long empresa(EmpresaModel empresa);
 }

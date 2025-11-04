@@ -55,7 +55,6 @@ public class HorarioFuncionamentoController {
     public ResponseEntity<List<HorarioFuncionamentoModel>> cadastrarVariosHorarios(
             @RequestBody @Valid List<HorarioFuncionamentoRecordDto> horarioFuncionamentoRecordDto,
             @PathVariable(name = "config_empresa_id")Long config_empresa_id,
-            @PathVariable(name = "empresa_id") Long empresa_id,
             HttpServletRequest req
             ){
 

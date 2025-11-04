@@ -2,6 +2,7 @@ package com.example.barberIO.services;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 import com.example.barberIO.exceptions.RecursoDuplicadoException;
 import org.springframework.beans.BeanUtils;
@@ -88,6 +89,16 @@ public class EmpresaService {
 		
 		return ResponseEntity.status(HttpStatus.OK).body(empresa);
 
+	}
+
+	public boolean validarEmpresa(UUID uuid){
+		Optional<EmpresaModel> empresaO = empresaRepository.findByUuid(uuid);
+
+		if(empresaO.isEmpty()){
+			return false;
+		}
+
+		return true;
 	}
 
 }

@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.UUID;
+
 @Entity
 @Table(name = "empresa")
 
@@ -16,6 +18,13 @@ public class EmpresaModel implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	// ATENÇÃO! QUANDO FOR DESCOMENTAR ESSA LINHA, ALTERAR O BANCO DE DADOS PARA NÃO GERAR MAIS O UUID
+	// NESSE MOMENTO, O BANCO DE DADOS É RESPONSÁVEL POR GERAR ESSE UUID
+	// QUANDO A MIGRAÇÃO FOR CONCLUÍDA, O JAVA VAI GERAR O UUID E ELE DEVE SER REMOVIDO DO POSTGRESQL
+	//@GeneratedValue(strategy = GenerationType.UUID)
+	@Column(unique = true, updatable = false, insertable = false)
+	private UUID uuid;
 
 	@Column(nullable = false)
 	private String nome;
@@ -120,5 +129,13 @@ public class EmpresaModel implements Serializable {
 
 	public void setUltima_alteracao(LocalDateTime ultima_alteracao) {
 		this.ultima_alteracao = ultima_alteracao;
+	}
+
+	public UUID getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(UUID uuid) {
+		this.uuid = uuid;
 	}
 }

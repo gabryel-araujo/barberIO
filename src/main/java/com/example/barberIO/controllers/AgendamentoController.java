@@ -4,8 +4,12 @@ import com.example.barberIO.dtos.AgendamentoRecordDto;
 import com.example.barberIO.dtos.ResponseAgendamentoRecordDto;
 import com.example.barberIO.exceptions.RecursoNaoEncontradoException;
 import com.example.barberIO.models.AgendamentoModel;
+import com.example.barberIO.models.EmpresaModel;
 import com.example.barberIO.repositories.AgendamentoRepository;
+import com.example.barberIO.repositories.FuncionarioRepository;
+import com.example.barberIO.security.JwtUtil;
 import com.example.barberIO.services.AgendamentoService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -26,9 +30,21 @@ public class AgendamentoController {
     @Autowired
     private AgendamentoService agendamentoService;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private FuncionarioRepository funcionarioRepository;
+
     @GetMapping("/admin/agendamentos")
-    public ResponseEntity<List<AgendamentoModel>> listarAgendamentos(@PathVariable Long empresa_id) {
-        return ResponseEntity.status(HttpStatus.OK).body(agendamentoRepository.findAllByEmpresaId(empresa_id));
+    public ResponseEntity<List<ResponseAgendamentoRecordDto>> listarAgendamentos(HttpServletRequest req) {
+        String authHeader = req.getHeader("Authorization");
+        String token = authHeader.substring(7);
+        String usuarioLogado = jwtUtil.extractUsername(token);
+        EmpresaModel empresaLogada = funcionarioRepository.findByEmail(usuarioLogado).get().getEmpresa();
+
+        return agendamentoService.listarAgendamentosMinificado(empresaLogada.getId());
+        //return ResponseEntity.status(HttpStatus.OK).body(agendamentoService.listarAgendamentosMinificado(empresaLogada.getId()));
     }
     
     @GetMapping("/agendamentos/{empresa_id}")

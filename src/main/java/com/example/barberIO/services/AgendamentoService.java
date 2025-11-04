@@ -131,8 +131,8 @@ public class AgendamentoService {
         LocalDate hoje = LocalDate.now(zone);
         LocalTime agora = LocalTime.now(zone);
         Duration intervalo = Duration.ofMinutes(empresa.getConfig_empresa().getIntervalo());
-        LocalTime abertura = horarioFuncionamentoRepository.verificarAbertura(dia.getDayOfWeek().getValue());
-        LocalTime fechamento = horarioFuncionamentoRepository.verificarFechamento(dia.getDayOfWeek().getValue());
+        LocalTime abertura = horarioFuncionamentoRepository.verificarAbertura(dia.getDayOfWeek().getValue(),empresa_id);
+        LocalTime fechamento = horarioFuncionamentoRepository.verificarFechamento(dia.getDayOfWeek().getValue(),empresa_id);
         LocalDateTime fechamento_ini = funcionario.getFechamento_ini();
         LocalDateTime fechamento_fim = funcionario.getFechamento_fim();
         boolean disponivel = true;

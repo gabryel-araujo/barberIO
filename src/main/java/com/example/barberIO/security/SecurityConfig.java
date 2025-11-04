@@ -39,16 +39,16 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth.requestMatchers("/agendamentos/**","/public/**","/empresas/**").permitAll()
+            .authorizeHttpRequests(auth -> auth.requestMatchers("/agendamentos/**","/public/**","/empresas/**","/error").permitAll()
                     // Endpoints específicos
-                    .requestMatchers("/admin/**").hasRole("GESTOR")
-                    .requestMatchers("/clientes/**").hasAnyRole("GESTOR","BARBEIRO")
-                    .requestMatchers("/funcionarios/**").hasAnyRole("GESTOR","BARBEIRO")
-                    .requestMatchers("/servico/**").hasRole("GESTOR")
-                    .requestMatchers("/horarioFuncionamento/**").hasRole("GESTOR")
-                    .requestMatchers("/configEmpresa/**").hasRole("GESTOR")
-                    .requestMatchers("/feriados/**").hasRole("GESTOR")
-                    .requestMatchers("/enderecos/**").hasRole("GESTOR")
+                    .requestMatchers("/admin/**").hasAnyRole("GESTOR","DEV")
+                    .requestMatchers("/clientes/**").hasAnyRole("GESTOR","BARBEIRO","DEV")
+                    .requestMatchers("/funcionarios/**").hasAnyRole("GESTOR","BARBEIRO","DEV")
+                    .requestMatchers("/servico/**").hasAnyRole("GESTOR","DEV")
+                    .requestMatchers("/horarioFuncionamento/**").hasAnyRole("GESTOR","DEV")
+                    .requestMatchers("/configEmpresa/**").hasAnyRole("GESTOR","DEV")
+                    .requestMatchers("/feriados/**").hasAnyRole("GESTOR","DEV")
+                    .requestMatchers("/enderecos/**").hasAnyRole("GESTOR","DEV")
                     .requestMatchers("/auth/login/**","/auth/register/**").permitAll()
                     // Qualquer outra requisição precisa estar autenticada
                     .anyRequest().authenticated()
