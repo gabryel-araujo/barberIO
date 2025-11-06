@@ -189,9 +189,22 @@ export default function Agendamentos() {
           </Link>
         </div>
 
-        <div className="flex items-center gap-2 text-green-600 font-semibold bg-green-50 px-3 py-1 rounded-full">
-          {/* <DollarSign size={14} /> */}
-          {formatCurrency(agendamento.preco)}
+        <div>
+          <Badge
+            className={`${
+              agendamento.status === "ATIVO"
+                ? "bg-primary"
+                : agendamento.status === "CANCELADO"
+                ? "bg-gray-950"
+                : "bg-green-600"
+            }`}
+          >
+            {agendamento.status}
+          </Badge>
+          <div className="flex items-center gap-2 text-green-600 font-semibold bg-green-50 px-3 py-1 rounded-full">
+            {/* <DollarSign size={14} /> */}
+            {formatCurrency(agendamento.preco)}
+          </div>
         </div>
       </div>
 
@@ -221,17 +234,43 @@ export default function Agendamentos() {
       </div>
 
       {/* Footer - Botão */}
-      <div className="pt-3 border-t mt-4">
+      <div className="pt-3 border-t mt-4 space-y-3 w-full">
+        {agendamento.status === "CANCELADO" ? (
+          <Button
+            className="bg-orange-600 hover:bg-orange-700 w-full"
+            size="sm"
+            onClick={() => {
+              idSelecionadoRef.current = agendamento.id;
+              setOpenReativar(true);
+            }}
+          >
+            Reativar
+          </Button>
+        ) : (
+          <Button
+            className="w-full"
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              idSelecionadoRef.current = agendamento.id;
+              setOpen(true);
+            }}
+          >
+            Cancelar
+          </Button>
+        )}
+
         <Button
-          variant="destructive"
+          disabled={agendamento.status === "CONCLUIDO"}
+          className={`w-full`}
+          variant="default"
           size="sm"
           onClick={() => {
             idSelecionadoRef.current = agendamento.id;
-            setOpen(true);
+            setOpenConcluir(true);
           }}
-          className="w-full rounded-lg font-medium tracking-wide"
         >
-          Cancelar Agendamento
+          Concluir
         </Button>
       </div>
     </Card>
@@ -550,6 +589,7 @@ export default function Agendamentos() {
                           )}
 
                           <Button
+                            disabled={a.status === "CONCLUIDO"}
                             variant="default"
                             size="sm"
                             onClick={() => {
