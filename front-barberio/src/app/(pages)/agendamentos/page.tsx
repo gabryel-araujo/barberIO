@@ -35,7 +35,12 @@ import {
   MessageCircle,
 } from "lucide-react";
 import { toast } from "sonner";
-import { GETAgendamentosAdmin, DELETEAgendamento } from "@/lib/api/agendamento";
+import {
+  CANCELARAgendamento,
+  CONCLUIRAgendamento,
+  GETAgendamentosAdmin,
+  REATIVARAgendamento,
+} from "@/lib/api/agendamento";
 import { AgendamentoPublic } from "@/types/agendamento";
 import {
   Accordion,
@@ -48,26 +53,35 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { formatarTelefone, formatCurrency } from "@/utils/functions";
+import {
+  dataFormatada,
+  formatarTelefone,
+  formatCurrency,
+} from "@/utils/functions";
 import Link from "next/link";
 import { whatsapp } from "@/lib/whstsapp";
+import { Badge } from "@/components/ui/badge";
 
 export default function Agendamentos() {
   const [agendamentos, setAgendamentos] = useState<AgendamentoPublic[]>([]);
   const [filtered, setFiltered] = useState<AgendamentoPublic[]>([]);
-  const [date, setDate] = useState<Date>(new Date());
+  const [dateInicio, setDateInicio] = useState<Date>(new Date());
+  const [dateFim, setDateFim] = useState<Date>(new Date());
   const [cliente, setCliente] = useState<string>("");
   const [barbeiro, setBarbeiro] = useState<string>("");
   const [servico, setServico] = useState<string>("");
+  const [status, setStatus] = useState<string>("");
   const [open, setOpen] = useState(false);
-  const [openCalendario, setOpenCalendario] = useState(false);
+  const [openConcluir, setOpenConcluir] = useState(false);
+  const [openReativar, setOpenReativar] = useState(false);
+  const [openCalendarioInicio, setOpenCalendarioInicio] = useState(false);
+  const [openCalendarioFim, setOpenCalendarioFim] = useState(false);
   const idSelecionadoRef = useRef<number>(0);
 
   async function fetchData() {
     try {
       const data = await GETAgendamentosAdmin();
       setAgendamentos(data);
-      setFiltered(data);
     } catch (error) {
       console.error("Erro ao carregar agendamentos:", error);
     }
@@ -81,15 +95,19 @@ export default function Agendamentos() {
     setServico("all");
     setBarbeiro("all");
     setCliente("");
-    setDate(new Date());
+    setDateInicio(new Date());
+    setDateFim(new Date());
   }
 
   useEffect(() => {
     const filtrados = agendamentos
       .filter((a) => {
-        const mesmaData =
-          format(new Date(a.horario), "yyyy-MM-dd") ===
-          format(date, "yyyy-MM-dd");
+        const dataInicio =
+          format(new Date(a.horario), "yyyy-MM-dd") >=
+          format(dateInicio, "yyyy-MM-dd");
+        const dataFim =
+          format(new Date(a.horario), "yyyy-MM-dd") <=
+          format(dateFim, "yyy-MM-dd");
         const clienteOk =
           !cliente || a.cliente.toLowerCase().includes(cliente.toLowerCase());
         const barbeiroOk =
@@ -100,21 +118,53 @@ export default function Agendamentos() {
           servico === "all" ||
           !servico ||
           a.servico.toLowerCase().includes(servico.toLowerCase());
-        return mesmaData && clienteOk && barbeiroOk && servicoOk;
+        const statusOK =
+          status === "all" ||
+          !status ||
+          (a.status && a.status.toLowerCase().includes(status.toLowerCase()));
+
+        return (
+          dataInicio &&
+          dataFim &&
+          clienteOk &&
+          barbeiroOk &&
+          servicoOk &&
+          statusOK
+        );
       })
       .sort(
         (a, b) => new Date(a.horario).getTime() - new Date(b.horario).getTime()
       );
     setFiltered(filtrados);
-  }, [agendamentos, date, cliente, barbeiro, servico]);
+  }, [agendamentos, dateInicio, dateFim, cliente, barbeiro, servico, status]);
 
   async function handleCancel() {
-    const response = await DELETEAgendamento(idSelecionadoRef.current);
+    const response = await CANCELARAgendamento(idSelecionadoRef.current);
     if (response.status === 200) {
       toast.success(response.data);
       fetchData();
     } else {
       toast.error(response.data);
+    }
+  }
+
+  async function handleConcluir() {
+    const response = await CONCLUIRAgendamento(idSelecionadoRef.current);
+    if (response.status === 200) {
+      toast.success("Agendamento concluído com sucesso.");
+      fetchData();
+    } else {
+      toast.error("Erro ao concluir agendamento.");
+    }
+  }
+
+  async function handleReativar() {
+    const response = await REATIVARAgendamento(idSelecionadoRef.current);
+    if (response.status === 200) {
+      toast.success(response.data);
+      fetchData();
+    } else {
+      toast.error("Erro ao reativar agendamento.");
     }
   }
 
@@ -196,6 +246,22 @@ export default function Agendamentos() {
         setOpen={setOpen}
         action={handleCancel}
       />
+      <DialogComponent
+        title="Tem certeza que deseja concluir o agendamento?"
+        actionLabel="Concluir"
+        className="bg-primary hover:bg-primary/50"
+        open={openConcluir}
+        setOpen={setOpenConcluir}
+        action={handleConcluir}
+      />
+      <DialogComponent
+        title="Tem certeza que deseja reativar o agendamento?"
+        actionLabel="Reativar"
+        className="bg-primary hover:bg-primary/50"
+        open={openReativar}
+        setOpen={setOpenReativar}
+        action={handleReativar}
+      />
 
       <div className="w-full max-w-7xl mx-auto space-y-6">
         <TitulosPages
@@ -269,16 +335,32 @@ export default function Agendamentos() {
                       </SelectContent>
                     </Select>
                   </div>
+                  <div className="flex flex-col w-full md:w-1/4">
+                    <span className="text-sm font-bold text-gray-500 mb-1">
+                      Status
+                    </span>
+                    <Select value={status} onValueChange={setStatus}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Todos Status" />
+                      </SelectTrigger>
+                      <SelectContent className="w-full">
+                        <SelectItem value="all">Todos</SelectItem>
+                        <SelectItem value="ATIVO">Ativo</SelectItem>
+                        <SelectItem value="CANCELADO">Cancelado</SelectItem>
+                        <SelectItem value="CONCLUIDO">Concluido</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                   {/* CONTROLE DE DATA */}
                   <div className="flex flex-col w-full md:w-1/4">
                     <span className="text-sm font-bold text-gray-500 mb-1">
-                      Data
+                      Data Inicio
                     </span>
                     <div className="flex items-center gap-2">
                       {/* Popover do calendário */}
                       <Popover
-                        open={openCalendario}
-                        onOpenChange={setOpenCalendario}
+                        open={openCalendarioInicio}
+                        onOpenChange={setOpenCalendarioInicio}
                       >
                         <PopoverTrigger className="w-full">
                           <Button
@@ -286,7 +368,7 @@ export default function Agendamentos() {
                             className="flex items-center w-full gap-2 justify-center text-gray-600"
                           >
                             <CalendarDays className="h-4 w-4" />
-                            {format(date, "dd/MM/yyyy")}
+                            {format(dateInicio, "dd/MM/yyyy")}
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent
@@ -296,12 +378,52 @@ export default function Agendamentos() {
                           <Calendar
                             locale={ptBR}
                             mode="single"
-                            selected={date}
+                            selected={dateInicio}
                             captionLayout="dropdown"
                             onSelect={(d) => {
                               if (d) {
-                                setDate(d);
-                                setOpenCalendario(false);
+                                setDateInicio(d);
+                                setOpenCalendarioInicio(false);
+                              }
+                            }}
+                            className="rounded-md border shadow-sm"
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                  </div>
+                  <div className="flex flex-col w-full md:w-1/4">
+                    <span className="text-sm font-bold text-gray-500 mb-1">
+                      Data Fim
+                    </span>
+                    <div className="flex items-center gap-2">
+                      {/* Popover do calendário */}
+                      <Popover
+                        open={openCalendarioFim}
+                        onOpenChange={setOpenCalendarioFim}
+                      >
+                        <PopoverTrigger className="w-full">
+                          <Button
+                            variant="outline"
+                            className="flex items-center w-full gap-2 justify-center text-gray-600"
+                          >
+                            <CalendarDays className="h-4 w-4" />
+                            {format(dateFim, "dd/MM/yyyy")}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent
+                          className="p-2 w-auto z-[9999] overflow-hidden"
+                          align="end"
+                        >
+                          <Calendar
+                            locale={ptBR}
+                            mode="single"
+                            selected={dateFim}
+                            captionLayout="dropdown"
+                            onSelect={(d) => {
+                              if (d) {
+                                setDateFim(d);
+                                setOpenCalendarioFim(false);
                               }
                             }}
                             className="rounded-md border shadow-sm"
@@ -311,6 +433,7 @@ export default function Agendamentos() {
                     </div>
                   </div>
                 </div>
+
                 <div className="w-full flex justify-end">
                   <Button
                     onClick={() => limparFiltro()}
@@ -337,6 +460,9 @@ export default function Agendamentos() {
                   <TableHeader>
                     <TableRow>
                       <TableHead className="font-bold text-gray-600">
+                        Data
+                      </TableHead>
+                      <TableHead className="font-bold text-gray-600">
                         Horário
                       </TableHead>
                       <TableHead className="font-bold text-gray-600">
@@ -352,6 +478,9 @@ export default function Agendamentos() {
                         Serviço
                       </TableHead>
                       <TableHead className="font-bold text-gray-600">
+                        Status
+                      </TableHead>
+                      <TableHead className="font-bold text-gray-600">
                         Valor
                       </TableHead>
                       <TableHead className="font-bold text-gray-600">
@@ -362,6 +491,9 @@ export default function Agendamentos() {
                   <TableBody>
                     {filtered.map((a, i) => (
                       <TableRow key={i}>
+                        <TableCell>
+                          {dataFormatada(new Date(a.horario))}
+                        </TableCell>
                         <TableCell>
                           {format(a.horario, "p", { locale: ptBR })}
                         </TableCell>
@@ -375,18 +507,57 @@ export default function Agendamentos() {
                         <TableCell>{a.barbeiro}</TableCell>
                         <TableCell>{a.servico}</TableCell>
                         <TableCell>
-                          {formatCurrency(a.preco.toFixed(2))}
+                          {
+                            <Badge
+                              className={`${
+                                a.status === "ATIVO"
+                                  ? "bg-primary"
+                                  : a.status === "CANCELADO"
+                                  ? "bg-gray-950"
+                                  : "bg-green-600"
+                              }`}
+                            >
+                              {a.status}
+                            </Badge>
+                          }
                         </TableCell>
                         <TableCell>
+                          {formatCurrency(a.preco.toFixed(2))}
+                        </TableCell>
+                        <TableCell className="space-x-3">
+                          {a.status === "CANCELADO" ? (
+                            <Button
+                              className="bg-orange-600 hover:bg-orange-700"
+                              size="sm"
+                              onClick={() => {
+                                idSelecionadoRef.current = a.id;
+                                setOpenReativar(true);
+                              }}
+                            >
+                              Reativar
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                idSelecionadoRef.current = a.id;
+                                setOpen(true);
+                              }}
+                            >
+                              Cancelar
+                            </Button>
+                          )}
+
                           <Button
-                            variant="ghost"
+                            variant="default"
                             size="sm"
                             onClick={() => {
                               idSelecionadoRef.current = a.id;
-                              setOpen(true);
+                              setOpenConcluir(true);
                             }}
                           >
-                            Cancelar
+                            Concluir
                           </Button>
                         </TableCell>
                       </TableRow>
