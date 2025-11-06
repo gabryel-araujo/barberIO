@@ -322,7 +322,7 @@ export default function Agendamentos() {
                 <div className="flex md:flex-row flex-col md:items-end md:justify-between gap-4 mt-3">
                   {/* Cliente */}
                   <div className="flex flex-col w-full md:w-1/4 pl-1">
-                    <span className="text-sm font-bold text-gray-500 mb-1">
+                    <span className="text-xs font-bold text-gray-500 mb-1">
                       Cliente
                     </span>
                     <Input
@@ -334,7 +334,7 @@ export default function Agendamentos() {
 
                   {/* Barbeiro */}
                   <div className="flex flex-col w-full md:w-1/4">
-                    <span className="text-sm font-bold text-gray-500 mb-1">
+                    <span className="text-xs font-bold text-gray-500 mb-1">
                       Barbeiro
                     </span>
                     <Select value={barbeiro} onValueChange={setBarbeiro}>
@@ -355,7 +355,7 @@ export default function Agendamentos() {
                   </div>
                   {/* Barbeiro */}
                   <div className="flex flex-col w-full md:w-1/4">
-                    <span className="text-sm font-bold text-gray-500 mb-1">
+                    <span className="text-xs font-bold text-gray-500 mb-1">
                       Serviço
                     </span>
                     <Select value={servico} onValueChange={setServico}>
@@ -375,7 +375,7 @@ export default function Agendamentos() {
                     </Select>
                   </div>
                   <div className="flex flex-col w-full md:w-1/4">
-                    <span className="text-sm font-bold text-gray-500 mb-1">
+                    <span className="text-xs font-bold text-gray-500 mb-1">
                       Status
                     </span>
                     <Select value={status} onValueChange={setStatus}>
@@ -392,7 +392,7 @@ export default function Agendamentos() {
                   </div>
                   {/* CONTROLE DE DATA */}
                   <div className="flex flex-col w-full md:w-1/4">
-                    <span className="text-sm font-bold text-gray-500 mb-1">
+                    <span className="text-xs font-bold text-gray-500 mb-1">
                       Data Inicio
                     </span>
                     <div className="flex items-center gap-2">
@@ -432,7 +432,7 @@ export default function Agendamentos() {
                     </div>
                   </div>
                   <div className="flex flex-col w-full md:w-1/4">
-                    <span className="text-sm font-bold text-gray-500 mb-1">
+                    <span className="text-xs font-bold text-gray-500 mb-1">
                       Data Fim
                     </span>
                     <div className="flex items-center gap-2">
