@@ -93,7 +93,7 @@ export const RevisaoAgendamento = ({
         <p className="flex gap-2 text-sm font-semibold text-primary">
           <User size={20} /> SEUS DADOS
         </p>
-        <div className="flex items-center justify-evenly">
+        <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-muted-foreground">Nome</p>
             <p className="text-lg font-bold">{nomeCliente}</p>
