@@ -43,7 +43,7 @@ export function isTokenValido() {
     const exp = decodificado.exp;
     const agora = Math.floor(Date.now() / 1000);
 
-    if (exp && exp < agora) {
+    if (!exp || exp < agora) {
       Cookies.remove("authToken");
       return false;
     }
@@ -69,12 +69,21 @@ export function validarToken() {
   return null;
 }
 
-export function validarTokenServer(token: string | undefined) {
+export function validarTokenServer(token?: string) {
   if (!token) return null;
 
   try {
     const decoded = jose.decodeJwt(token);
-    return decoded; // deve conter { role: "DEV" | "USER" | ... }
+    const exp = decoded?.exp;
+    const agora = Math.floor(Date.now() / 1000);
+
+    // Se o token não tiver exp ou estiver vencido
+    if (!exp || exp < agora) {
+      console.warn("Token expirado ou sem exp:", decoded);
+      return null;
+    }
+
+    return decoded; // payload válido, ex: { role: "DEV", sub: "123", ... }
   } catch (error) {
     console.error("Erro ao decodificar token:", error);
     return null;

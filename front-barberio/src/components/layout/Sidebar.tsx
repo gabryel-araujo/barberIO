@@ -109,7 +109,7 @@ export const Sidebar = ({ onClick }: SideBarProps) => {
               key={menu.path}
               href={menu.path}
               onClick={onClick}
-              className={`flex items-center gap-3 py-3 px-5 transition-colors ${
+              className={`flex items-center gap-3 text-sm py-3 px-5 transition-colors ${
                 isActive
                   ? "bg-[#3f88c5]/40 border-l-4 border-[#3f88c5]"
                   : "hover:bg-[#3f88c5]/40"

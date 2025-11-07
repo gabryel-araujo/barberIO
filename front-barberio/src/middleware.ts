@@ -10,7 +10,11 @@ export function middleware(request: NextRequest) {
   if (!token) {
     return NextResponse.redirect(new URL("/not-found", request.url));
   }
+  if (!tokenValidado) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
   console.log("token:", tokenValidado);
+
   if (rotasApenasDev.some((r) => path.startsWith(r))) {
     try {
       if (tokenValidado?.role !== "DEV") {
