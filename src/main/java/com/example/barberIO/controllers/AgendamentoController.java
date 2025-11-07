@@ -79,14 +79,19 @@ public class AgendamentoController {
         return agendamentoService.editarAgendamento(agendamentoRecordDto, id);
     }
 
-    @DeleteMapping("/admin/agendamentos/{id}")
-    public ResponseEntity<Object> removerAgendamento(@PathVariable(name = "id") Long id) {
+    @PatchMapping("/admin/agendamentos/{id}")
+    public ResponseEntity<Object> cancelarAgendamento(@PathVariable(name = "id") Long id) {
         return agendamentoService.cancelarHorario(id);
     }
 
-    @DeleteMapping("/public/agendamentos/{id}")
-    public ResponseEntity<Object> removerAgendamentoPublic(@PathVariable(name = "id") Long id) {
+    @PatchMapping("/public/agendamentos/{id}")
+    public ResponseEntity<Object> cancelarAgendamentoPublic(@PathVariable(name = "id") Long id) {
         return agendamentoService.cancelarHorario(id);
+    }
+
+    @PatchMapping("/public/reativarAgendamentos/{id}")
+    public ResponseEntity<Object> reativarAgendamento(@PathVariable(name = "id") Long id) {
+        return agendamentoService.reativarHorario(id);
     }
 
     @GetMapping("/admin/agendamentos/horarioDisponivel")
@@ -108,6 +113,11 @@ public class AgendamentoController {
                 .horariosDisponiveis(barbeiro_id, data, empresa_id);
 
         return ResponseEntity.ok(horariosDisponiveis);
+    }
+
+    @PostMapping("/agendamentos/concluirAgendamento/{id}")
+    public ResponseEntity<AgendamentoModel> concluirAgendamento(@PathVariable(name = "id") Long id) {
+        return agendamentoService.concluirAgendamento(id);
     }
 
 }

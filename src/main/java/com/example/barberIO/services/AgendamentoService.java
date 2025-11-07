@@ -2,6 +2,7 @@ package com.example.barberIO.services;
 
 import com.example.barberIO.dtos.AgendamentoRecordDto;
 import com.example.barberIO.dtos.ResponseAgendamentoRecordDto;
+import com.example.barberIO.enums.TipoAgendamento;
 import com.example.barberIO.exceptions.RecursoNaoEncontradoException;
 import com.example.barberIO.models.AgendamentoModel;
 import com.example.barberIO.models.ClienteModel;
@@ -26,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.example.barberIO.enums.TipoAgendamento.*;
 
 @Service
 public class AgendamentoService {
@@ -85,6 +88,7 @@ public class AgendamentoService {
             agendamentoModel.setFim(fimAgendamento);
             agendamentoModel.setFim(agendamentoModel.getFim());
             agendamentoModel.setEmpresa(empresa);
+            agendamentoModel.setStatus(ATIVO);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(agendamentoRepository.save(agendamentoModel));
         }
@@ -98,8 +102,25 @@ public class AgendamentoService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Agendamento não localizado! Verifique os dados");
         }
 
-        agendamentoRepository.deleteById(id);
-        return ResponseEntity.status(HttpStatus.OK).body("Agendamento removido com sucesso!");
+        AgendamentoModel agendamentoModel = agendamentoO.get();
+        agendamentoModel.setStatus(CANCELADO);
+        agendamentoRepository.save(agendamentoModel);
+
+        return ResponseEntity.status(HttpStatus.OK).body("Agendamento cancelado com sucesso!");
+    }
+
+    public ResponseEntity<Object> reativarHorario(Long id) {
+        Optional<AgendamentoModel> agendamentoO = agendamentoRepository.findById(id);
+
+        if (agendamentoO.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Agendamento não localizado! Verifique os dados");
+        }
+
+        AgendamentoModel agendamentoModel = agendamentoO.get();
+        agendamentoModel.setStatus(ATIVO);
+        agendamentoRepository.save(agendamentoModel);
+
+        return ResponseEntity.status(HttpStatus.OK).body("Agendamento reativado com sucesso!");
     }
 
     public ResponseEntity<Object> editarAgendamento(AgendamentoRecordDto agendamentoRecordDto, Long id) {
@@ -189,10 +210,29 @@ public class AgendamentoService {
             agendamento.getCliente().getNome(),
             agendamento.getCliente().getTelefone(),
             agendamento.getServico().getNome(),
-            agendamento.getServico().getPreco()
+            agendamento.getServico().getPreco(),
+            agendamento.getStatus()
         )
     ).toList();
     	return ResponseEntity.status(HttpStatus.OK).body(dtos);
+    }
+
+    public ResponseEntity<AgendamentoModel> concluirAgendamento(Long id){
+        try{
+            Optional<AgendamentoModel> agendamentoO = agendamentoRepository.findById(id);
+
+            if(agendamentoO.isEmpty()){
+                throw new RecursoNaoEncontradoException("Agendamento não localizado, Verifique os dados");
+            }
+            AgendamentoModel agendamento = agendamentoO.get();
+
+            agendamento.setStatus(CONCLUIDO);
+
+            return ResponseEntity.status(HttpStatus.OK).body(agendamentoRepository.save(agendamento));
+
+        }catch(Exception ex){
+            throw new RuntimeException(ex);
+        }
     }
 
 }

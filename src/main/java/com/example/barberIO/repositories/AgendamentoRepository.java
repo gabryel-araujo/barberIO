@@ -1,5 +1,6 @@
 package com.example.barberIO.repositories;
 
+import com.example.barberIO.enums.TipoAgendamento;
 import com.example.barberIO.models.AgendamentoModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,12 +14,12 @@ import java.util.List;
 @Repository
 public interface AgendamentoRepository extends JpaRepository<AgendamentoModel, Long> {
 	@Query("SELECT COUNT(a) > 0 FROM AgendamentoModel a " + "WHERE a.barbeiro.id = :funcionarioId "
-			+ "AND a.horario < :fim " + "AND a.fim > :inicio")
+			+ "AND a.horario < :fim " + "AND a.fim > :inicio" + " AND a.status = 'ATIVO'")
 	boolean barbeiroOcupado(@Param("funcionarioId") Long funcionarioId, @Param("inicio") LocalDateTime inicio,
-			@Param("fim") LocalDateTime fim);
+							@Param("fim") LocalDateTime fim);
 
 	@Query(value = "SELECT horario, duracao FROM agendamento " + "JOIN servico ON agendamento.servico_id = servico.id "
-			+ "WHERE barbeiro_id = :barbeiroId " + "AND horario::date = :dia", nativeQuery = true)
+			+ "WHERE barbeiro_id = :barbeiroId " + "AND horario::date = :dia" + " AND status = 'ATIVO'", nativeQuery = true)
 	List<Object[]> findAgendamentosComDuracao(@Param("barbeiroId") Long barbeiroId, @Param("dia") LocalDate dia);
 
 	List<AgendamentoModel> findAllByEmpresaId(Long empresaId);

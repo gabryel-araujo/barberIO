@@ -85,7 +85,7 @@ public class EmpresaService {
 		}
 
 		EmpresaPublicaRecordDto empresa = new EmpresaPublicaRecordDto(empresaO.get().getNome(),
-				empresaO.get().getTelefone(), empresaO.get().getEmail(), empresaO.get().getNacional_id());
+				empresaO.get().getTelefone(), empresaO.get().getEmail(), empresaO.get().getNacional_id(),empresaO.get().getUrl_img());
 		
 		return ResponseEntity.status(HttpStatus.OK).body(empresa);
 

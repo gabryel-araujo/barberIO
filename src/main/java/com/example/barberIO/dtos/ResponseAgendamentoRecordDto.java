@@ -1,5 +1,7 @@
 package com.example.barberIO.dtos;
 
+import com.example.barberIO.enums.TipoAgendamento;
+
 import java.time.LocalDateTime;
 
 public record ResponseAgendamentoRecordDto(
@@ -10,7 +12,8 @@ public record ResponseAgendamentoRecordDto(
 		String cliente,
 		String telefone,
 		String servico,
-		Float preco
+		Float preco,
+		TipoAgendamento status
 		) {
 
 }

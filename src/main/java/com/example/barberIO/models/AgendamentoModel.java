@@ -1,8 +1,10 @@
 package com.example.barberIO.models;
 
+import com.example.barberIO.enums.TipoAgendamento;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -10,6 +12,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "agendamento")
+@Data
 public class AgendamentoModel implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,59 +39,8 @@ public class AgendamentoModel implements Serializable {
     @JsonIgnore
     private EmpresaModel empresa;
 
-    public LocalDateTime getFim() {
-        return fim;
-    }
-
-    public void setFim(LocalDateTime fim) {
-        this.fim = fim;
-    }
-
-    public ClienteModel getCliente() {
-        return cliente;
-    }
-
-    public void setCliente(ClienteModel cliente) {
-        this.cliente = cliente;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public LocalDateTime getHorario() {
-        return horario;
-    }
-
-    public void setHorario(LocalDateTime horario) {
-        this.horario = horario;
-    }
-
-    public FuncionarioModel getBarbeiro() {
-        return barbeiro;
-    }
-
-    public void setBarbeiro(FuncionarioModel barbeiro) {
-        this.barbeiro = barbeiro;
-    }
-
-    public ServiceModel getServico() {
-        return servico;
-    }
-
-    public void setServico(ServiceModel servico) {
-        this.servico = servico;
-    }
-
-    public EmpresaModel getEmpresa() {
-        return empresa;
-    }
-
-    public void setEmpresa(EmpresaModel empresa) {
-        this.empresa = empresa;
-    }
+    //mudar para false após a criação e rodar o alter table no banco para modificar o not null
+    @Column(nullable = true)
+    @Enumerated(EnumType.STRING)
+    private TipoAgendamento status;
 }
