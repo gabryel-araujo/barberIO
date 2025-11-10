@@ -449,7 +449,7 @@ const barbeiros = () => {
           ))}
       </div>
       <Dialog open={openModal} onOpenChange={setOpenModal}>
-        <DialogContent className="h-full overflow-y-auto min-w-3xl">
+        <DialogContent className="h-full overflow-y-auto md:min-w-3xl">
           <DialogHeader>
             <DialogTitle>
               {barbeiroSelecionado ? "Editar Barbeiro" : "Cadastro de Barbeiro"}
