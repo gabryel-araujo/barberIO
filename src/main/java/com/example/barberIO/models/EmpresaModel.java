@@ -14,7 +14,6 @@ import java.util.UUID;
 @Entity
 @Table(name = "empresa")
 @Data
-
 public class EmpresaModel implements Serializable {
 
 	@Id

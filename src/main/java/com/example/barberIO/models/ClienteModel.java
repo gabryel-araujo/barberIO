@@ -1,12 +1,14 @@
 package com.example.barberIO.models;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "cliente")
+@Data
 public class ClienteModel implements Serializable {
 
     @Id
@@ -26,51 +28,4 @@ public class ClienteModel implements Serializable {
     @Column(nullable = true)
     private LocalDateTime created_at;
 
-    public LocalDateTime getCreated_at() {
-        return created_at;
-    }
-
-    public void setCreated_at(LocalDateTime created_at) {
-        this.created_at = created_at;
-    }
-
-    public String getTelefone() {
-        return telefone;
-    }
-
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public boolean isAtivo() {
-        return ativo;
-    }
-
-    public EmpresaModel getEmpresa() {
-        return empresa;
-    }
-
-    public void setEmpresa(EmpresaModel empresa) {
-        this.empresa = empresa;
-    }
-
-    public void setAtivo(boolean ativo) {
-        this.ativo = ativo;
-    }
 }

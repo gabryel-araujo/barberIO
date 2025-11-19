@@ -3,6 +3,7 @@ package com.example.barberIO.security;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -39,7 +40,19 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth.requestMatchers("/agendamentos/**","/public/**","/empresas/**","/error").permitAll()
+            .authorizeHttpRequests(auth -> auth.requestMatchers("/public/**","/empresas/**","/error").permitAll()
+                    //validações de endpoints específicos para devs (delete routes)
+                    .requestMatchers(HttpMethod.DELETE,
+                            "/clientes/**",
+                            "/funcionarios/**",
+                            "/servico/**",
+                            "/horarioFuncionamento/**",
+                            "/configEmpresa/**",
+                            "/feriados/**",
+                            "/enderecos/**",
+                            "/agendamentos/**"
+                    ).hasRole("DEV")
+
                     // Endpoints específicos
                     .requestMatchers("/admin/**").hasAnyRole("GESTOR","DEV")
                     .requestMatchers("/clientes/**").hasAnyRole("GESTOR","BARBEIRO","DEV")
@@ -50,6 +63,7 @@ public class SecurityConfig {
                     .requestMatchers("/feriados/**").hasAnyRole("GESTOR","DEV")
                     .requestMatchers("/enderecos/**").hasAnyRole("GESTOR","DEV")
                     .requestMatchers("/auth/login/**","/auth/register/**").permitAll()
+
                     // Qualquer outra requisição precisa estar autenticada
                     .anyRequest().authenticated()
             )
@@ -60,7 +74,7 @@ public class SecurityConfig {
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                             response.setContentType("application/json");
-                            response.getWriter().write("{\"error\":\"Usuário não autenticado\"}");
+                            response.getWriter().write("{\"error\":\"Usuário sem permissão para a operação\"}");
                         })
                         // Quando o usuário está autenticado, mas sem permissão
                         .accessDeniedHandler((request, response, accessDeniedException) -> {

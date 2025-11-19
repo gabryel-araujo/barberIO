@@ -15,9 +15,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.Data;
 
 @Entity
 @Table(name = "feriados")
+@Data
 public class FeriadoModel implements Serializable{
 	
 	@Id
@@ -42,52 +44,4 @@ public class FeriadoModel implements Serializable{
 	@JoinColumn(name = "empresa_id")
 	@JsonIgnore
 	private EmpresaModel empresa;
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getNome() {
-		return nome;
-	}
-
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
-
-	public LocalDate getData() {
-		return data;
-	}
-
-	public void setData(LocalDate data) {
-		this.data = data;
-	}
-
-	public Boolean getRecorrente() {
-		return recorrente;
-	}
-
-	public void setRecorrente(Boolean recorrente) {
-		this.recorrente = recorrente;
-	}
-
-	public ConfigEmpresaModel getConfig_empresa() {
-		return config_empresa;
-	}
-
-	public void setConfig_empresa(ConfigEmpresaModel config_empresa) {
-		this.config_empresa = config_empresa;
-	}
-
-	public EmpresaModel getEmpresa() {
-		return empresa;
-	}
-
-	public void setEmpresa(EmpresaModel empresa) {
-		this.empresa = empresa;
-	}
 }
