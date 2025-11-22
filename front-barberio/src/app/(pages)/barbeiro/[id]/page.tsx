@@ -73,6 +73,8 @@ const Barbeiros = () => {
     }
   }, [data]);
 
+  console.log(formData);
+
   return (
     <div className="w-full px-6 py-6 space-y-6 bg-[#e6f0ff]">
       <aside className="sticky top-0 z-10  backdrop-blur-md supports-[backdrop-filter]:bg-[#e6f0ff]/60 p-6 flex md:flex-row items-center justify-between gap-3 md:px-10">
@@ -207,17 +209,17 @@ const Barbeiros = () => {
                     Selecione os serviços que este barbeiro realiza
                   </CardDescription>
                   <div className=" md:grid md:grid-cols-2 md:gap-3 md:space-y-0 space-y-3">
-                    {servicos?.map((servico) => (
+                    {servicos?.map((serv) => (
                       <CardServico
-                        key={servico?.id}
+                        key={serv?.id}
                         checked={Boolean(
-                          formData?.servicos?.includes(String(servico.id))
+                          formData.servicos?.some((s) => s.id === serv.id)
                         )}
-                        id={Number(servico?.id)}
-                        nome={servico?.nome ?? ""}
-                        descricao={servico?.descricao ?? ""}
-                        duracao={servico?.duracao ?? 0}
-                        preco={servico?.preco ?? 0}
+                        id={Number(serv?.id)}
+                        nome={serv?.nome ?? ""}
+                        descricao={serv?.descricao ?? ""}
+                        duracao={serv?.duracao ?? 0}
+                        preco={serv?.preco ?? 0}
                         fnSelecionaServico={() =>
                           toast.warning("teste de seleção")
                         }

@@ -1,3 +1,5 @@
+import { Servico } from "./servico";
+
 export interface Barbeiro {
   id: number;
   nome: string;
@@ -9,7 +11,7 @@ export interface Barbeiro {
   avaliacao?: number;
   experiencia?: number;
   atendimentos?: number;
-  servicos?: any[];
+  servicos?: Servico[];
   avatar?: string;
   tipo: string;
   fechamento_ini?: Date;
