@@ -7,9 +7,7 @@ const nextConfig = {
     return [
       {
         source: "/api/:path*", // tudo que vier de /api/...
-
-        destination: `http://${process.env.HOMOLOG_SERVER}:${process.env.API_PORT}/:path*`,
-        //destination: "http://163.176.201.237:1509/:path*",
+        destination: `http://${process.env.PROD_SERVER}:${process.env.API_PORT}/:path*`,
       },
     ];
   },
