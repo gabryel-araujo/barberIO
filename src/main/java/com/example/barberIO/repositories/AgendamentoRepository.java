@@ -2,6 +2,7 @@ package com.example.barberIO.repositories;
 
 import com.example.barberIO.enums.TipoAgendamento;
 import com.example.barberIO.models.AgendamentoModel;
+import com.example.barberIO.models.FuncionarioModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,4 +24,6 @@ public interface AgendamentoRepository extends JpaRepository<AgendamentoModel, L
 	List<Object[]> findAgendamentosComDuracao(@Param("barbeiroId") Long barbeiroId, @Param("dia") LocalDate dia);
 
 	List<AgendamentoModel> findAllByEmpresaId(Long empresaId);
+
+	List<AgendamentoModel> findAllByHorarioBetweenAndBarbeiroAndStatus(LocalDateTime horarioAfter, LocalDateTime horarioBefore, FuncionarioModel barbeiro,TipoAgendamento status);
 }

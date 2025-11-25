@@ -70,4 +70,8 @@ public class FuncionarioModel implements Serializable {
 
     @Column(nullable = true)
     private LocalDateTime fechamento_fim;
+
+    @Column(nullable = true)
+    private Float comissao;
+
 }

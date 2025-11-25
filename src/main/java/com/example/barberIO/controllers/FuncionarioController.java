@@ -3,12 +3,15 @@ package com.example.barberIO.controllers;
 import com.example.barberIO.dtos.FuncionarioPublicoRecordDto;
 import com.example.barberIO.dtos.FuncionarioRecordDto;
 import com.example.barberIO.dtos.ResponseAgendamentoRecordDto;
+import com.example.barberIO.enums.TipoAgendamento;
 import com.example.barberIO.enums.TipoFuncionario;
 import com.example.barberIO.exceptions.RecursoDuplicadoException;
 import com.example.barberIO.exceptions.RecursoNaoEncontradoException;
+import com.example.barberIO.models.AgendamentoModel;
 import com.example.barberIO.models.EmpresaModel;
 import com.example.barberIO.models.FuncionarioModel;
 import com.example.barberIO.models.ServiceModel;
+import com.example.barberIO.repositories.AgendamentoRepository;
 import com.example.barberIO.repositories.EmpresaRepository;
 import com.example.barberIO.repositories.FuncionarioRepository;
 import com.example.barberIO.repositories.ServiceRepository;
@@ -17,11 +20,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 import static com.example.barberIO.enums.TipoFuncionario.BARBEIRO;
@@ -30,7 +38,8 @@ import static com.example.barberIO.enums.TipoFuncionario.BARBEIRO;
 @RequestMapping
 public class FuncionarioController {
 	@Autowired
-	FuncionarioRepository funcionarioRepository;
+	private FuncionarioRepository funcionarioRepository;
+
 	@Autowired
 	private ServiceRepository serviceRepository;
 
@@ -39,8 +48,12 @@ public class FuncionarioController {
 
 	@Autowired
 	private JwtUtil jwtUtil;
+
     @Autowired
     private EmpresaRepository empresaRepository;
+
+	@Autowired
+	private AgendamentoRepository agendamentoRepository;
 
 	@GetMapping("/funcionarios")
 	public ResponseEntity<List<FuncionarioModel>> getAll( HttpServletRequest req) {
@@ -214,6 +227,37 @@ public class FuncionarioController {
 
 		return ResponseEntity.status(HttpStatus.OK).body(funcionario);
 
+	}
+
+	@GetMapping("/funcionarios/calcularComissao/{id}")
+	public ResponseEntity<Float> calcularComissao(@PathVariable(value = "id") Long id,
+												  // ✅ Recebe LocalDate. O formato 'ISO.DATE' é suficiente.
+												  @RequestParam("data_ini") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data_ini,
+												  @RequestParam("data_fim") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data_fim
+	){
+
+		LocalDateTime inicioPeriodo = data_ini.atStartOfDay(); // 00:00:00 do dia inicial
+		LocalDateTime fimPeriodo = data_fim.atTime(LocalTime.MAX);
+		Optional<FuncionarioModel> funcionarioO = funcionarioRepository.findById(id);
+
+		if(funcionarioO.isEmpty()){
+			throw new RecursoNaoEncontradoException("Funcionário não localizado!");
+		}
+
+		FuncionarioModel funcionarioModel = funcionarioO.get();
+		List<AgendamentoModel> agendamentosPeriodo = agendamentoRepository.findAllByHorarioBetweenAndBarbeiroAndStatus(inicioPeriodo,fimPeriodo,funcionarioModel, TipoAgendamento.CONCLUIDO );
+
+		List<Float> precosAtendimentos = agendamentosPeriodo.stream().map(agendamento -> agendamento.getServico().getPreco()).toList();
+
+		if(funcionarioModel.getComissao() == 0 || funcionarioModel.getComissao() == null){
+			throw new ArithmeticException("O barbeiro não possui comissão definida nas suas configurações");
+		}
+
+		Float comissaoFinal = precosAtendimentos.stream()
+				.map(preco -> preco * funcionarioModel.getComissao())
+				.reduce(0.0f, Float::sum);
+
+		return ResponseEntity.status(HttpStatus.OK).body(comissaoFinal);
 	}
 
 	public void adicionarServicoAux(Long id, Long servicoId) {
