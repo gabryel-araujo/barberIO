@@ -65,7 +65,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
 import Cookies from "js-cookie";
 
 const clientes = () => {
@@ -161,6 +160,7 @@ const clientes = () => {
         nome: nomeCapitalizado(values.nome),
         telefone: values.telefone,
         ativo: clienteExistente?.ativo,
+        empresa_id: values.empresa_id,
       };
       if (clienteExistente) {
         console.log("Verificando campos:", clienteExistente, clienteAtualizado);
@@ -178,7 +178,11 @@ const clientes = () => {
         toast.success("Cliente alterado com sucesso!");
       } else {
         //agora seta o novo cliente nos clientes
-        await axios.post(`${baseUrl}/clientes`, clienteAtualizado);
+        await axios.post(`${baseUrl}/clientes`, clienteAtualizado, {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("authToken")}`,
+          },
+        });
         console.log("Cliente Novo:", clienteAtualizado);
         toast.success("Cliente cadastrado com sucesso!");
       }

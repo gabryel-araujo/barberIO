@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
 import { Servico } from "@/types/servico";
@@ -34,12 +34,14 @@ export const Step4 = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { push } = useRouter();
+  empresaId.current = getEmpresaIdFromHref();
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      empresaId.current = getEmpresaIdFromHref();
-    }
-  }, []);
+  console.log(empresaId.current);
+
+  // useEffect(() => {
+  //   if (typeof window !== "undefined") {
+  //   }
+  // }, []);
 
   const {
     register,
@@ -191,7 +193,7 @@ export const Step4 = () => {
             <CardServico
               key={servico.id}
               nome={servico.nome}
-              descricao={servico.descricao}
+              descricao={servico.descricao!}
               valor={servico.preco}
               duracao={servico.duracao}
               selecionado={servicoSelecionado.id === servico.id ? true : false}
