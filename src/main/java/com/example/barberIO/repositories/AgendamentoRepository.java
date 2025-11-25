@@ -25,5 +25,5 @@ public interface AgendamentoRepository extends JpaRepository<AgendamentoModel, L
 
 	List<AgendamentoModel> findAllByEmpresaId(Long empresaId);
 
-	List<AgendamentoModel> findAllByHorarioBetweenAndBarbeiroAndStatus(LocalDateTime horarioAfter, LocalDateTime horarioBefore, FuncionarioModel barbeiro,TipoAgendamento status);
+	List<AgendamentoModel> findAllByHorarioBetweenAndBarbeiroAndStatus(LocalDateTime horarioAfter, LocalDateTime horarioBefore, FuncionarioModel barbeiro, TipoAgendamento status);
 }

@@ -2,9 +2,7 @@ package com.example.barberIO.controllers;
 
 import com.example.barberIO.dtos.FuncionarioPublicoRecordDto;
 import com.example.barberIO.dtos.FuncionarioRecordDto;
-import com.example.barberIO.dtos.ResponseAgendamentoRecordDto;
 import com.example.barberIO.enums.TipoAgendamento;
-import com.example.barberIO.enums.TipoFuncionario;
 import com.example.barberIO.exceptions.RecursoDuplicadoException;
 import com.example.barberIO.exceptions.RecursoNaoEncontradoException;
 import com.example.barberIO.models.AgendamentoModel;
@@ -26,7 +24,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;

@@ -55,17 +55,21 @@ public class ClienteController {
         return ResponseEntity.status(HttpStatus.OK).body(clienteRepository.findAllByEmpresaId(empresaLogada.getId()));
     }
 
-    @PostMapping("public/clientes")
+    @PostMapping("/public/clientes")
     public ResponseEntity<Object> addCliente(@RequestBody @Valid ClienteRecordDto clienteRecordDto) {
+        //todo:verificar pela empresaId
         Optional<ClienteModel> clienteO = clienteRepository.findByTelefone(clienteRecordDto.telefone());
 
         if (clienteO.isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Cliente já cadastrado");
         }
 
+        EmpresaModel empresa = empresaRepository.findById(clienteRecordDto.empresa_id()).get();
+
         ClienteModel clienteModel = new ClienteModel();
         LocalDateTime now = LocalDateTime.now();
         BeanUtils.copyProperties(clienteRecordDto, clienteModel);
+        clienteModel.setEmpresa(empresa);
         clienteModel.setAtivo(true);
         clienteModel.setCreated_at(now);
 

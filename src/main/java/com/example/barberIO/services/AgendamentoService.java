@@ -2,7 +2,6 @@ package com.example.barberIO.services;
 
 import com.example.barberIO.dtos.AgendamentoRecordDto;
 import com.example.barberIO.dtos.ResponseAgendamentoRecordDto;
-import com.example.barberIO.enums.TipoAgendamento;
 import com.example.barberIO.exceptions.RecursoNaoEncontradoException;
 import com.example.barberIO.models.AgendamentoModel;
 import com.example.barberIO.models.ClienteModel;
