@@ -21,17 +21,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GETUmFuncionario } from "@/lib/api/funcionarios";
 import { GETServicos } from "@/lib/api/servico";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CardServico } from "../components/cardServico";
 import { toast } from "sonner";
 import { Barbeiro } from "@/types/barbeiro";
+import { adicionarServico, removerServico } from "../functions/functions";
+import { Switch } from "@/components/ui/switch";
 
 const Barbeiros = () => {
   const params = useParams();
   const idBarbeiro = String(params.id);
+  const queryClient = useQueryClient();
 
   const { data } = useQuery({
     queryKey: ["barbeiro", idBarbeiro],
@@ -54,6 +57,7 @@ const Barbeiros = () => {
     tipo: "BARBEIRO",
     fechamento_ini: undefined,
     fechamento_fim: undefined,
+    ativo: undefined,
   });
 
   useEffect(() => {
@@ -69,11 +73,31 @@ const Barbeiros = () => {
         servicos: data?.servicos || [],
         fechamento_ini: data?.fechamento_ini ?? undefined,
         fechamento_fim: data?.fechamento_fim ?? undefined,
+        ativo: data.ativo ?? undefined,
       });
     }
   }, [data]);
 
-  console.log(formData);
+  async function handleAdicionarServico(
+    idBarbeiro: number,
+    idServico: number,
+    checked: boolean
+  ) {
+    try {
+      if (checked) {
+        await adicionarServico(idBarbeiro, idServico);
+        toast.success("Serviço Adicionado com sucesso!");
+      } else {
+        await removerServico(idBarbeiro, idServico);
+        toast.success("Serviço Removido com sucesso!");
+      }
+      queryClient.invalidateQueries({
+        queryKey: ["servicos"],
+      });
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  }
 
   return (
     <div className="w-full px-6 py-6 space-y-6 bg-[#e6f0ff]">
@@ -220,19 +244,63 @@ const Barbeiros = () => {
                         descricao={serv?.descricao ?? ""}
                         duracao={serv?.duracao ?? 0}
                         preco={serv?.preco ?? 0}
-                        fnSelecionaServico={() =>
-                          toast.warning("teste de seleção")
+                        fnSelecionaServico={(novoChecked) =>
+                          handleAdicionarServico(
+                            formData.id,
+                            Number(serv.id),
+                            novoChecked
+                          )
                         }
                       />
                     ))}
                   </div>
                 </Card>
               </TabsContent>
-              <TabsContent value="disponibilidade">
+              <TabsContent value="disponibilidade" className="space-y-3">
                 <Card className="p-6">
-                  <CardTitle className="pb-6">
-                    Status de Disponibilidade
-                  </CardTitle>
+                  <CardTitle className="">Status de Disponibilidade</CardTitle>
+                  <CardDescription>
+                    Configure se o barbeiro está aceitando agendamentos
+                  </CardDescription>
+                  <div className="border rounded-xl flex items-center justify-between p-4">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`size-3.5 ${
+                          formData.ativo === true
+                            ? "bg-green-500"
+                            : "bg-red-500"
+                        }  rounded-full`}
+                      />
+                      <div className="">
+                        <p className="font-semibold">
+                          {formData.ativo
+                            ? "Disponível para agendamentos"
+                            : "Indisponível para agendamentos"}
+                        </p>
+                        <p className="text-muted-foreground text-sm">
+                          {formData.ativo
+                            ? "Este barbeiro pode receber novos agendamentos"
+                            : "Este barbeiro não aparecerá nas opções de agendamento"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <Switch
+                      className=""
+                      id="disponivel"
+                      checked={formData.ativo}
+                      onCheckedChange={(checked) =>
+                        setFormData({ ...formData, ativo: checked })
+                      }
+                    />
+                  </div>
+                </Card>
+                <Card className="p-6">
+                  <CardTitle>Fechamento de Horário</CardTitle>
+                  <CardDescription>
+                    Selecione um horario para ser fechado no agendamento
+                  </CardDescription>
+                  <div>conteudo</div>
                 </Card>
               </TabsContent>
             </Tabs>

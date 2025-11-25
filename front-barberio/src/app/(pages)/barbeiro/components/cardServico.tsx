@@ -7,7 +7,7 @@ interface CardServicoProps {
   descricao: string;
   preco: number;
   duracao: number;
-  fnSelecionaServico?: () => void;
+  fnSelecionaServico?: (checked: boolean) => void;
   checked: boolean;
 }
 
@@ -25,7 +25,7 @@ export const CardServico = ({
       className={`p-4 flex gap-3 border-2 rounded-lg cursor-pointer hover:border-2 hover:border-primary ${
         checked === true ? "border-2 border-primary" : ""
       }`}
-      onClick={fnSelecionaServico}
+      onClick={() => fnSelecionaServico?.(!checked)}
     >
       <div>
         <Checkbox id={String(id)} checked={checked} />
