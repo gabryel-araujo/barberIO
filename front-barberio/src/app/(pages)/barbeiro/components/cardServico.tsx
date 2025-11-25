@@ -28,7 +28,12 @@ export const CardServico = ({
       onClick={() => fnSelecionaServico?.(!checked)}
     >
       <div>
-        <Checkbox id={String(id)} checked={checked} />
+        <Checkbox
+          id={String(id)}
+          checked={checked}
+          onClick={(e) => e.stopPropagation()}
+          onCheckedChange={() => fnSelecionaServico?.(!checked)}
+        />
       </div>
       <div>
         <p className="font-semibold">{nome}</p>

@@ -30,6 +30,9 @@ import { toast } from "sonner";
 import { Barbeiro } from "@/types/barbeiro";
 import { adicionarServico, removerServico } from "../functions/functions";
 import { Switch } from "@/components/ui/switch";
+import { format } from "date-fns";
+import { Award, Calendar, Star } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 const Barbeiros = () => {
   const params = useParams();
@@ -58,6 +61,8 @@ const Barbeiros = () => {
     fechamento_ini: undefined,
     fechamento_fim: undefined,
     ativo: undefined,
+    comissao: Number(""),
+    disponivel: undefined,
   });
 
   useEffect(() => {
@@ -74,6 +79,8 @@ const Barbeiros = () => {
         fechamento_ini: data?.fechamento_ini ?? undefined,
         fechamento_fim: data?.fechamento_fim ?? undefined,
         ativo: data.ativo ?? undefined,
+        comissao: data?.comissao ?? undefined,
+        disponivel: data?.disponivel ?? undefined,
       });
     }
   }, [data]);
@@ -84,6 +91,26 @@ const Barbeiros = () => {
     checked: boolean
   ) {
     try {
+      setFormData((prev) => {
+        const servicosAtuais = prev.servicos ?? [];
+
+        if (checked) {
+          // → ADICIONAR SERVIÇO
+          const servicoCompleto = servicos?.find((s) => s.id === idServico);
+          if (!servicoCompleto) return prev;
+
+          return {
+            ...prev,
+            servicos: [...servicosAtuais, servicoCompleto],
+          };
+        }
+
+        // → REMOVER SERVIÇO
+        return {
+          ...prev,
+          servicos: servicosAtuais.filter((s) => s.id !== idServico),
+        };
+      });
       if (checked) {
         await adicionarServico(idBarbeiro, idServico);
         toast.success("Serviço Adicionado com sucesso!");
@@ -92,13 +119,40 @@ const Barbeiros = () => {
         toast.success("Serviço Removido com sucesso!");
       }
       queryClient.invalidateQueries({
-        queryKey: ["servicos"],
+        queryKey: ["barbeiro", idBarbeiro],
       });
     } catch (error: any) {
       toast.error(error.message);
     }
   }
+  const [inicioData, setInicioData] = useState<Date>();
+  const [fimData, setFimData] = useState<Date>();
+  const [inicioHora, setInicioHora] = useState<string>("");
+  const [fimHora, setFimHora] = useState<string>("");
 
+  useEffect(() => {
+    if (inicioData && inicioHora) {
+      const dataFormatada = format(inicioData, "yyyy-MM-dd");
+      setFormData((prev) => ({
+        ...prev,
+        fechamento_ini: `${dataFormatada}T${inicioHora}`,
+      }));
+    }
+  }, [inicioData, inicioHora]);
+
+  useEffect(() => {
+    if (fimData && fimHora) {
+      const dataFormatada = format(fimData, "yyyy-MM-dd");
+      setFormData((prev) => ({
+        ...prev,
+        fechamento_fim: `${dataFormatada}T${fimHora}`,
+      }));
+    }
+  }, [fimData, fimHora]);
+
+  function salvarBarbeiro() {
+    console.log(formData);
+  }
   return (
     <div className="w-full px-6 py-6 space-y-6 bg-[#e6f0ff]">
       <aside className="sticky top-0 z-10  backdrop-blur-md supports-[backdrop-filter]:bg-[#e6f0ff]/60 p-6 flex md:flex-row items-center justify-between gap-3 md:px-10">
@@ -124,7 +178,7 @@ const Barbeiros = () => {
           </Breadcrumb>
         </div>
         <div>
-          <Button>Salvar alterações</Button>
+          <Button onClick={salvarBarbeiro}>Salvar alterações</Button>
         </div>
       </aside>
 
@@ -173,7 +227,7 @@ const Barbeiros = () => {
                   Disponibilidades
                 </TabsTrigger>
               </TabsList>
-              <TabsContent value="gerais">
+              <TabsContent value="gerais" className="space-y-3">
                 <Card className="p-6">
                   <CardTitle className="pb-6">Informações Pessoais</CardTitle>
                   {/* formulario Edição */}
@@ -225,6 +279,22 @@ const Barbeiros = () => {
                     </div>
                   </div>
                 </Card>
+                <Card className="p-6">
+                  <CardTitle>Comissão</CardTitle>
+                  <CardDescription>
+                    Digite o percentual (%) de comissão do barbeiro
+                  </CardDescription>
+                  <Input
+                    type="number"
+                    value={Number(formData.comissao) * 100}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        comissao: Number(e.target.value) / 100,
+                      })
+                    }
+                  />
+                </Card>
               </TabsContent>
               <TabsContent value="servicos">
                 <Card className="p-6">
@@ -266,19 +336,19 @@ const Barbeiros = () => {
                     <div className="flex items-center gap-3">
                       <div
                         className={`size-3.5 ${
-                          formData.ativo === true
+                          formData.disponivel === true
                             ? "bg-green-500"
                             : "bg-red-500"
                         }  rounded-full`}
                       />
                       <div className="">
                         <p className="font-semibold">
-                          {formData.ativo
+                          {formData.disponivel
                             ? "Disponível para agendamentos"
                             : "Indisponível para agendamentos"}
                         </p>
                         <p className="text-muted-foreground text-sm">
-                          {formData.ativo
+                          {formData.disponivel
                             ? "Este barbeiro pode receber novos agendamentos"
                             : "Este barbeiro não aparecerá nas opções de agendamento"}
                         </p>
@@ -288,9 +358,9 @@ const Barbeiros = () => {
                     <Switch
                       className=""
                       id="disponivel"
-                      checked={formData.ativo}
+                      checked={formData.disponivel}
                       onCheckedChange={(checked) =>
-                        setFormData({ ...formData, ativo: checked })
+                        setFormData({ ...formData, disponivel: checked })
                       }
                     />
                   </div>
@@ -300,7 +370,73 @@ const Barbeiros = () => {
                   <CardDescription>
                     Selecione um horario para ser fechado no agendamento
                   </CardDescription>
-                  <div>conteudo</div>
+                  <div className="flex flex-col gap-3 md:flex-row items-center md:justify-evenly">
+                    <div className="flex flex-col gap-2">
+                      <Label>Início</Label>
+                      <div className="flex flex-col gap-2">
+                        <Input
+                          type="date"
+                          className="w-[200px]"
+                          placeholder="dd/MM/aaaa"
+                          value={
+                            inicioData ? format(inicioData, "yyyy-MM-dd") : ""
+                          }
+                          min={new Date().toISOString().split("T")[0]}
+                          onChange={(e) => {
+                            const inicioDataSelecionada = new Date(
+                              e.target.value
+                            );
+                            inicioDataSelecionada.setDate(
+                              inicioDataSelecionada.getDate() + 1
+                            );
+                            setInicioData(inicioDataSelecionada);
+                          }}
+                        />
+
+                        <input
+                          type="time"
+                          value={inicioHora}
+                          onChange={(e) => setInicioHora(e.target.value)}
+                          className="border border-input rounded-md px-2 py-1 text-sm w-[200px] bg-background"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex flex-col gap-2">
+                        <Label>Fim</Label>
+                        <Input
+                          type="date"
+                          className="w-[200px]"
+                          placeholder="dd/MM/aaaa"
+                          value={fimData ? format(fimData, "yyyy-MM-dd") : ""}
+                          min={new Date().toISOString().split("T")[0]}
+                          onChange={(e) => {
+                            const fimDataSelecionada = new Date(e.target.value);
+                            fimDataSelecionada.setDate(
+                              fimDataSelecionada.getDate() + 1
+                            );
+                            setFimData(fimDataSelecionada);
+                          }}
+                        />
+
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="time"
+                            value={fimHora}
+                            onChange={(e) => setFimHora(e.target.value)}
+                            className="border border-input rounded-md px-2 py-1 text-sm w-[200px] bg-background"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+                <Card className="p-6">
+                  <p className="text-sm text-muted-foreground">
+                    💡 Dica: Quando um barbeiro está indisponível, ele não
+                    aparecerá nas opções ao criar novos agendamentos, mas os
+                    agendamentos já existentes serão mantidos.
+                  </p>
                 </Card>
               </TabsContent>
             </Tabs>
@@ -308,7 +444,7 @@ const Barbeiros = () => {
         </div>
         {/* Lado Menor */}
         <div className="lg:col-span-1 bg-card space-y-3 shadow rounded-lg">
-          <div className="bg-gray-300 p-6 rounded-t-lg">
+          <div className="bg-gradient-to-br from-gray-200 to-gray-50 p-6 rounded-t-lg">
             <p className="text-lg font-semibold">Preview do Perfil</p>
           </div>
           <div className="w-full flex flex-col gap-2 items-center justify-center">
@@ -329,7 +465,7 @@ const Barbeiros = () => {
             <div className="w-full flex items-center flex-col">
               <p className="font-semibold">{data?.nome}</p>
               <p className="text-sm">
-                {data?.disponivel === true ? (
+                {formData?.disponivel === true ? (
                   <div className="flex items-center gap-2">
                     {" "}
                     <p className="size-2 rounded-full bg-green-500"></p>{" "}
@@ -346,6 +482,40 @@ const Barbeiros = () => {
             </div>
           </div>
           <div className="border-b" />
+          <div className="space-y-3">
+            <div className="flex shadow-md items-center justify-between px-5 bg-slate-50 mx-5 rounded-sm py-3">
+              <p className="flex items-center gap-3 text-sm font-semibold">
+                <Star className="text-yellow-500" size={20} />
+                Avaliação
+              </p>
+              <p className="text-sm font-semibold">4.8/5.0</p>
+            </div>
+
+            <div className="flex shadow-md items-center justify-between px-5 bg-slate-50 mx-5 rounded-sm py-3">
+              <p className="flex items-center gap-3 text-sm font-semibold">
+                <Award className="text-yellow-500" size={20} />
+                Experiência
+              </p>
+              <p className="text-sm font-semibold">8 anos</p>
+            </div>
+
+            <div className="flex shadow-md items-center justify-between px-5 bg-slate-50 mx-5 rounded-sm py-3">
+              <p className="flex items-center gap-3 text-sm font-semibold">
+                <Calendar className="text-yellow-500" size={20} />
+                Serviços
+              </p>
+              <p className="text-sm font-semibold">3</p>
+            </div>
+          </div>
+          <div className="border-b" />
+          <div className="px-5 space-y-3">
+            <Label>Especializações</Label>
+            <div className="flex gap-3">
+              {servicos?.map((servico) => (
+                <Badge key={servico.id}>{servico.nome}</Badge>
+              ))}
+            </div>
+          </div>
         </div>
       </main>
     </div>

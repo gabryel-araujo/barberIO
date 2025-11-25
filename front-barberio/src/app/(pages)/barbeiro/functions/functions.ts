@@ -6,6 +6,7 @@ export async function adicionarServico(idBarbeiro: number, idServico: number) {
   try {
     const response = await axios.patch(
       `${baseUrl}/funcionarios/${idBarbeiro}/adicionarServico/${idServico}`,
+      null,
       {
         headers: {
           Authorization: `Bearer ${Cookies.get("authToken")}`,
@@ -25,6 +26,7 @@ export async function removerServico(idBarbeiro: number, idServico: number) {
   try {
     const response = await axios.patch(
       `${baseUrl}/funcionarios/${idBarbeiro}/removerServico/${idServico}`,
+      null,
       {
         headers: {
           Authorization: `Bearer ${Cookies.get("authToken")}`,
