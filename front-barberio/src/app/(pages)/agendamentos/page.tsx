@@ -277,7 +277,7 @@ export default function Agendamentos() {
   );
 
   return (
-    <div className="min-h-screen w-full flex flex-col px-4 py-6 md:px-10 bg-[#f8fafc]">
+    <div className="w-full min-h-screen bg-[#e6f0ff]">
       <DialogComponent
         title="Tem certeza que deseja cancelar o agendamento?"
         actionLabel="Sim"
@@ -302,14 +302,16 @@ export default function Agendamentos() {
         action={handleReativar}
       />
 
-      <div className="w-full max-w-7xl mx-auto space-y-6">
-        <TitulosPages
-          Titulos="Agendamentos"
-          subtitulo="Visualize e gerencie os agendamentos da barbearia"
-        />
+      <div className="w-full mx-auto space-y-6">
+        <div className="w-full flex items-center justify-between px-10 pt-5">
+          <TitulosPages
+            Titulos="Agendamentos"
+            subtitulo="Visualize e gerencie os agendamentos da barbearia"
+          />
+        </div>
 
         {/* FILTROS */}
-        <Card className="p-4 shadow-sm border bg-white">
+        <Card className="p-4 shadow-sm border bg-white m-5">
           <Accordion type="single" collapsible>
             <AccordionItem value="filtros">
               <AccordionTrigger className="flex items-center text-xl py-2 cursor-pointer">
@@ -490,7 +492,7 @@ export default function Agendamentos() {
         </Card>
 
         {/* LISTAGEM */}
-        <Card className="p-4 shadow-sm border bg-white">
+        <Card className="p-4 shadow-sm border bg-white m-5 ">
           {filtered.length > 0 ? (
             <>
               {/* Tabela Desktop */}

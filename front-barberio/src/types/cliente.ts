@@ -4,5 +4,6 @@ export interface Cliente {
   telefone: string;
   ativo?: boolean;
   created_at?: Date;
+  empresa_id?: number;
 }
 //ID | NOME | TELEFONE
