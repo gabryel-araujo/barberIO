@@ -27,14 +27,14 @@ type BarberCardProps = {
   barbeiro: Barbeiro;
   form: UseFormReturn<BarbeiroFormData>;
   setBarbeiroSelecionado: Dispatch<SetStateAction<Barbeiro | undefined>>;
-  setOpenModal: Dispatch<SetStateAction<boolean>>;
+  direcionar: () => void;
 };
 
 export function BarberCard({
   barbeiro,
   form,
   setBarbeiroSelecionado,
-  setOpenModal,
+  direcionar,
 }: BarberCardProps) {
   const { dispatch } = useFormReducer();
 
@@ -147,7 +147,7 @@ export function BarberCard({
           onClick={() => {
             handleRecoveryBarbeiro(barbeiro);
             setBarbeiroSelecionado(barbeiro);
-            setOpenModal(true);
+            direcionar();
           }}
           className="bg-slate-700 hover:bg-slate-600"
         >

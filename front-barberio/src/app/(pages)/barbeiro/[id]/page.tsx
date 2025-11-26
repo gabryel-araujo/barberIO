@@ -1,5 +1,4 @@
 "use client";
-
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -18,13 +17,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { GETUmFuncionario } from "@/lib/api/funcionarios";
+import { GETUmFuncionario, PUTFuncionario } from "@/lib/api/funcionarios";
 import { GETServicos } from "@/lib/api/servico";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { CardServico } from "../components/cardServico";
 import { toast } from "sonner";
 import { Barbeiro } from "@/types/barbeiro";
@@ -33,11 +32,18 @@ import { Switch } from "@/components/ui/switch";
 import { format } from "date-fns";
 import { Award, Calendar, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { fileToBase64, validarToken } from "@/utils/functions";
+import axios from "axios";
 
 const Barbeiros = () => {
   const params = useParams();
   const idBarbeiro = String(params.id);
   const queryClient = useQueryClient();
+  const avatarRef = useRef<HTMLInputElement>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [imagemSelecionada, setImagemSelecionada] = useState<File | null>(null);
+
+  const usuario = validarToken();
 
   const { data } = useQuery({
     queryKey: ["barbeiro", idBarbeiro],
@@ -129,7 +135,7 @@ const Barbeiros = () => {
   const [fimData, setFimData] = useState<Date>();
   const [inicioHora, setInicioHora] = useState<string>("");
   const [fimHora, setFimHora] = useState<string>("");
-
+  const router = useRouter();
   useEffect(() => {
     if (inicioData && inicioHora) {
       const dataFormatada = format(inicioData, "yyyy-MM-dd");
@@ -150,9 +156,55 @@ const Barbeiros = () => {
     }
   }, [fimData, fimHora]);
 
-  function salvarBarbeiro() {
-    console.log(formData);
-  }
+  const onSubmit = async (barbeiro: Barbeiro) => {
+    console.log(barbeiro);
+    let urlPublica = data?.avatar ?? "";
+    if (imagemSelecionada) {
+      const base64 = await fileToBase64(imagemSelecionada);
+      const resUpload = await axios.post("/api/avatar-upload", {
+        base64,
+        NomeBarbeiro: barbeiro.nome,
+        idBarbeiro: data?.id,
+      });
+      urlPublica = resUpload.data.publicUrl;
+    }
+    const response = await PUTFuncionario(
+      data!.id,
+      barbeiro.nome,
+      barbeiro.email,
+      barbeiro.data_nascimento!,
+      barbeiro.disponivel!,
+      barbeiro.senha ? barbeiro.senha : data!.senha,
+      data!.ativo,
+      urlPublica,
+      barbeiro.tipo,
+      barbeiro.fechamento_ini!,
+      barbeiro.fechamento_fim!,
+      data!.atendimentos,
+      barbeiro?.comissao
+    );
+
+    if (response.status === 200) {
+      toast.success("Barbeiro atualizado com sucesso!");
+    } else if (response.status >= 400) {
+      toast.error("Erro na requisição! Verifique os dados");
+    } else {
+      toast.error("Oops, ocorreu um erro!");
+    }
+
+    if (data!.id === usuario?.id) {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      toast.warning("Faça Login para validação");
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      router.replace("/login");
+    }
+
+    // dispatch({
+    //   type: AgendamentoAction.setBarbeiro,
+    //   payload: [response.data],
+    // });
+  };
+
   return (
     <div className="w-full px-6 py-6 space-y-6 bg-[#e6f0ff]">
       <aside className="sticky top-0 z-10  backdrop-blur-md supports-[backdrop-filter]:bg-[#e6f0ff]/60 p-6 flex md:flex-row items-center justify-between gap-3 md:px-10">
@@ -161,7 +213,7 @@ const Barbeiros = () => {
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/">Home</Link>
+                  <Link href="/home">Home</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
@@ -178,7 +230,7 @@ const Barbeiros = () => {
           </Breadcrumb>
         </div>
         <div>
-          <Button onClick={salvarBarbeiro}>Salvar alterações</Button>
+          <Button onClick={() => onSubmit(formData)}>Salvar alterações</Button>
         </div>
       </aside>
 
@@ -188,7 +240,55 @@ const Barbeiros = () => {
           <Card className="flex flex-row p-6">
             <CardHeader className="flex md:flex-row items-center gap-6">
               <div className="relative border-2 border-[#3f89c5] rounded-full h-20 w-20 bg-slate-700 items-center justify-center flex text-white">
-                {data?.avatar !== null ? (
+                {/* INICIO AVATAR */}
+                <div className="space-y-2">
+                  <div className="relative flex items-center justify-center">
+                    <input
+                      type="file"
+                      ref={avatarRef}
+                      className="absolute w-0 h-0 opacity-0"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setImagemSelecionada(file);
+                          const previewUrl = URL.createObjectURL(file);
+                          setPreview(previewUrl);
+                        }
+                      }}
+                    />
+                    <button
+                      onClick={() => avatarRef.current?.click()}
+                      type="button"
+                      className="relative h-20 w-20 rounded-full border-4 border-[#3f89c5] shadow shadow-primary hover:shadow-primary/20 transition-all duration-300 cursor-pointer bg-primary text-white overflow-hidden"
+                    >
+                      {preview ? (
+                        <img
+                          src={preview}
+                          alt="avatar preview"
+                          className="absolute inset-0 h-full w-full object-cover object-center"
+                        />
+                      ) : data?.avatar ? (
+                        <img
+                          src={data.avatar}
+                          alt="avatar"
+                          className="absolute inset-0 h-full w-full object-cover object-center"
+                        />
+                      ) : (
+                        <img
+                          src={`${data?.avatar || "/imagens/default.png"}`}
+                          sizes="56px"
+                          alt="avatar"
+                          //onError={() => setErroImagem(true)}
+                          className="absolute rounded-full inset-0 h-full w-full object-cover object-center"
+                        />
+                      )}
+                    </button>{" "}
+                  </div>
+                </div>
+                {/* FIM AVATAR */}
+
+                {/* {data?.avatar !== null ? (
                   <img
                     src={`${data?.avatar || "/imagens/default.png"}`}
                     sizes="56px"
@@ -200,7 +300,7 @@ const Barbeiros = () => {
                   <p className="font-bold text-3xl">
                     {data?.nome.split("")[0]}
                   </p>
-                )}
+                )} */}
               </div>
               <div>
                 <p className="text-xl font-medium">Editar Barbeiro</p>
@@ -232,7 +332,7 @@ const Barbeiros = () => {
                   <CardTitle className="pb-6">Informações Pessoais</CardTitle>
                   {/* formulario Edição */}
                   <div className="space-y-3">
-                    <div className="space-y-2">
+                    <div className="flex-1 space-y-2">
                       <Label>Nome</Label>
                       <Input
                         type="text"
@@ -242,6 +342,7 @@ const Barbeiros = () => {
                         }
                       />
                     </div>
+
                     <div className="space-y-2">
                       <Label>Email</Label>
                       <Input
@@ -510,7 +611,7 @@ const Barbeiros = () => {
           <div className="border-b" />
           <div className="px-5 space-y-3">
             <Label>Especializações</Label>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
               {servicos?.map((servico) => (
                 <Badge key={servico.id}>{servico.nome}</Badge>
               ))}

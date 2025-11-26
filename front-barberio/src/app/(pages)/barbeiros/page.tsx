@@ -444,7 +444,7 @@ const barbeiros = () => {
               barbeiro={barbeiro}
               form={form}
               setBarbeiroSelecionado={setBarbeiroSelecionado}
-              setOpenModal={setOpenModal}
+              direcionar={() => router.replace(`/barbeiro/${barbeiro.id}`)}
             />
           ))}
       </div>
