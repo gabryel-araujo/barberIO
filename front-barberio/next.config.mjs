@@ -6,8 +6,8 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        source: "/api/:path*", // tudo que vier de /api/...
-        destination: "http://136.248.85.49:1509/:path*", // vai para o seu back-end  Novo - 136.248.85.49 ANTIGO - 137.131.135.29
+        source: "/api/:path*",
+        destination: `http://${process.env.SERVER}:${process.env.API_PORT}/:path*`,
       },
     ];
   },
