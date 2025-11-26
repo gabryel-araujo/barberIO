@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "servico")
+@Data
 public class ServiceModel implements Serializable {
 
     @Id
@@ -40,84 +42,4 @@ public class ServiceModel implements Serializable {
     @JoinColumn(name = "empresa_id")
     @JsonIgnore
     private EmpresaModel empresa;
-
-    public LocalDateTime getCreated_at() {
-        return created_at;
-    }
-
-    public void setCreated_at(LocalDateTime created_at) {
-        this.created_at = created_at;
-    }
-
-    public boolean isAtivo() {
-        return ativo;
-    }
-
-    public void setAtivo(boolean ativo) {
-        this.ativo = ativo;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
-
-    public float getPreco() {
-        return preco;
-    }
-
-    public void setPreco(float preco) {
-        this.preco = preco;
-    }
-
-    public int getDuracao() {
-        return duracao;
-    }
-
-    public void setDuracao(int duracao) {
-        this.duracao = duracao;
-    }
-
-    public void setPreco(Float preco) {
-        this.preco = preco;
-    }
-
-    public void setDuracao(Integer duracao) {
-        this.duracao = duracao;
-    }
-
-    public List<FuncionarioModel> getBarbeiros() {
-        return barbeiros;
-    }
-
-    public void setBarbeiros(List<FuncionarioModel> barbeiros) {
-        this.barbeiros = barbeiros;
-    }
-
-    public EmpresaModel getEmpresa() {
-        return empresa;
-    }
-
-    public void setEmpresa(EmpresaModel empresa) {
-        this.empresa = empresa;
-    }
 }

@@ -1,7 +1,11 @@
 package com.example.barberIO.controllers;
 
 import java.util.List;
+import java.util.UUID;
 
+import com.example.barberIO.repositories.FuncionarioRepository;
+import com.example.barberIO.security.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +34,12 @@ public class EmpresaController {
 	@Autowired
 	private EmpresaService empresaService;
 
+	@Autowired
+	private JwtUtil jwtUtil;
+
+	@Autowired
+	private FuncionarioRepository funcionarioRepository;
+
 	@GetMapping("/empresas")
 	public ResponseEntity<List<EmpresaModel>> listarEmpresas() {
 		return ResponseEntity.status(HttpStatus.OK).body(empresaRepository.findAll());
@@ -38,6 +48,16 @@ public class EmpresaController {
 	@GetMapping("/empresas/{id}")
 	public ResponseEntity<EmpresaModel> listarEmpresa(@PathVariable(value = "id") Long id){
 		return empresaService.listarEmpresaPorId(id);
+	}
+
+	@GetMapping("/empresa")
+	public ResponseEntity<EmpresaModel> listarEmpresaAuth(HttpServletRequest req){
+		String authHeader = req.getHeader("Authorization");
+		String token = authHeader.substring(7);
+		String usuarioLogado = jwtUtil.extractUsername(token);
+		EmpresaModel empresaLogada = funcionarioRepository.findByEmail(usuarioLogado).get().getEmpresa();
+
+		return empresaService.listarEmpresaPorId(empresaLogada.getId());
 	}
 	
 //	@GetMapping("/public/empresas/{id}")
@@ -55,10 +75,15 @@ public class EmpresaController {
 			@RequestBody @Valid EmpresaRecordDto empresaRecordDto) {
 		return empresaService.editarEmpresa(empresaRecordDto, id);
 	}
-	
+
 	@DeleteMapping("/empresas/{id}")
 	public ResponseEntity<Object> removerEmpresa(@PathVariable(value = "id")Long id){
 		return empresaService.removerEmpresa(id);
+	}
+
+	@GetMapping("/public/empresas/{uuid}")
+	public boolean validarEmpresa(@PathVariable(value = "uuid") UUID uuid){
+		return empresaService.validarEmpresa(uuid);
 	}
 
 }

@@ -13,9 +13,11 @@ import java.util.List;
 import java.util.UUID;
 
 import com.example.barberIO.enums.TipoFuncionario;
+import lombok.Data;
 
 @Entity
 @Table(name="funcionario")
+@Data
 public class FuncionarioModel implements Serializable {
 
     @Id
@@ -69,143 +71,7 @@ public class FuncionarioModel implements Serializable {
     @Column(nullable = true)
     private LocalDateTime fechamento_fim;
 
-    public LocalDateTime getCreated_at() {
-        return created_at;
-    }
+    @Column(nullable = true)
+    private Float comissao;
 
-    public void setCreated_at(LocalDateTime created_at) {
-        this.created_at = created_at;
-    }
-
-    public boolean isAtivo() {
-        return ativo;
-    }
-
-    public void setAtivo(boolean ativo) {
-        this.ativo = ativo;
-    }
-
-    public boolean isDisponivel() {
-        return disponivel;
-    }
-
-    public void setDisponivel(boolean disponivel) {
-        this.disponivel = disponivel;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setData_nascimento(String data_nascimento) {
-        this.data_nascimento = data_nascimento;
-    }
-
-    public List<ServiceModel> getServicos() {
-        return servicos;
-    }
-
-    public void setServicos(List<ServiceModel> servicos) {
-        this.servicos = servicos;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getSenha() {
-        return senha;
-    }
-
-    public void setSenha(String senha) {
-        this.senha = senha;
-    }
-
-    public String getData_nascimento() {
-        return data_nascimento;
-    }
-
-    public void setData_dascimento(String data_dascimento) {
-        this.data_nascimento = data_nascimento;
-    }
-
-    public float getAvaliacao() {
-        return avaliacao;
-    }
-
-    public void setAvaliacao(float avaliacao) {
-        this.avaliacao = avaliacao;
-    }
-
-    public float getExperiencia() {
-        return experiencia;
-    }
-
-    public void setExperiencia(float experiencia) {
-        this.experiencia = experiencia;
-    }
-
-    public int getAtendimentos() {
-        return atendimentos;
-    }
-
-    public void setAtendimentos(int atendimentos) {
-        this.atendimentos = atendimentos;
-    }
-
-    public String getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
-
-    public TipoFuncionario getTipo() {
-		return tipo;
-	}
-
-	public void setTipo(TipoFuncionario tipo) {
-		this.tipo = tipo;
-	}
-
-    public EmpresaModel getEmpresa() {
-        return empresa;
-    }
-
-    public void setEmpresa(EmpresaModel empresa) {
-        this.empresa = empresa;
-    }
-
-    public LocalDateTime getFechamento_ini() {
-        return fechamento_ini;
-    }
-
-    public void setFechamento_ini(LocalDateTime fechamento_ini) {
-        this.fechamento_ini = fechamento_ini;
-    }
-
-    public LocalDateTime getFechamento_fim() {
-        return fechamento_fim;
-    }
-
-    public void setFechamento_fim(LocalDateTime fechamento_fim) {
-        this.fechamento_fim = fechamento_fim;
-    }
 }

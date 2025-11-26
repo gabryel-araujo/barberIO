@@ -3,6 +3,7 @@ package com.example.barberIO.security;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -39,46 +40,37 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth.requestMatchers("/agendamentos/**","/public/**","/empresas/**").permitAll()
+            .authorizeHttpRequests(auth -> auth.requestMatchers("/agendamentos/**","/public/**","/empresas/**","/error/**").permitAll()
                     // Endpoints específicos
-                    .requestMatchers("/admin/**").hasRole("GESTOR")
-                    .requestMatchers("/clientes/**").hasAnyRole("GESTOR","BARBEIRO")
-                    .requestMatchers("/funcionarios/**").hasAnyRole("GESTOR","BARBEIRO")
-                    .requestMatchers("/servico/**").hasRole("GESTOR")
-                    .requestMatchers("/horarioFuncionamento/**").hasRole("GESTOR")
-                    .requestMatchers("/configEmpresa/**").hasRole("GESTOR")
-                    .requestMatchers("/feriados/**").hasRole("GESTOR")
-                    .requestMatchers("/enderecos/**").hasRole("GESTOR")
+                    //.requestMatchers(HttpMethod.GET,"/agendamentos/**").permitAll()
+                    .requestMatchers("/admin/**").hasAnyRole("GESTOR","DEV")
+                    .requestMatchers("/clientes/**").hasAnyRole("GESTOR","BARBEIRO","DEV")
+                    .requestMatchers("/funcionarios/**").hasAnyRole("GESTOR","BARBEIRO","DEV")
+                    .requestMatchers("/servico/**").hasAnyRole("GESTOR","DEV")
+                    .requestMatchers("/horarioFuncionamento/**").hasAnyRole("GESTOR","DEV")
+                    .requestMatchers("/configEmpresa/**").hasAnyRole("GESTOR","DEV")
+                    .requestMatchers("/feriados/**").hasAnyRole("GESTOR","DEV")
+                    .requestMatchers("/enderecos/**").hasAnyRole("GESTOR","DEV")
                     .requestMatchers("/auth/login/**","/auth/register/**").permitAll()
+
                     // Qualquer outra requisição precisa estar autenticada
                     .anyRequest().authenticated()
             )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex
-                        // Quando o usuário não está autenticado
+                        // 1. Mantém o tratamento para 401 (Usuário NÃO autenticado)
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                             response.setContentType("application/json");
-                            response.getWriter().write("{\"error\":\"Usuário não autenticado\"}");
+                            response.getWriter().write("{\"error\":\"Usuário sem permissão para a operação\"}");
                         })
-                        // Quando o usuário está autenticado, mas sem permissão
-                        .accessDeniedHandler((request, response, accessDeniedException) -> {
-                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                            response.setContentType("application/json");
-                            response.getWriter().write("{\"error\":\"Acesso negado\"}");
-                        })
-                )
-                // 🔥 ESSA LINHA É ESSENCIAL
-                .exceptionHandling(ex -> ex
+                        // 2. Access Denied Handler: Relança a exceção para que o Spring a capture e mostre o trace/detalhes.
                         .accessDeniedHandler((req, res, e) -> {
-                            // Deixa o erro subir — NÃO trata aqui
+                            // 🔥 ESSA LINHA É ESSENCIAL para relançar o erro
                             throw e;
                         })
                 );
-        ;
-
-
         return http.build();
     }
 

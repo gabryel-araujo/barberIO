@@ -4,6 +4,7 @@ import com.example.barberIO.models.ClienteModel;
 import com.example.barberIO.models.EmpresaModel;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -12,4 +13,6 @@ import org.springframework.stereotype.Repository;
 public interface EmpresaRepository extends JpaRepository<EmpresaModel, Long> {
 	
 	Optional<EmpresaModel> findByEmail(String email);
+
+	Optional<EmpresaModel> findByUuid(UUID uuid);
 }
