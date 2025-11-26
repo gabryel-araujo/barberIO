@@ -196,7 +196,7 @@ const Barbeiros = () => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       toast.warning("Faça Login para validação");
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      router.replace("/login");
+      router.push("/login");
     }
 
     // dispatch({
