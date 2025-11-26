@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.example.barberIO.enums.TipoAgendamento.*;
+
 @Service
 public class AgendamentoService {
 
@@ -85,6 +87,7 @@ public class AgendamentoService {
             agendamentoModel.setFim(fimAgendamento);
             agendamentoModel.setFim(agendamentoModel.getFim());
             agendamentoModel.setEmpresa(empresa);
+            agendamentoModel.setStatus(ATIVO);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(agendamentoRepository.save(agendamentoModel));
         }
@@ -98,8 +101,25 @@ public class AgendamentoService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Agendamento não localizado! Verifique os dados");
         }
 
-        agendamentoRepository.deleteById(id);
-        return ResponseEntity.status(HttpStatus.OK).body("Agendamento removido com sucesso!");
+        AgendamentoModel agendamentoModel = agendamentoO.get();
+        agendamentoModel.setStatus(CANCELADO);
+        agendamentoRepository.save(agendamentoModel);
+
+        return ResponseEntity.status(HttpStatus.OK).body("Agendamento cancelado com sucesso!");
+    }
+
+    public ResponseEntity<Object> reativarHorario(Long id) {
+        Optional<AgendamentoModel> agendamentoO = agendamentoRepository.findById(id);
+
+        if (agendamentoO.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Agendamento não localizado! Verifique os dados");
+        }
+
+        AgendamentoModel agendamentoModel = agendamentoO.get();
+        agendamentoModel.setStatus(ATIVO);
+        agendamentoRepository.save(agendamentoModel);
+
+        return ResponseEntity.status(HttpStatus.OK).body("Agendamento reativado com sucesso!");
     }
 
     public ResponseEntity<Object> editarAgendamento(AgendamentoRecordDto agendamentoRecordDto, Long id) {
@@ -131,8 +151,8 @@ public class AgendamentoService {
         LocalDate hoje = LocalDate.now(zone);
         LocalTime agora = LocalTime.now(zone);
         Duration intervalo = Duration.ofMinutes(empresa.getConfig_empresa().getIntervalo());
-        LocalTime abertura = horarioFuncionamentoRepository.verificarAbertura(dia.getDayOfWeek().getValue());
-        LocalTime fechamento = horarioFuncionamentoRepository.verificarFechamento(dia.getDayOfWeek().getValue());
+        LocalTime abertura = horarioFuncionamentoRepository.verificarAbertura(dia.getDayOfWeek().getValue(),empresa_id);
+        LocalTime fechamento = horarioFuncionamentoRepository.verificarFechamento(dia.getDayOfWeek().getValue(),empresa_id);
         LocalDateTime fechamento_ini = funcionario.getFechamento_ini();
         LocalDateTime fechamento_fim = funcionario.getFechamento_fim();
         boolean disponivel = true;
@@ -189,10 +209,29 @@ public class AgendamentoService {
             agendamento.getCliente().getNome(),
             agendamento.getCliente().getTelefone(),
             agendamento.getServico().getNome(),
-            agendamento.getServico().getPreco()
+            agendamento.getServico().getPreco(),
+            agendamento.getStatus()
         )
     ).toList();
     	return ResponseEntity.status(HttpStatus.OK).body(dtos);
+    }
+
+    public ResponseEntity<AgendamentoModel> concluirAgendamento(Long id){
+        try{
+            Optional<AgendamentoModel> agendamentoO = agendamentoRepository.findById(id);
+
+            if(agendamentoO.isEmpty()){
+                throw new RecursoNaoEncontradoException("Agendamento não localizado, Verifique os dados");
+            }
+            AgendamentoModel agendamento = agendamentoO.get();
+
+            agendamento.setStatus(CONCLUIDO);
+
+            return ResponseEntity.status(HttpStatus.OK).body(agendamentoRepository.save(agendamento));
+
+        }catch(Exception ex){
+            throw new RuntimeException(ex);
+        }
     }
 
 }

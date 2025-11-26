@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.example.barberIO.models.EmpresaModel;
+import com.example.barberIO.repositories.EmpresaRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -31,6 +32,9 @@ public class HorarioFuncionamentoService {
 
 	@Autowired
 	private ConfigEmpresaRepository configEmpresaRepository;
+
+	@Autowired
+	private EmpresaRepository empresaRepository;
 
 	public ResponseEntity<List<HorarioFuncionamentoModel>> listarHorariosFunc() {
 		List<HorarioFuncionamentoModel> horarios = horarioFuncionamentoRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
@@ -104,7 +108,15 @@ public class HorarioFuncionamentoService {
 			horarioNew.setUltima_alteracao(LocalDateTime.now());
 			horarioNew.setConfig_empresa(configO.get());
 			horarioNew.setCodigo_dia(horario.codigo_dia());
+			if(horario.empresa_id() == null){
 			horarioNew.setEmpresa(empresaLogada);
+			}else{
+				Optional<EmpresaModel> empresa = empresaRepository.findById(horario.empresa_id());
+				if(empresa.isEmpty()){
+					throw new RecursoNaoEncontradoException("Empresa não localizada. Verifique os dados");
+				}
+				horarioNew.setEmpresa(empresa.get());
+			}
 			horariosNew.add(horarioNew);
 		}
 

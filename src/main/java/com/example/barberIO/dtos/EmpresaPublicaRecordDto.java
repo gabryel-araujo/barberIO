@@ -5,4 +5,6 @@ public record EmpresaPublicaRecordDto(
 		String nome,
 		String telefone,
 		String email, 
-		String nacional_id) {}
+		String nacional_id,
+		String url_img
+) {}
