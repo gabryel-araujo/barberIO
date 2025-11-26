@@ -78,24 +78,13 @@ const servicos = () => {
     setOpenModal(false);
   };
   const formSchema = z.object({
-    nome: z
-      .string()
-      .trim()
-      .min(2, {
-        message: "Serviço deve conter no mínimo 5 caracteres",
-      })
-      .regex(/^[a-zA-ZáàâãäéèêëíìîïóòôõöúùûüçÇ+-/&\s]*$/, {
-        message: "O nome do serviço deve conter apenas letras.",
-      }),
-    descricao: z
-      .string()
-      .trim()
-      .min(5, {
-        message: "Descrição deve conter no mínimo 5 caracteres",
-      })
-      .regex(/^[a-zA-ZáàâãäéèêëíìîïóòôõöúùûüçÇ\s]*$/, {
-        message: "O campo descrição deve conter apenas letras.",
-      }),
+    nome: z.string().trim().min(2, {
+      message: "Serviço deve conter no mínimo 5 caracteres",
+    }),
+
+    descricao: z.string().trim().min(5, {
+      message: "Descrição deve conter no mínimo 5 caracteres",
+    }),
     duracao: z.number().positive({ message: "Duração deve ser positivo" }),
     preco: z.number().positive({ message: "Valor deve ser positivo" }),
   });

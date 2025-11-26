@@ -72,66 +72,74 @@ export const Step2 = () => {
       <div className="flex flex-col gap-5 items-center justify-center">
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 mt-4 w-full justify-items-center items-center">
           {barbeiroDisponivel.map((barber) => (
-            <div
-              key={barber.id}
-              onClick={() => {
-                setbarbeiro(barber);
-                dispatch({
-                  type: AgendamentoAction.setBarbeiro,
-                  payload: barber,
-                });
-              }}
-              className={`border-2 w-4/5 py-10 cursor-pointer${
-                barber.nome === barbeiro.nome ? "border-2 border-[#3f89c5]" : ""
-              } border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 rounded-lg p-4 flex gap-4 items-center w-full`}
-            >
-              {barber.avatar ? (
-                <img
-                  src={barber.avatar}
-                  alt="imagem do barbeiro"
-                  className="h-20 w-20 rounded-full border-4 border-[#3f89c5] object-cover"
-                />
-              ) : (
-                <img
-                  src={"/imagens/default.png"}
-                  alt="imagem do barbeiro"
-                  className="h-20 w-20 rounded-full border-4 border-[#3f89c5] object-cover"
-                />
-              )}
+            <>
+              <div
+                key={barber.id}
+                onClick={() => {
+                  setbarbeiro(barber);
+                  dispatch({
+                    type: AgendamentoAction.setBarbeiro,
+                    payload: barber,
+                  });
+                }}
+                className={`border-2 w-4/5 py-10 cursor-pointer${
+                  barber.nome === barbeiro.nome
+                    ? "border-2 border-[#3f89c5]"
+                    : ""
+                } border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 rounded-lg p-4 flex gap-4 items-center w-full`}
+              >
+                {barber.avatar ? (
+                  <img
+                    src={barber.avatar}
+                    alt="imagem do barbeiro"
+                    className="h-20 w-20 rounded-full border-4 border-[#3f89c5] object-cover"
+                  />
+                ) : (
+                  <img
+                    src={"/imagens/default.png"}
+                    alt="imagem do barbeiro"
+                    className="h-20 w-20 rounded-full border-4 border-[#3f89c5] object-cover"
+                  />
+                )}
 
-              <div className="w-full flex flex-col gap-2">
-                <div className="w-full flex items-center justify-between">
-                  <p className="text-lg font-bold flex gap-3">{barber.nome}</p>
-                  {barber.nome === barbeiro.nome ? (
-                    <Badge>
-                      <Sparkles /> Selecionado
-                    </Badge>
-                  ) : (
-                    ""
-                  )}
-                </div>
-                <section className="flex items-center gap-1">
-                  {/* todo: colocar avaliações futuramente */}
-                  {/* <Star color="orange" fill="orange" />
+                <div className="w-full flex flex-col gap-2">
+                  <div className="w-full flex flex-col justify-between gap-3">
+                    <div className="flex justify-end">
+                      {barber.nome === barbeiro.nome ? (
+                        <Badge>
+                          <Sparkles /> Selecionado
+                        </Badge>
+                      ) : (
+                        ""
+                      )}
+                    </div>
+                    <p className="text-lg font-bold flex gap-3">
+                      {barber.nome}
+                    </p>
+                  </div>
+                  <section className="flex items-center gap-1">
+                    {/* todo: colocar avaliações futuramente */}
+                    {/* <Star color="orange" fill="orange" />
                   <p className="text-sm text-slate-500">
                     <b>4.3</b> (123+ Avaliações)
                   </p> */}
-                  <p className="w-full space-x-1 space-y-1">
-                    {barber.servicos!.map((servico) => (
-                      <Badge className="bg-[#3f89c5] rounded-sm">
-                        {servico.nome}
-                      </Badge>
-                    ))}
-                  </p>
-                </section>
-                <section className="flex items-center gap-1">
-                  <Award color="#3f89c5" />
-                  <p className="text-sm text-slate-500">
-                    <b>Quantidade de cortes:</b> {barber.atendimentos}
-                  </p>
-                </section>
+                    <p className="w-full space-x-1 space-y-1">
+                      {barber.servicos!.map((servico) => (
+                        <Badge className="bg-[#3f89c5] rounded-sm">
+                          {servico.nome}
+                        </Badge>
+                      ))}
+                    </p>
+                  </section>
+                  <section className="flex items-center gap-1">
+                    <Award color="#3f89c5" />
+                    <p className="text-sm text-slate-500">
+                      <b>Quantidade de cortes:</b> {barber.atendimentos}
+                    </p>
+                  </section>
+                </div>
               </div>
-            </div>
+            </>
           ))}
         </div>
         <div className="flex gap-3">
