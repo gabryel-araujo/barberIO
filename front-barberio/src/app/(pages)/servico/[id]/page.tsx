@@ -17,39 +17,31 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { GETUmServico } from "@/lib/api/servico";
 
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
-import { format } from "date-fns";
-import { Award, Calendar, Scissors, Star } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Servico } from "@/types/servico";
 import { CardServico } from "@/app/(agendar)/agendar/components/cardServicos";
 import axios from "axios";
 import { baseUrl } from "@/lib/baseUrl";
 import Cookies from "js-cookie";
+import { Scissors } from "lucide-react";
 
 const Barbeiros = () => {
   const params = useParams();
   const idServico = String(params.id);
-  const queryClient = useQueryClient();
   const router = useRouter();
 
   const { data } = useQuery({
     queryKey: ["servico", idServico],
     queryFn: () => GETUmServico(idServico),
   });
-
-  // const { data: servicos } = useQuery({
-  //   queryKey: ["servicos"],
-  //   queryFn: () => GETServicos(),
-  // });
 
   const [formData, setFormData] = useState<Servico>({
     id: 0,
@@ -72,47 +64,6 @@ const Barbeiros = () => {
       });
     }
   }, [data]);
-
-  // async function handleAdicionarServico(
-  //   idBarbeiro: number,
-  //   idServico: number,
-  //   checked: boolean
-  // ) {
-  //   try {
-  //     setFormData((prev) => {
-  //       const servicosAtuais = prev.servicos ?? [];
-
-  //       if (checked) {
-  //         // → ADICIONAR SERVIÇO
-  //         const servicoCompleto = servicos?.find((s) => s.id === idServico);
-  //         if (!servicoCompleto) return prev;
-
-  //         return {
-  //           ...prev,
-  //           servicos: [...servicosAtuais, servicoCompleto],
-  //         };
-  //       }
-
-  //       // → REMOVER SERVIÇO
-  //       return {
-  //         ...prev,
-  //         servicos: servicosAtuais.filter((s) => s.id !== idServico),
-  //       };
-  //     });
-  //     if (checked) {
-  //       await adicionarServico(idBarbeiro, idServico);
-  //       toast.success("Serviço Adicionado com sucesso!");
-  //     } else {
-  //       await removerServico(idBarbeiro, idServico);
-  //       toast.success("Serviço Removido com sucesso!");
-  //     }
-  //     queryClient.invalidateQueries({
-  //       queryKey: ["barbeiro", idBarbeiro],
-  //     });
-  //   } catch (error: any) {
-  //     toast.error(error.message);
-  //   }
-  // }
   async function salvarBarbeiro() {
     await axios
       .put(
