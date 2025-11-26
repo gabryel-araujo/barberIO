@@ -17,7 +17,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { GETUmFuncionario, PUTFuncionario } from "@/lib/api/funcionarios";
+import {
+  DELETEFuncionario,
+  GETUmFuncionario,
+  PUTFuncionario,
+  ReativarFuncionario,
+} from "@/lib/api/funcionarios";
 import { GETServicos } from "@/lib/api/servico";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -34,6 +39,7 @@ import { Award, Calendar, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { fileToBase64, validarToken } from "@/utils/functions";
 import axios from "axios";
+import { DialogComponent } from "@/components/layout/DialogComponent";
 
 const Barbeiros = () => {
   const params = useParams();
@@ -42,6 +48,8 @@ const Barbeiros = () => {
   const avatarRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [imagemSelecionada, setImagemSelecionada] = useState<File | null>(null);
+  const [openModal, setOpenModal] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
 
   const usuario = validarToken();
 
@@ -54,6 +62,35 @@ const Barbeiros = () => {
     queryKey: ["servicos"],
     queryFn: () => GETServicos(),
   });
+
+  async function handleDeleteBarbeiro(value: Barbeiro) {
+    const response = await DELETEFuncionario(value);
+
+    if (response.status === 200) {
+      toast.success("Barbeiro excluído com sucesso!");
+      router.replace("/barbeiros");
+    } else if (response.status >= 400) {
+      toast.error("Erro na requisição! Verifique os dados");
+    } else {
+      toast.error("Oops, ocorreu um erro!");
+      console.log(response);
+      console.error(response.statusText);
+    }
+  }
+  async function handleReativarBarbeiro(value: Barbeiro) {
+    const response = await ReativarFuncionario(value);
+
+    if (response.status === 200) {
+      toast.success("Barbeiro Ativado com sucesso!");
+      router.replace("/barbeiros");
+    } else if (response.status >= 400) {
+      toast.error("Erro na requisição! Verifique os dados");
+    } else {
+      toast.error("Oops, ocorreu um erro!");
+      console.log(response);
+      console.error(response.statusText);
+    }
+  }
 
   const [formData, setFormData] = useState<Barbeiro>({
     id: 0,
@@ -356,8 +393,10 @@ const Barbeiros = () => {
                     <div className="w-full md:flex gap-3">
                       <div className="space-y-3 w-full">
                         <Label>Data de Nascimento</Label>
+
                         <Input
-                          type="text"
+                          type="date"
+                          placeholder="dd/MM/aaaa"
                           value={formData?.data_nascimento}
                           onChange={(e) =>
                             setFormData({
@@ -365,6 +404,7 @@ const Barbeiros = () => {
                               data_nascimento: e.target.value,
                             })
                           }
+                          max={new Date().toISOString().split("T")[0]}
                         />
                       </div>
                       <div className="space-y-3 w-full">
@@ -396,7 +436,58 @@ const Barbeiros = () => {
                     }
                   />
                 </Card>
+                <Card className="p-6">
+                  <CardTitle>Exclusão de Barbeiro</CardTitle>
+                  <div className="flex items-center justify-between gap-3">
+                    {data && data.ativo === false && (
+                      <div className="flex w-full items-center justify-end">
+                        <Button
+                          type="button"
+                          className="bg-green-600 hover:bg-green-500 w-[150px]"
+                          variant="default"
+                          onClick={() => {
+                            setOpenDialog(!openDialog);
+                            setOpenModal(!openModal);
+                          }}
+                        >
+                          Ativar
+                        </Button>
+                      </div>
+                    )}
+                    {data && data.ativo === true && (
+                      <div className="flex w-full items-center justify-end">
+                        <Button
+                          className="w-[150px]"
+                          onClick={() => {
+                            setOpenDialog(!openDialog);
+                            setOpenModal(!openModal);
+                          }}
+                          variant={"destructive"}
+                          type="button"
+                        >
+                          Excluir
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </Card>
               </TabsContent>
+              <DialogComponent
+                className={`${
+                  data?.ativo === false ? "bg-green-600 hover:bg-green-500" : ""
+                }`}
+                title={`Você deseja ${
+                  data?.ativo === false ? "Ativar" : "excluir"
+                } o barbeiro ${data?.nome}?`}
+                actionLabel={`${data?.ativo === false ? "Ativar" : "Excluir"}`}
+                open={openDialog}
+                setOpen={setOpenDialog}
+                action={
+                  data?.ativo === true
+                    ? () => handleDeleteBarbeiro(data!)
+                    : () => handleReativarBarbeiro(data!)
+                }
+              />
               <TabsContent value="servicos">
                 <Card className="p-6">
                   <CardTitle>Serviços Prestados</CardTitle>
@@ -612,7 +703,7 @@ const Barbeiros = () => {
           <div className="px-5 space-y-3">
             <Label>Especializações</Label>
             <div className="flex flex-wrap gap-3">
-              {servicos?.map((servico) => (
+              {data?.servicos?.map((servico) => (
                 <Badge key={servico.id}>{servico.nome}</Badge>
               ))}
             </div>
