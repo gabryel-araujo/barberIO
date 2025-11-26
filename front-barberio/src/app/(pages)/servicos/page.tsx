@@ -37,12 +37,15 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 const servicos = () => {
   const [openModal, setOpenModal] = useState(false);
   const [servicoSelecionado, setServicoSelecionado] = useState<Servico>();
   const [exibirInativos, setExibirInativos] = useState(false);
   const [openModalDelete, setOpenModalDelete] = useState(false);
+
+  const router = useRouter();
 
   const { data: servicos = [] } = useQuery({
     queryKey: ["servicos", exibirInativos],
@@ -307,14 +310,7 @@ const servicos = () => {
 
                   <Button
                     onClick={() => {
-                      setServicoSelecionado(servico);
-                      form.reset({
-                        nome: servico.nome,
-                        descricao: servico.descricao,
-                        duracao: servico.duracao,
-                        preco: servico.preco,
-                      });
-                      setOpenModal(true);
+                      router.push(`/servico/${servico.id}`);
                     }}
                     variant="secondary"
                     type="button"
