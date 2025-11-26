@@ -8,7 +8,7 @@ interface CardServicoProps {
   duracao: number;
   valor: number;
   selecionado: boolean;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 export const CardServico = ({
