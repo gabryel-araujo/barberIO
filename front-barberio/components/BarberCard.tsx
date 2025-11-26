@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { changeStatus } from "@/lib/api/funcionarios";
-import { Barbeiro } from "@/types/barbeiro";
+import { Barbeiro, BarbeiroFormData } from "@/types/barbeiro";
 import { Star } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
 import { UseFormReturn } from "react-hook-form";
@@ -11,17 +11,6 @@ import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-
-type BarbeiroFormData = {
-  nome: string;
-  email: string;
-  senha?: string;
-  data_nascimento?: string | null;
-  servico: any[] | null;
-  disponivel: boolean;
-  avatar?: string | null;
-  tipo: string;
-};
 
 type BarberCardProps = {
   barbeiro: Barbeiro;
@@ -56,7 +45,7 @@ export function BarberCard({
 
   const updateStatus = async (barbeiro: Barbeiro) => {
     const response = await changeStatus(
-      barbeiro.id,
+      barbeiro.id!,
       barbeiro.nome,
       barbeiro.email,
       barbeiro.senha,
