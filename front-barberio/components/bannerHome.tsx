@@ -1,4 +1,3 @@
-import { Card } from "@/components/ui/card";
 import { Mail, MapPin, Phone } from "lucide-react";
 
 interface BannerHomeProps {
@@ -18,13 +17,13 @@ export const BannerHome = ({
   telefoneBarbearia,
   emailBarbearia,
   bairroBarbearia,
-  cidadeBarbearia,
+
   numeroBarbearia,
   ruaBarbearia,
 }: BannerHomeProps) => {
   return (
-    <Card className="overflow-hidden w-full border-0 shadow-lg">
-      <div className="relative h-64 md:h-80 overflow-hidden">
+    <div className="overflow-hidden w-full lg:min-w-4xl rounded-md md:mt-10 border-0 shadow-lg">
+      <div className="relative w-full h-64 md:h-80 overflow-hidden">
         <img
           src={imagemBarbaria}
           alt={nomeBarbearia}
@@ -53,6 +52,6 @@ export const BannerHome = ({
           </div>
         </div>
       </div>
-    </Card>
+    </div>
   );
 };

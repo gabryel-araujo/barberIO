@@ -20,4 +20,5 @@ export type AgendamentoPublic = {
   telefone: string;
   servico: string;
   preco: number;
+  status: "ATIVO" | "CANCELADO" | "CONCLUIDO";
 };

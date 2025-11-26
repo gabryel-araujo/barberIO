@@ -52,13 +52,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Cookies from "js-cookie";
-
-import Image from "next/image";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { validarToken } from "@/utils/functions";
 import { format } from "date-fns";
 import { Card } from "@/components/ui/card";
+import { useRouter } from "next/navigation";
 // import axiosInstance from "@/lib/axios";
 
 const barbeiros = () => {
@@ -73,7 +72,7 @@ const barbeiros = () => {
   const avatarRef = useRef<HTMLInputElement>(null);
 
   const usuario = validarToken();
-
+  const router = useRouter();
   const formSchema = z.object({
     nome: z
       .string()
@@ -280,6 +279,13 @@ const barbeiros = () => {
         toast.error("Oops, ocorreu um erro!");
       }
 
+      if (barbeiroSelecionado.id === usuario?.id) {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        toast.warning("Faça Login para validação");
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        router.replace("/login");
+      }
+
       dispatch({
         type: AgendamentoAction.setBarbeiro,
         payload: [response.data],
@@ -443,7 +449,7 @@ const barbeiros = () => {
           ))}
       </div>
       <Dialog open={openModal} onOpenChange={setOpenModal}>
-        <DialogContent className="h-full overflow-y-auto">
+        <DialogContent className="h-full overflow-y-auto md:min-w-3xl">
           <DialogHeader>
             <DialogTitle>
               {barbeiroSelecionado ? "Editar Barbeiro" : "Cadastro de Barbeiro"}
@@ -468,26 +474,21 @@ const barbeiros = () => {
                 }
               }}
             />
-
             <button
               onClick={() => avatarRef.current?.click()}
               type="button"
-              className="relative h-28 w-28 rounded-full border-2 border-green-400 hover:border-green-400 shadow shadow-primary hover:shadow-primary/20 transition-all duration-300 cursor-pointer bg-primary text-white overflow-hidden"
+              className="relative h-32 w-32 rounded-full border-4 border-[#3f89c5] shadow shadow-primary hover:shadow-primary/20 transition-all duration-300 cursor-pointer bg-primary text-white overflow-hidden"
             >
               {preview ? (
-                <Image
+                <img
                   src={preview}
-                  sizes="112px"
                   alt="avatar preview"
-                  fill
                   className="absolute inset-0 h-full w-full object-cover object-center"
                 />
               ) : barbeiroSelecionado?.avatar ? (
-                <Image
+                <img
                   src={barbeiroSelecionado.avatar}
-                  sizes="112px"
                   alt="avatar"
-                  fill
                   className="absolute inset-0 h-full w-full object-cover object-center"
                 />
               ) : (
@@ -495,7 +496,7 @@ const barbeiros = () => {
                   {barbeiroSelecionado?.nome.split("")[0]}
                 </p>
               )}
-            </button>
+            </button>{" "}
           </div>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">

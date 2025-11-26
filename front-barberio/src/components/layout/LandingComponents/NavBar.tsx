@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { whatsapp } from "@/lib/whstsapp";
+
 import { useRouter } from "next/navigation";
 
 const Navbar = () => {
@@ -47,6 +48,11 @@ const Navbar = () => {
             >
               Preços
             </a>
+            {/* <a href="#futuro">
+              <Badge className="bg-orange-300 border border-orange-600 text-orange-600 px-3 animate-pulse gap-3 items-center">
+                <TrendingUp /> Futuras implementações
+              </Badge>
+            </a> */}
           </div>
 
           <div className="flex items-center gap-4">

@@ -42,10 +42,29 @@ export const GETAgendamentos = cache(
   }
 );
 
-export const DELETEAgendamento = cache(
+export const GETAgendamentosAdmin = cache(
+  async (): Promise<AgendamentoPublic[]> => {
+    try {
+      const respose = await axiosInstance.get<AgendamentoPublic[]>(
+        `/admin/agendamentos/`,
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("authToken")}`,
+          },
+        }
+      );
+      return respose.data;
+    } catch (error) {
+      console.error("Erro ao listar agendamentos", error);
+      throw error;
+    }
+  }
+);
+
+export const CANCELARAgendamento = cache(
   async (id: number): Promise<AxiosResponse<any, any>> => {
     try {
-      const respose = await axiosInstance.delete(`/public/agendamentos/${id}`, {
+      const respose = await axiosInstance.patch(`/public/agendamentos/${id}`, {
         headers: {
           Authorization: `Bearer ${Cookies.get("authToken")}`,
         },
@@ -53,6 +72,43 @@ export const DELETEAgendamento = cache(
       return respose;
     } catch (error) {
       console.error("Erro ao apagar agendamento", error);
+      throw error;
+    }
+  }
+);
+export const REATIVARAgendamento = cache(
+  async (id: number): Promise<AxiosResponse<any, any>> => {
+    try {
+      const respose = await axiosInstance.patch(
+        `/public/reativarAgendamentos/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("authToken")}`,
+          },
+        }
+      );
+      return respose;
+    } catch (error) {
+      console.error("Erro ao reativar agendamento", error);
+      throw error;
+    }
+  }
+);
+
+export const CONCLUIRAgendamento = cache(
+  async (id: number): Promise<AxiosResponse<any, any>> => {
+    try {
+      const respose = await axiosInstance.post(
+        `/agendamentos/concluirAgendamento/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("authToken")}`,
+          },
+        }
+      );
+      return respose;
+    } catch (error) {
+      console.error("Erro ao concluir agendamento", error);
       throw error;
     }
   }

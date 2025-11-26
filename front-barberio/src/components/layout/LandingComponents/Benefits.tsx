@@ -33,7 +33,7 @@ const benefits = [
 const Benefits = () => {
   return (
     <section
-      className="py-24 bg-gradient-to-b from-background to-muted/30"
+      className="py-24 md:px-32 bg-gradient-to-b from-background to-muted/30"
       id="recursos"
     >
       <div className="container mx-auto px-4">
@@ -41,7 +41,7 @@ const Benefits = () => {
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             Recursos que fazem a diferença
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-xl font-semibold text-muted-foreground max-w-2xl mx-auto">
             Tudo que você precisa para levar sua barbearia ao próximo nível
           </p>
         </div>
@@ -52,7 +52,7 @@ const Benefits = () => {
             return (
               <Card
                 key={index}
-                className="p-6 hover:shadow-xl transition-all duration-300 animate-slide-up bg-card border-border hover:border-primary/50"
+                className="p-6  border-l-4 border-primary hover:shadow-xl transition-all duration-300 animate-slide-up bg-card hover:border-primary/50"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">

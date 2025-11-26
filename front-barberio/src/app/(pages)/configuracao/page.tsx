@@ -32,7 +32,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { baseUrl } from "@/lib/baseUrl";
+import { baseUrl, linkBarberio } from "@/lib/baseUrl";
 import { useMutations } from "./mutations/configuracoes";
 import { AxiosError } from "axios";
 import { DialogComponent } from "@/components/layout/DialogComponent";
@@ -55,15 +55,13 @@ const configuracao = () => {
     useState<z.infer<typeof empresaSchema>>();
   const [openModalExcluir, setOpenModalExcluir] = useState(false);
 
-  const empresaId = window.location.href.split("=")[1];
-
   const { data, error } = useQuery<
     z.infer<typeof empresaSchema>,
     AxiosError<ErrorResponse>
   >({
     queryKey: ["empresas"],
     queryFn: async () => {
-      const response = await axios.get(`${baseUrl}/empresas/${empresaId}`, {
+      const response = await axios.get(`${baseUrl}/empresa`, {
         headers: {
           Authorization: `Bearer ${Cookies.get("authToken")}`,
         },
@@ -261,6 +259,12 @@ const configuracao = () => {
 
     console.log("Editando Feriado: ", feriado);
   };
+
+  function copiarLink() {
+    const LinkInstagram = `${linkBarberio}/home?ref=${data?.id}`;
+    navigator.clipboard.writeText(LinkInstagram);
+    toast.success("Copiado!");
+  }
   return (
     <div className="w-screen min-h-screen bg-[#e6f0ff] p-2">
       <div className="w-full flex justify-between items-center md:px-8 px-2 py-3">
@@ -299,10 +303,14 @@ const configuracao = () => {
               <TabsContent value="geral" className="space-y-4 pb-4">
                 {/* Aqui será colocado o conteudo da tab Geral */}
                 <Card className="min-h-[250px] p-4 space-y-4">
-                  <TitulosCards
-                    Titulos="Informações da Barbearia"
-                    subtitulo="Configure as informações básicas do seu estabelecimento"
-                  />
+                  <div className="flex items-center justify-between">
+                    <TitulosCards
+                      Titulos="Informações da Barbearia"
+                      subtitulo="Configure as informações básicas do seu estabelecimento"
+                      tituloButton="Link de agendamento"
+                      onClick={copiarLink}
+                    />
+                  </div>
                   <div className=" grid grid-cols-2 gap-4 items-center">
                     <FormField
                       control={form.control}

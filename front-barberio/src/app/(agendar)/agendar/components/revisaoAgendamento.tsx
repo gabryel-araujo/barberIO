@@ -39,7 +39,9 @@ export const RevisaoAgendamento = ({
           </p>
           <div className="flex gap-2 items-center">
             <img
-              src={fotoBarbeiro}
+              src={`${
+                fotoBarbeiro === "" ? "/imagens/default.png" : fotoBarbeiro
+              }`}
               alt="imagem do barbeiro"
               className="h-16 w-16 rounded-full border-4 border-[#3f89c5] object-cover"
             />
@@ -91,7 +93,7 @@ export const RevisaoAgendamento = ({
         <p className="flex gap-2 text-sm font-semibold text-primary">
           <User size={20} /> SEUS DADOS
         </p>
-        <div className="flex items-center justify-evenly">
+        <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-muted-foreground">Nome</p>
             <p className="text-lg font-bold">{nomeCliente}</p>

@@ -1,13 +1,20 @@
 "use client";
 import Link from "next/link";
-import MenuItems from "./ItemMenu";
+
 import { usePathname, useRouter } from "next/navigation";
 import InstallButton from "../../../components/InstallButton";
 import { useState, useRef, useEffect } from "react";
-import { User, LogOut, LogIn, EllipsisVertical } from "lucide-react";
+import {
+  User,
+  LogOut,
+  LogIn,
+  EllipsisVertical,
+  MonitorCog,
+} from "lucide-react";
 import { validarToken } from "@/utils/functions";
 import { tokenType } from "@/types/tokenType";
 import Cookies from "js-cookie";
+import { useMenuItems } from "./ItemMenu";
 
 interface SideBarProps {
   onClick?: () => void;
@@ -17,6 +24,7 @@ export const Sidebar = ({ onClick }: SideBarProps) => {
   const pathname = usePathname();
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const menuItems = useMenuItems();
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -33,6 +41,10 @@ export const Sidebar = ({ onClick }: SideBarProps) => {
     } else {
       router.replace("/login");
     }
+  };
+
+  const redirectAdm = () => {
+    router.replace("/administracao");
   };
 
   // Alterna menu dropdown
@@ -55,6 +67,11 @@ export const Sidebar = ({ onClick }: SideBarProps) => {
     if (tokenValido) {
       setUser(tokenValido);
       setIsLoggedIn(true);
+
+      // 🔥 Garante que o ref é persistente no cookie
+      if (tokenValido.empresa_id) {
+        Cookies.set("ref", String(tokenValido.empresa_id), { expires: 7 });
+      }
     }
 
     document.addEventListener("mousedown", handleClickOutside);
@@ -77,10 +94,11 @@ export const Sidebar = ({ onClick }: SideBarProps) => {
         {/* <span className="text-[#3f88c5]">Barber</span>iO */}
         {/* </p> */}
 
-        {MenuItems.map((menu) => {
+        {menuItems.map((menu) => {
           // Exibe item se permission === "" (público) ou se bate com role do usuário
           const podeExibir =
-            menu.permission === "" || user?.role === menu.permission;
+            menu.permission === "" ||
+            menu.permission.includes(user?.role ?? "");
 
           if (!podeExibir) return null;
 
@@ -91,7 +109,7 @@ export const Sidebar = ({ onClick }: SideBarProps) => {
               key={menu.path}
               href={menu.path}
               onClick={onClick}
-              className={`flex items-center gap-3 py-3 px-5 transition-colors ${
+              className={`flex items-center gap-3 text-sm py-3 px-5 transition-colors ${
                 isActive
                   ? "bg-[#3f88c5]/40 border-l-4 border-[#3f88c5]"
                   : "hover:bg-[#3f88c5]/40"
@@ -128,6 +146,15 @@ export const Sidebar = ({ onClick }: SideBarProps) => {
 
             {showDropdown && (
               <div className="absolute bottom-full left-0 right-0 mb-2 bg-[#2a2f3c] rounded-md shadow-lg border border-gray-600 z-50">
+                {user.role === "DEV" && (
+                  <button
+                    onClick={redirectAdm}
+                    className="flex items-center gap-3 w-full py-3 px-4 hover:bg-primary/20 text-primary hover:text-primary transition-colors"
+                  >
+                    <MonitorCog size={18} />
+                    Administracão
+                  </button>
+                )}
                 <button
                   onClick={handleAuthClick}
                   className="flex items-center gap-3 w-full py-3 px-4 hover:bg-red-600/20 text-red-400 hover:text-red-300 transition-colors"

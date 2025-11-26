@@ -1,8 +1,8 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { AgendamentoAction } from "@/contexts/AgendamentoReducer";
 import { Button } from "@/components/ui/button";
-import { Award } from "lucide-react";
+import { Award, Sparkles } from "lucide-react";
 import { inicialData, useForm } from "@/contexts/AgendamentoContextProvider";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
@@ -13,17 +13,19 @@ import { Badge } from "@/components/ui/badge";
 export const Step2 = () => {
   const { state, dispatch } = useForm();
   const [barbeiro, setbarbeiro] = useState(state.barbeiro);
-  const empresaId = useRef<any>(null);
+  //const empresaId = useRef<any>(null);
+
+  const empresaId = getEmpresaIdFromHref();
 
   const { data: barbeiros = [] } = useQuery({
     queryKey: ["barbeirosDisponivel"],
-    queryFn: () => GETFuncionariosPublicos(empresaId.current),
+    queryFn: () => GETFuncionariosPublicos(empresaId),
     //staleTime: 3000,
   });
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      empresaId.current = getEmpresaIdFromHref();
+      //empresaId.current = getEmpresaIdFromHref();
     }
   }, []);
 
@@ -90,13 +92,24 @@ export const Step2 = () => {
                   className="h-20 w-20 rounded-full border-4 border-[#3f89c5] object-cover"
                 />
               ) : (
-                <div className="h-20 w-20 rounded-full bg-slate-700 flex items-center justify-center text-white font-bold text-3xl border border-slate-700">
-                  {barber.nome[0]}
-                </div>
+                <img
+                  src={"/imagens/default.png"}
+                  alt="imagem do barbeiro"
+                  className="h-20 w-20 rounded-full border-4 border-[#3f89c5] object-cover"
+                />
               )}
 
-              <div className="flex flex-col gap-2">
-                <p className="text-lg font-bold flex gap-3">{barber.nome}</p>
+              <div className="w-full flex flex-col gap-2">
+                <div className="w-full flex items-center justify-between">
+                  <p className="text-lg font-bold flex gap-3">{barber.nome}</p>
+                  {barber.nome === barbeiro.nome ? (
+                    <Badge>
+                      <Sparkles /> Selecionado
+                    </Badge>
+                  ) : (
+                    ""
+                  )}
+                </div>
                 <section className="flex items-center gap-1">
                   {/* todo: colocar avaliações futuramente */}
                   {/* <Star color="orange" fill="orange" />

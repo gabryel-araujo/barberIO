@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { DELETEAgendamento, GETAgendamentos } from "@/lib/api/agendamento";
+import { CANCELARAgendamento, GETAgendamentos } from "@/lib/api/agendamento";
 import { AgendamentoPublic } from "@/types/agendamento";
 import Cookies from "js-cookie";
 import { useEffect, useRef, useState } from "react";
@@ -18,6 +18,7 @@ import { ptBR } from "date-fns/locale";
 import { getEmpresaIdFromHref, normalizarData } from "@/utils/functions";
 import { toast } from "sonner";
 import { DialogComponent } from "@/components/layout/DialogComponent";
+import { Badge } from "@/components/ui/badge";
 
 export const AgendamentoClientes = () => {
   const [agendamentos, setAgendamentos] = useState<AgendamentoPublic[]>([]);
@@ -51,7 +52,7 @@ export const AgendamentoClientes = () => {
     );
 
   async function handleCancel() {
-    const response = await DELETEAgendamento(idSelecionadoRef.current);
+    const response = await CANCELARAgendamento(idSelecionadoRef.current);
     console.log(response);
 
     if (response.status == 200) {
@@ -63,7 +64,7 @@ export const AgendamentoClientes = () => {
   }
 
   return (
-    <div className="w-full flex flex-col bg-[#e6f0ff]">
+    <div className="lg:min-w-4xl w-full flex flex-col bg-[#e6f0ff]">
       {clienteLogado && (
         <Card className={`p-4 md:p-6`}>
           <div className="mb-4">
@@ -82,6 +83,7 @@ export const AgendamentoClientes = () => {
                         <TableHead>Cliente</TableHead>
                         <TableHead>Barbeiro</TableHead>
                         <TableHead>Serviço</TableHead>
+                        <TableHead>Status</TableHead>
                         <TableHead>Valor</TableHead>
                         <TableHead>Ações</TableHead>
                       </TableRow>
@@ -99,6 +101,19 @@ export const AgendamentoClientes = () => {
                             <TableCell>{agendamento.barbeiro}</TableCell>
                             <TableCell>{agendamento.servico}</TableCell>
                             <TableCell>
+                              <Badge
+                                className={`${
+                                  agendamento.status === "ATIVO"
+                                    ? "bg-primary"
+                                    : agendamento.status === "CANCELADO"
+                                    ? "bg-gray-950"
+                                    : "bg-green-600"
+                                }`}
+                              >
+                                {agendamento.status}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
                               R${agendamento.preco.toFixed(2)}
                             </TableCell>
                             <TableCell className="flex gap-2 items-center justify-center">
@@ -110,6 +125,8 @@ export const AgendamentoClientes = () => {
                                 Reagendar
                               </Button> */}
                               <Button
+                                disabled={agendamento.status === "CONCLUIDO"}
+                                className={``}
                                 onClick={() => {
                                   setOpen(!open);
                                   idSelecionadoRef.current = agendamento.id;
@@ -153,6 +170,17 @@ export const AgendamentoClientes = () => {
                                 })}
                               </p>
                             </div>
+                            <Badge
+                              className={`${
+                                agendamento.status === "ATIVO"
+                                  ? "bg-primary"
+                                  : agendamento.status === "CANCELADO"
+                                  ? "bg-gray-950"
+                                  : "bg-green-600"
+                              }`}
+                            >
+                              {agendamento.status}
+                            </Badge>
                           </div>
 
                           <div className="grid grid-cols-2 gap-2 text-sm">
@@ -188,6 +216,7 @@ export const AgendamentoClientes = () => {
                                 Reagendar
                               </Button> */}
                               <Button
+                                disabled={agendamento.status === "CONCLUIDO"}
                                 onClick={() => {
                                   setOpen(!open);
                                   idSelecionadoRef.current = agendamento.id;

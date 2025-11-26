@@ -5,7 +5,7 @@ export const MensagemPadrao = () => {
   return (
     <>
       {!clienteLogado && (
-        <div className="bg-white border rounded-lg p-6">
+        <div className="bg-white border md:w-full lg:min-w-4xl rounded-lg p-6">
           <p className="text-2xl text-center font-semibold">Nossos Serviços</p>
           <div className="grid grid-cols-1 md:grid-cols-2 text-center gap-5 pt-3">
             <div className="bg-[#f3f4f6]/30 rounded-sm p-5">
