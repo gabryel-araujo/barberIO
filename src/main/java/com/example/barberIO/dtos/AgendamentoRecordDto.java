@@ -1,5 +1,6 @@
 package com.example.barberIO.dtos;
 
+import com.example.barberIO.enums.TipoAgendamento;
 import com.example.barberIO.models.ClienteModel;
 import com.example.barberIO.models.FuncionarioModel;
 import com.example.barberIO.models.ServiceModel;
@@ -13,5 +14,6 @@ public record AgendamentoRecordDto (
 		@NotNull(message = "Deve ser atribuído um serviço para o agendamento") ServiceModel servico, 
 		@NotNull(message = "Deve ser atribuído um cliente para o agendamento") ClienteModel cliente, 
 		@NotNull(message = "O tempo de finalização do atendimento deve ser estipulado") LocalDateTime fim,
-		Long empresa_id
+		Long empresa_id,
+		TipoAgendamento status
 		){}

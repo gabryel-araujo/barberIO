@@ -55,31 +55,53 @@ public class ClienteController {
         return ResponseEntity.status(HttpStatus.OK).body(clienteRepository.findAllByEmpresaId(empresaLogada.getId()));
     }
 
-    @PostMapping("public/clientes")
-    public ResponseEntity<Object> addCliente(@RequestBody @Valid ClienteRecordDto clienteRecordDto, HttpServletRequest req) {
+    @PostMapping("/public/clientes")
+    public ResponseEntity<Object> addCliente(@RequestBody @Valid ClienteRecordDto clienteRecordDto) {
+        //todo:verificar pela empresaId
         Optional<ClienteModel> clienteO = clienteRepository.findByTelefone(clienteRecordDto.telefone());
-
-        String authHeader = req.getHeader("Authorization");
-
 
         if (clienteO.isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Cliente já cadastrado");
         }
 
+        EmpresaModel empresa = empresaRepository.findById(clienteRecordDto.empresa_id()).get();
+
         ClienteModel clienteModel = new ClienteModel();
+        LocalDateTime now = LocalDateTime.now();
+        BeanUtils.copyProperties(clienteRecordDto, clienteModel);
+        clienteModel.setEmpresa(empresa);
+        clienteModel.setAtivo(true);
+        clienteModel.setCreated_at(now);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(clienteRepository.save(clienteModel));
+    }
+
+    @PostMapping("/admin/clientes")
+    public ResponseEntity<Object> addClientePrivate(@RequestBody @Valid ClienteRecordDto clienteRecordDto,HttpServletRequest req) {
+        Optional<ClienteModel> clienteO = clienteRepository.findByTelefone(clienteRecordDto.telefone());
+
+        if (clienteO.isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Cliente já cadastrado");
+        }
+
+        String authHeader = req.getHeader("Authorization");
+        String token = authHeader.substring(7);
+        String usuarioLogado = jwtUtil.extractUsername(token);
+        EmpresaModel empresaLogada = funcionarioRepository.findByEmail(usuarioLogado).get().getEmpresa();
+
+        ClienteModel clienteModel = new ClienteModel();
+
+        if(clienteRecordDto.empresa_id() == null){
+            clienteModel.setEmpresa(empresaLogada);
+        }else{
+            EmpresaModel empresaNova = empresaRepository.findById(clienteRecordDto.empresa_id()).get();
+            clienteModel.setEmpresa(empresaNova);
+        }
+
         LocalDateTime now = LocalDateTime.now();
         BeanUtils.copyProperties(clienteRecordDto, clienteModel);
         clienteModel.setAtivo(true);
         clienteModel.setCreated_at(now);
-
-        if(clienteRecordDto.empresa_id() != null){
-            clienteModel.setEmpresa(empresaRepository.findById(clienteRecordDto.empresa_id()).orElseThrow());
-        }else if(authHeader != null) {
-            String token = authHeader.substring(7);
-            String usuarioLogado = jwtUtil.extractUsername(token);
-            EmpresaModel empresaLogada = funcionarioRepository.findByEmail(usuarioLogado).get().getEmpresa();
-            clienteModel.setEmpresa(empresaLogada);
-        }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(clienteRepository.save(clienteModel));
     }

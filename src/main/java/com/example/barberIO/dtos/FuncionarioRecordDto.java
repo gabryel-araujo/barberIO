@@ -21,6 +21,8 @@ public record FuncionarioRecordDto(
         Long empresa_id,
         LocalDateTime fechamento_ini,
         LocalDateTime fechamento_fim,
-        boolean ativo) {
+        boolean ativo,
+        Float comissao
+        ) {
 }
 
