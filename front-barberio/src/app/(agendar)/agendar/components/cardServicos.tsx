@@ -24,6 +24,15 @@ export const CardServico = ({
       className={`p-6 ${selecionado && "border-3 border-primary"}`}
       onClick={onClick}
     >
+      <div className="flex justify-end">
+        {selecionado === true ? (
+          <Badge>
+            <Sparkles /> Selecionado
+          </Badge>
+        ) : (
+          ""
+        )}
+      </div>
       <div
         className={`flex text-xl font-bold items-center justify-between px-3`}
       >
@@ -33,13 +42,6 @@ export const CardServico = ({
           </span>
           {nome}
         </p>
-        {selecionado === true ? (
-          <Badge>
-            <Sparkles /> Selecionado
-          </Badge>
-        ) : (
-          ""
-        )}
       </div>
       <p className="text-lg text-muted-foreground px-3 border-b pb-4">
         {descricao}
