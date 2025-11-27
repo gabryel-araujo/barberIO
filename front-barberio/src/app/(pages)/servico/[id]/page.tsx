@@ -31,7 +31,14 @@ import { CardServico } from "@/app/(agendar)/agendar/components/cardServicos";
 import axios from "axios";
 import { baseUrl } from "@/lib/baseUrl";
 import Cookies from "js-cookie";
-import { Scissors } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  DollarSign,
+  Scissors,
+  TrendingUp,
+} from "lucide-react";
+import StatCard from "../components/StatCard";
 
 const Barbeiros = () => {
   const params = useParams();
@@ -120,7 +127,7 @@ const Barbeiros = () => {
         <div className="lg:col-span-2 space-y-4">
           <Card className="flex flex-row p-6">
             <CardHeader className="flex md:flex-row items-center gap-6">
-              <div className="relative border-2 border-[#3f89c5] rounded-full h-20 w-20 bg-slate-700 items-center justify-center flex text-white">
+              <div className="relative border-2 border-[#3f89c5] rounded-full h-20 w-20 bg-slate-800 items-center justify-center flex text-white">
                 <Scissors />
               </div>
               <div>
@@ -226,46 +233,18 @@ const Barbeiros = () => {
                   </div>
                 </Card>
               </TabsContent>
-              <TabsContent value="servicos">
-                <Card className="p-6">
-                  <CardTitle>Serviços Prestados</CardTitle>
-                  <CardDescription>
-                    Selecione os serviços que este barbeiro realiza
-                  </CardDescription>
-                  <div className=" md:grid md:grid-cols-2 md:gap-3 md:space-y-0 space-y-3">
-                    {/* {servicos?.map((serv) => (
-                      <CardServico
-                        key={serv?.id}
-                        checked={Boolean(
-                          formData.servicos?.some((s) => s.id === serv.id)
-                        )}
-                        id={Number(serv?.id)}
-                        nome={serv?.nome ?? ""}
-                        descricao={serv?.descricao ?? ""}
-                        duracao={serv?.duracao ?? 0}
-                        preco={serv?.preco ?? 0}
-                        fnSelecionaServico={(novoChecked) =>
-                          handleAdicionarServico(
-                            formData.id,
-                            Number(serv.id),
-                            novoChecked
-                          )
-                        }
-                      />
-                    ))} */}
-                  </div>
-                </Card>
-              </TabsContent>
             </Tabs>
           </div>
         </div>
         {/* Lado Menor */}
         <div className="lg:col-span-1 bg-card space-y-3 shadow rounded-lg">
-          <div className="bg-gradient-to-br from-gray-200 to-gray-50 p-6 rounded-t-lg">
-            <p className="text-lg font-semibold">Visão geral do serviço</p>
+          <div className="bg-gradient-to-br from-slate-700 to-slate-800 p-6 rounded-t-lg">
+            <p className="text-lg font-semibold text-white">
+              Visão geral do serviço
+            </p>
           </div>
           <div className="w-full flex flex-col gap-2 items-center justify-center">
-            <div className="relative border-2 border-[#3f89c5] rounded-full h-20 w-20 bg-slate-700 items-center justify-center flex text-white">
+            <div className="relative border-2 border-[#3f89c5] rounded-full h-20 w-20 bg-slate-800 items-center justify-center flex text-white">
               <Scissors />
             </div>
 
@@ -287,9 +266,8 @@ const Barbeiros = () => {
               </p>
             </div>
           </div>
-          <div className="border-b" />
           <div className="space-y-3 px-5">
-            <p className="font-bold">Preview do card</p>
+            <p className="font-bold text-slate-600">Como os clientes verão:</p>
             <CardServico
               descricao={formData.descricao!}
               duracao={formData.duracao!}
@@ -309,6 +287,38 @@ const Barbeiros = () => {
           </div> */}
         </div>
       </main>
+
+      <Card className="p-6 w-full">
+        <CardTitle>Estatatísticas do serviço</CardTitle>
+        <CardDescription>Performance do último mês</CardDescription>
+
+        <div className="md:grid md:grid-cols-2 md:grid-rows-2 flex flex-col justify-center items-center gap-3">
+          <StatCard
+            icon={<Calendar size={16} />}
+            title="Agendamentos"
+            stats={43}
+            label="Este mês"
+          />
+          <StatCard
+            icon={<DollarSign size={16} className="text-green-500" />}
+            title="Receita"
+            stats={1200}
+            label="Este mês"
+          />
+          <StatCard
+            icon={<Clock size={16} className="text-primary" />}
+            title="Duração média de atendimento"
+            stats={35}
+            label="Tempo médio"
+          />
+          <StatCard
+            icon={<TrendingUp size={16} className="text-amber-500" />}
+            title="Popularidade"
+            stats={"85%"}
+            label="Taxa de escolha"
+          />
+        </div>
+      </Card>
     </div>
   );
 };
