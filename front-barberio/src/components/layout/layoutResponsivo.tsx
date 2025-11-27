@@ -27,7 +27,9 @@ export function LayoutResponsivo({ children }: Props) {
     pathname === "/administracao" || pathname.startsWith("/administracao/");
 
   return (
-    <div className={`${isMobile ? "flex flex-col" : "flex"} min-h-screen`}>
+    <div
+      className={`${isMobile ? "flex flex-col" : "flex ml-74"} min-h-screen`}
+    >
       {!isHomePage &&
         !isAdmin && // 👈 só mostra sidebar se não estiver na home
         (isMobile ? <MobileSidebar /> : <Sidebar />)}
