@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { changeStatus } from "@/lib/api/funcionarios";
-import { Barbeiro } from "@/types/barbeiro";
+import { Barbeiro, BarbeiroFormData } from "@/types/barbeiro";
 import { Star } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
 import { UseFormReturn } from "react-hook-form";
@@ -12,29 +12,18 @@ import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 
-type BarbeiroFormData = {
-  nome: string;
-  email: string;
-  senha?: string;
-  data_nascimento?: string | null;
-  servico: any[] | null;
-  disponivel: boolean;
-  avatar?: string | null;
-  tipo: string;
-};
-
 type BarberCardProps = {
   barbeiro: Barbeiro;
   form: UseFormReturn<BarbeiroFormData>;
   setBarbeiroSelecionado: Dispatch<SetStateAction<Barbeiro | undefined>>;
-  setOpenModal: Dispatch<SetStateAction<boolean>>;
+  direcionar: () => void;
 };
 
 export function BarberCard({
   barbeiro,
   form,
   setBarbeiroSelecionado,
-  setOpenModal,
+  direcionar,
 }: BarberCardProps) {
   const { dispatch } = useFormReducer();
 
@@ -56,7 +45,7 @@ export function BarberCard({
 
   const updateStatus = async (barbeiro: Barbeiro) => {
     const response = await changeStatus(
-      barbeiro.id,
+      barbeiro.id!,
       barbeiro.nome,
       barbeiro.email,
       barbeiro.senha,
@@ -147,7 +136,7 @@ export function BarberCard({
           onClick={() => {
             handleRecoveryBarbeiro(barbeiro);
             setBarbeiroSelecionado(barbeiro);
-            setOpenModal(true);
+            direcionar();
           }}
           className="bg-slate-700 hover:bg-slate-600"
         >
