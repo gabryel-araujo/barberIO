@@ -81,7 +81,7 @@ export const Sidebar = ({ onClick }: SideBarProps) => {
   }, []);
 
   return (
-    <div className="flex flex-col bg-[#1a1f2c] text-white md:w-[300px] min-h-screen justify-between">
+    <div className="fixed left-0 h-screen flex flex-col bg-[#1a1f2c] text-white md:w-[300px] min-h-screen justify-between">
       <div>
         <div className="flex flex-col justify-center items-center mt-4 mb-2">
           <img

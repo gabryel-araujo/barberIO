@@ -18,3 +18,17 @@ export const GETServicos = cache(async (): Promise<Servico[]> => {
     throw error;
   }
 });
+
+export const GETUmServico = cache(async (id: String): Promise<Servico> => {
+  try {
+    const response = await axios.get(`${baseUrl}/servico/${id}`, {
+      headers: {
+        Authorization: `Bearer ${Cookies.get("authToken")}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao listar servicos", error);
+    throw error;
+  }
+});
