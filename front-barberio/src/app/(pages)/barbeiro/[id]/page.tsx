@@ -235,7 +235,6 @@ const Barbeiros = () => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       router.push("/login");
     }
-    router.replace("/barbeiros");
 
     // dispatch({
     //   type: AgendamentoAction.setBarbeiro,
@@ -637,10 +636,8 @@ const Barbeiros = () => {
         </div>
         {/* Lado Menor */}
         <div className="lg:col-span-1 bg-card space-y-3 shadow rounded-lg">
-          <div className="bg-gradient-to-br from-slate-700 to-slate-800 p-6 rounded-t-lg">
-            <p className="text-lg font-semibold text-white">
-              Visão Geral do Perfil
-            </p>
+          <div className="bg-gradient-to-br from-gray-200 to-gray-50 p-6 rounded-t-lg">
+            <p className="text-lg font-semibold">Visão Geral do Perfil</p>
           </div>
           <div className="w-full flex flex-col gap-2 items-center justify-center">
             <div className="relative border-2 border-[#3f89c5]  rounded-full h-14 w-14 bg-slate-700 items-center justify-center flex text-white">
