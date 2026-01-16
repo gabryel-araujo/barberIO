@@ -420,7 +420,7 @@ const Barbeiros = () => {
                     </div>
                   </div>
                 </Card>
-                <Card className="p-6">
+                {/* <Card className="p-6">
                   <CardTitle>Comissão</CardTitle>
                   <CardDescription>
                     Digite o percentual (%) de comissão do barbeiro
@@ -435,7 +435,7 @@ const Barbeiros = () => {
                       })
                     }
                   />
-                </Card>
+                </Card> */}
                 <Card className="p-6">
                   <CardTitle>Exclusão de Barbeiro</CardTitle>
                   <div className="flex items-center justify-between gap-3">
@@ -622,6 +622,8 @@ const Barbeiros = () => {
                       </div>
                     </div>
                   </div>
+
+                  {/* <Button>Liberar Horário</Button> */}
                 </Card>
                 <Card className="p-6">
                   <p className="text-sm text-muted-foreground">
