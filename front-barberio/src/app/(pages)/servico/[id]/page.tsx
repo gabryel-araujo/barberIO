@@ -288,7 +288,8 @@ const Barbeiros = () => {
         </div>
       </main>
 
-      <Card className="p-6 w-full">
+      {/* todo: adicionar essas estatísticas para consumir da api */}
+      {/* <Card className="p-6 w-full">
         <CardTitle>Estatatísticas do serviço</CardTitle>
         <CardDescription>Performance do último mês</CardDescription>
 
@@ -318,7 +319,7 @@ const Barbeiros = () => {
             label="Taxa de escolha"
           />
         </div>
-      </Card>
+      </Card> */}
     </div>
   );
 };
