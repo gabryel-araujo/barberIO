@@ -44,8 +44,8 @@ import { baseUrl, linkBarberio } from "@/lib/baseUrl";
 import { useMutations } from "./mutations/configuracoes";
 import { AxiosError } from "axios";
 import { DialogComponent } from "@/components/layout/DialogComponent";
+import animationData from "@/assets/uploadToCloud.json";
 import Cookies from "js-cookie";
-import animationData from "../../../../public/UploadToCloud.json";
 import Lottie from "lottie-react";
 import { fileToBase64 } from "@/utils/functions";
 
