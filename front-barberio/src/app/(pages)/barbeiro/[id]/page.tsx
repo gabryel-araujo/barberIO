@@ -50,6 +50,7 @@ const Barbeiros = () => {
   const [imagemSelecionada, setImagemSelecionada] = useState<File | null>(null);
   const [openModal, setOpenModal] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
+  const [openDialogLimparHorario, setOpenDialogLimparHorario] = useState(false);
 
   const usuario = validarToken();
 
@@ -107,7 +108,10 @@ const Barbeiros = () => {
     comissao: Number(""),
     disponivel: undefined,
   });
-
+  const [inicioData, setInicioData] = useState<Date | null>();
+  const [fimData, setFimData] = useState<Date | null>();
+  const [inicioHora, setInicioHora] = useState<string>("");
+  const [fimHora, setFimHora] = useState<string>("");
   useEffect(() => {
     if (data) {
       setFormData({
@@ -125,6 +129,12 @@ const Barbeiros = () => {
         comissao: data?.comissao ?? undefined,
         disponivel: data?.disponivel ?? undefined,
       });
+      if (data.fechamento_ini && data.fechamento_fim) {
+        setInicioData(new Date(data?.fechamento_ini));
+        setInicioHora(data.fechamento_ini?.split("T")[1]);
+        setFimData(new Date(data.fechamento_fim));
+        setFimHora(data.fechamento_fim?.split("T")[1]);
+      }
     }
   }, [data]);
 
@@ -156,10 +166,10 @@ const Barbeiros = () => {
       });
       if (checked) {
         await adicionarServico(idBarbeiro, idServico);
-        toast.success("Serviço Adicionado com sucesso!");
+        // toast.success("Serviço Adicionado com sucesso!");
       } else {
         await removerServico(idBarbeiro, idServico);
-        toast.success("Serviço Removido com sucesso!");
+        // toast.success("Serviço Removido com sucesso!");
       }
       queryClient.invalidateQueries({
         queryKey: ["barbeiro", idBarbeiro],
@@ -168,11 +178,9 @@ const Barbeiros = () => {
       toast.error(error.message);
     }
   }
-  const [inicioData, setInicioData] = useState<Date>();
-  const [fimData, setFimData] = useState<Date>();
-  const [inicioHora, setInicioHora] = useState<string>("");
-  const [fimHora, setFimHora] = useState<string>("");
+
   const router = useRouter();
+
   useEffect(() => {
     if (inicioData && inicioHora) {
       const dataFormatada = format(inicioData, "yyyy-MM-dd");
@@ -240,7 +248,35 @@ const Barbeiros = () => {
     //   type: AgendamentoAction.setBarbeiro,
     //   payload: [response.data],
     // });
+    await queryClient.invalidateQueries({
+      queryKey: ["barbeiro", idBarbeiro],
+    });
   };
+  function chamarModalLimparHorario() {
+    setOpenDialogLimparHorario(!openDialogLimparHorario);
+  }
+  async function handleLimparHorario() {
+    const payload = {
+      ...formData,
+      fechamento_ini: null,
+      fechamento_fim: null,
+    };
+
+    setInicioData(null);
+    setInicioHora("");
+    setFimData(null);
+    setFimHora("");
+    setFormData(payload);
+    try {
+      await onSubmit(payload);
+      await queryClient.invalidateQueries({
+        queryKey: ["barbeiro", idBarbeiro],
+      });
+      console.log("Limpeza de horario de fechamento concluido!");
+    } catch (error) {
+      console.error("Erro ao limpar horario: ", error);
+    }
+  }
 
   return (
     <div className="w-full px-6 py-6 space-y-6 bg-[#e6f0ff]">
@@ -488,6 +524,17 @@ const Barbeiros = () => {
                     : () => handleReativarBarbeiro(data!)
                 }
               />
+
+              <DialogComponent
+                className={`${
+                  data?.ativo === false ? "bg-green-600 hover:bg-green-500" : ""
+                }`}
+                title={`Tem certeza que deseja liberar o horário?`}
+                actionLabel={`Liberar`}
+                open={openDialogLimparHorario}
+                setOpen={setOpenDialogLimparHorario}
+                action={handleLimparHorario}
+              />
               <TabsContent value="servicos">
                 <Card className="p-6">
                   <CardTitle>Serviços Prestados</CardTitle>
@@ -622,8 +669,11 @@ const Barbeiros = () => {
                       </div>
                     </div>
                   </div>
-
-                  {/* <Button>Liberar Horário</Button> */}
+                  {data?.fechamento_ini && (
+                    <Button onClick={chamarModalLimparHorario}>
+                      Liberar Horário
+                    </Button>
+                  )}
                 </Card>
                 <Card className="p-6">
                   <p className="text-sm text-muted-foreground">
