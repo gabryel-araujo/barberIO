@@ -42,4 +42,5 @@ export const empresaSchema = z.object({
   org_id: z.number().nullable().optional(),
   endereco: enderecoSchema.optional(),
   config_empresa: configEmpresaSchema.optional(),
+  url_img: z.string().nullish(),
 });
