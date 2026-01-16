@@ -8,7 +8,7 @@ import { whatsapp } from "@/lib/whstsapp";
 const plans = [
   {
     name: "Essencial",
-    price: "R$ 25",
+    price: "R$ 30",
     period: "mês",
     description:
       "Ideal para barbearias individuais que estão começando a otimizar os atendimentos.",
