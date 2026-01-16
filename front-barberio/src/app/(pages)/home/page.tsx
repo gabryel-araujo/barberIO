@@ -70,18 +70,11 @@ const Home = () => {
   return (
     <div className="w-full flex min-h-screen flex-col items-center justify-center space-y-7 px-7 pt-7 md:pt-0 bg-[#e6f0ff]">
       <PrefetchAgendar />
-
-      {/* <p className="text-5xl font-bold text-center ">
-        Bem-Vindo à <span className="text-primary">Barber</span>iO
-      </p>
-      <p className="text-slate-500 text-xl text-center">
-        Agende seu horário de forma rápida e fácil com os melhores barbeiros da
-        cidade.
-      </p> */}
-
       <BannerHome
         nomeBarbearia={data?.nome!}
-        imagemBarbaria="/imagens/barbeariaBeta.png"
+        imagemBarbaria={
+          data?.url_img ? data.url_img : "/imagens/barbeariaBeta.png"
+        }
         emailBarbearia={data?.email!}
         telefoneBarbearia={formatarTelefone(data?.telefone!)}
         ruaBarbearia={data?.endereco?.rua!}

@@ -28,7 +28,9 @@ export function LayoutResponsivo({ children }: Props) {
 
   return (
     <div
-      className={`${isMobile ? "flex flex-col" : "flex ml-74"} min-h-screen`}
+      className={`${isMobile ? "flex flex-col" : "flex"} min-h-screen ${
+        !isHomePage && !isMobile ? "pl-[300px]" : ""
+      }`}
     >
       {!isHomePage &&
         !isAdmin && // 👈 só mostra sidebar se não estiver na home

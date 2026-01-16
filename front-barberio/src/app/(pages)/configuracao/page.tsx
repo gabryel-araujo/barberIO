@@ -138,12 +138,15 @@ const configuracao = () => {
     mutationAtualizarHorarioFuncionamento,
   } = useMutations();
 
-  const onSubmitConfiguracao = (values: z.infer<typeof empresaSchema>) => {
+  const onSubmitConfiguracao = async (
+    values: z.infer<typeof empresaSchema>
+  ) => {
     try {
       if (values.id === undefined) {
         toast.error("ID da empresa é obrigatório para atualizar");
         return;
       }
+      let urlPublica = data?.url_img ?? "";
       //unificando os dados da empresa a ser alterados
       const empresa = {
         id: values.id,
@@ -151,6 +154,7 @@ const configuracao = () => {
         telefone: values.telefone,
         email: values.email,
         nacional_id: values.nacional_id,
+        url_img: urlPublica,
       };
       //função mutation para atualizar os dados da empresa
       mutationAtualizarEmpresa.mutate({
@@ -265,6 +269,7 @@ const configuracao = () => {
     navigator.clipboard.writeText(LinkInstagram);
     toast.success("Copiado!");
   }
+
   return (
     <div className="w-screen min-h-screen bg-[#e6f0ff] p-2">
       <div className="w-full flex justify-between items-center md:px-8 px-2 py-3">
@@ -273,7 +278,11 @@ const configuracao = () => {
           subtitulo="Gerencie as configurações da sua barbearia"
         />
 
-        <Button form="formConfiguracao" type="submit">
+        <Button
+          disabled={form.formState.isLoading}
+          form="formConfiguracao"
+          type="submit"
+        >
           Salvar Alterações
         </Button>
       </div>
@@ -375,6 +384,7 @@ const configuracao = () => {
                     />
                   </div>
                 </Card>
+
                 <Card className="min-h-[250px] p-4 space-y-4">
                   <TitulosCards
                     Titulos="Endereço"
