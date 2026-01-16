@@ -9,12 +9,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
@@ -31,14 +26,7 @@ import { CardServico } from "@/app/(agendar)/agendar/components/cardServicos";
 import axios from "axios";
 import { baseUrl } from "@/lib/baseUrl";
 import Cookies from "js-cookie";
-import {
-  Calendar,
-  Clock,
-  DollarSign,
-  Scissors,
-  TrendingUp,
-} from "lucide-react";
-import StatCard from "../components/StatCard";
+import { Scissors } from "lucide-react";
 
 const Barbeiros = () => {
   const params = useParams();
