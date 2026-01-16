@@ -13,7 +13,15 @@ import {
 } from "@/components/ui/form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Building2, Calendar, Clock, Edit, Plus, Trash2 } from "lucide-react";
+import {
+  Building2,
+  Calendar,
+  Clock,
+  Edit,
+  Plus,
+  Trash2,
+  X,
+} from "lucide-react";
 import { useForm, useWatch } from "react-hook-form";
 import { empresaSchema, formSchemaFeriado } from "./schemas/schemas";
 import { z } from "zod";
@@ -37,6 +45,9 @@ import { useMutations } from "./mutations/configuracoes";
 import { AxiosError } from "axios";
 import { DialogComponent } from "@/components/layout/DialogComponent";
 import Cookies from "js-cookie";
+import animationData from "../../../../public/UploadToCloud.json";
+import Lottie from "lottie-react";
+import { fileToBase64 } from "@/utils/functions";
 
 export type ErrorResponse = {
   error: string;
@@ -54,6 +65,8 @@ const configuracao = () => {
   const [dadosEmpresa, setDadosEmpresa] =
     useState<z.infer<typeof empresaSchema>>();
   const [openModalExcluir, setOpenModalExcluir] = useState(false);
+  const [bannerSelecionado, setBannerSelecionado] = useState<File | null>(null);
+  const [previewBanner, setPreviewBanner] = useState<string | null>(null);
 
   const { data, error } = useQuery<
     z.infer<typeof empresaSchema>,
@@ -81,6 +94,7 @@ const configuracao = () => {
       setDadosEmpresa(data);
       form.reset({
         ...data,
+        url_img: data.url_img,
         endereco: data.endereco,
         config_empresa: data.config_empresa,
       });
@@ -147,6 +161,15 @@ const configuracao = () => {
         return;
       }
       let urlPublica = data?.url_img ?? "";
+      if (bannerSelecionado) {
+        const base64 = await fileToBase64(bannerSelecionado);
+        const resUpload = await axios.post("api/banner-upload", {
+          base64,
+          nomeBarberia: data?.nome,
+          idBarbearia: data?.id,
+        });
+        urlPublica = resUpload.data.publicUrl;
+      }
       //unificando os dados da empresa a ser alterados
       const empresa = {
         id: values.id,
@@ -384,7 +407,51 @@ const configuracao = () => {
                     />
                   </div>
                 </Card>
+                <Card className="relative min-h-[250px] p-4 space-y-4 flex items-center w-full ">
+                  <div className="absolute left-5 rounded-lg cursor-pointer right-5 top-5 bottom-5 border-2 border-[#e6f0ff] border-dashed min-h-[210px] items-center flex justify-center">
+                    {previewBanner || data?.url_img ? (
+                      <>
+                        <div className="absolute right-5 w-8 h-8 bg-gray-700/70 flex items-center justify-center rounded-sm cursor-pointer top-5">
+                          <X size={20} className="text-white" />
+                        </div>
+                        <img
+                          src={
+                            previewBanner
+                              ? previewBanner
+                              : data?.url_img
+                              ? `${data?.url_img}?v=${Date.now()}`
+                              : undefined
+                          }
+                          alt="Banner"
+                          className="min min-h-[210px] shadow-lg bsolute inset-0 left-5 right-5 top-5 bottom-5 h-full w-full object-cover object-center rounded-lg"
+                        />
+                      </>
+                    ) : (
+                      <Lottie
+                        animationData={animationData}
+                        loop={true}
+                        style={{ width: 300, height: 300 }}
+                      />
+                    )}
+                  </div>
 
+                  <input
+                    type="file"
+                    // ref={bannerRef}
+                    className="absolute cursor-pointer opacity-0 left-5 right-5 top-5 bottom-5 border-2 border-[#e6f0ff] border-dashed min-h-[200px] items-center flex justify-center"
+                    id="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const bannerFile = e.target.files?.[0];
+                      if (bannerFile) {
+                        setBannerSelecionado(bannerFile);
+                        const previewUrl = URL.createObjectURL(bannerFile);
+                        setPreviewBanner(previewUrl);
+                        console.log(bannerFile);
+                      }
+                    }}
+                  />
+                </Card>
                 <Card className="min-h-[250px] p-4 space-y-4">
                   <TitulosCards
                     Titulos="Endereço"
