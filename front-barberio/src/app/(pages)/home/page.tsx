@@ -18,6 +18,7 @@ import { ErrorResponse } from "../configuracao/page";
 import { baseUrl } from "@/lib/baseUrl";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { LoadingComponent } from "../../../../components/LoadingComponent";
 
 const Home = () => {
   const router = useRouter();
@@ -62,18 +63,21 @@ const Home = () => {
 
   if (!empresaId || !data) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#e6f0ff]">
-        <p>Carregando...</p>
+      <div className="flex items-center justify-center w-full min-h-screen bg-[#e6f0ff]">
+        <p>
+          <LoadingComponent />
+        </p>
       </div>
     );
   }
+
   return (
     <div className="w-full flex min-h-screen flex-col items-center justify-center space-y-7 px-7 pt-7 md:pt-0 bg-[#e6f0ff]">
       <PrefetchAgendar />
       <BannerHome
         nomeBarbearia={data?.nome!}
         imagemBarbaria={
-          data?.url_img ? data.url_img : "/imagens/barbeariaBeta.png"
+          data?.url_img ? data?.url_img : "/imagens/barbeariaBeta.png"
         }
         emailBarbearia={data?.email!}
         telefoneBarbearia={formatarTelefone(data?.telefone!)}
