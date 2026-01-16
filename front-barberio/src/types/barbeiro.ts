@@ -18,3 +18,15 @@ export interface Barbeiro {
   fechamento_fim?: string | null;
   comissao?: number;
 }
+export type BarbeiroFormData = {
+  nome: string;
+  email: string;
+  senha?: string;
+  data_nascimento?: string | null;
+  servico?: any[]; //
+  disponivel: boolean;
+  avatar?: string | null;
+  tipo: string;
+  fechamento_ini?: string;
+  fechamento_fim?: string;
+};

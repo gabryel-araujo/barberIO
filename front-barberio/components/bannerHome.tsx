@@ -17,7 +17,6 @@ export const BannerHome = ({
   telefoneBarbearia,
   emailBarbearia,
   bairroBarbearia,
-
   numeroBarbearia,
   ruaBarbearia,
 }: BannerHomeProps) => {
@@ -25,7 +24,7 @@ export const BannerHome = ({
     <div className="overflow-hidden w-full lg:min-w-4xl rounded-md md:mt-10 border-0 shadow-lg">
       <div className="relative w-full h-64 md:h-80 overflow-hidden">
         <img
-          src={imagemBarbaria}
+          src={`${imagemBarbaria}?v=${Date.now()}`}
           alt={nomeBarbearia}
           className="w-full h-full object-cover"
         />

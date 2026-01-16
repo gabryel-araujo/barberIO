@@ -37,12 +37,15 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 const servicos = () => {
   const [openModal, setOpenModal] = useState(false);
   const [servicoSelecionado, setServicoSelecionado] = useState<Servico>();
   const [exibirInativos, setExibirInativos] = useState(false);
   const [openModalDelete, setOpenModalDelete] = useState(false);
+
+  const router = useRouter();
 
   const { data: servicos = [] } = useQuery({
     queryKey: ["servicos", exibirInativos],
@@ -78,24 +81,13 @@ const servicos = () => {
     setOpenModal(false);
   };
   const formSchema = z.object({
-    nome: z
-      .string()
-      .trim()
-      .min(2, {
-        message: "Serviço deve conter no mínimo 5 caracteres",
-      })
-      .regex(/^[a-zA-ZáàâãäéèêëíìîïóòôõöúùûüçÇ+-/&\s]*$/, {
-        message: "O nome do serviço deve conter apenas letras.",
-      }),
-    descricao: z
-      .string()
-      .trim()
-      .min(5, {
-        message: "Descrição deve conter no mínimo 5 caracteres",
-      })
-      .regex(/^[a-zA-ZáàâãäéèêëíìîïóòôõöúùûüçÇ\s]*$/, {
-        message: "O campo descrição deve conter apenas letras.",
-      }),
+    nome: z.string().trim().min(2, {
+      message: "Serviço deve conter no mínimo 5 caracteres",
+    }),
+
+    descricao: z.string().trim().min(5, {
+      message: "Descrição deve conter no mínimo 5 caracteres",
+    }),
     duracao: z.number().positive({ message: "Duração deve ser positivo" }),
     preco: z.number().positive({ message: "Valor deve ser positivo" }),
   });
@@ -318,14 +310,7 @@ const servicos = () => {
 
                   <Button
                     onClick={() => {
-                      setServicoSelecionado(servico);
-                      form.reset({
-                        nome: servico.nome,
-                        descricao: servico.descricao,
-                        duracao: servico.duracao,
-                        preco: servico.preco,
-                      });
-                      setOpenModal(true);
+                      router.push(`/servico/${servico.id}`);
                     }}
                     variant="secondary"
                     type="button"
