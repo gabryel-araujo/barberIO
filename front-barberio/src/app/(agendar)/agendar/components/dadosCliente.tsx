@@ -2,6 +2,7 @@
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { FieldErrors, UseFormRegister } from "react-hook-form";
+import { maskPhone } from "@/lib/utils";
 
 export const schema = z.object({
   name: z
@@ -12,7 +13,7 @@ export const schema = z.object({
     }),
   phone: z
     .string()
-    .regex(/^\d{11}$/, "Telefone inválido, digite no formato XX XXXXX XXXX"),
+    .regex(/^\d{10,11}$/, "Telefone inválido, digite no formato XX XXXXX XXXX"),
 });
 
 export type FormData = z.infer<typeof schema>;
@@ -23,9 +24,6 @@ type DadosClienteProps = {
 };
 
 export function DadosCliente({ register, errors }: DadosClienteProps) {
-  const handlePhoneInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.target.value = e.target.value.replace(/[^0-9]/g, "");
-  };
   return (
     <div className="flex flex-col gap-3">
       <form className="flex flex-col gap-3">
@@ -41,9 +39,14 @@ export function DadosCliente({ register, errors }: DadosClienteProps) {
           <Input
             type="text"
             inputMode="numeric"
-            onInput={handlePhoneInput}
-            {...register("phone")}
+            {...register("phone", {
+              onChange: (e) => {
+                e.target.value = maskPhone(e.target.value);
+              },
+              setValueAs: (value) => value.replace(/\D/g, ""),
+            })}
           />
+
           {errors.phone && (
             <p className="text-red-500 italic text-xs">
               {errors.phone.message}
