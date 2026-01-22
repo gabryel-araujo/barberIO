@@ -57,8 +57,8 @@ public class ClienteController {
 
     @PostMapping("/public/clientes")
     public ResponseEntity<Object> addCliente(@RequestBody @Valid ClienteRecordDto clienteRecordDto) {
-        //todo:verificar pela empresaId
-        Optional<ClienteModel> clienteO = clienteRepository.findByTelefone(clienteRecordDto.telefone());
+        //Optional<ClienteModel> clienteO = clienteRepository.findByTelefone(clienteRecordDto.telefone());
+        Optional<ClienteModel> clienteO = clienteRepository.findByTelefoneAndEmpresa_Id(clienteRecordDto.telefone(), clienteRecordDto.empresa_id());
 
         if (clienteO.isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Cliente já cadastrado");
