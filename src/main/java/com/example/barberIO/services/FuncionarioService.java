@@ -26,4 +26,8 @@ public class FuncionarioService implements UserDetailsService{
         return new FuncionarioDetails(funcionario);
 	}
 
+	public FuncionarioModel cadastrarFuncionario(FuncionarioModel funcionarioDto) {
+
+	}
+
 }
