@@ -9,6 +9,7 @@ import com.example.barberIO.repositories.AgendamentoRepository;
 import com.example.barberIO.repositories.FuncionarioRepository;
 import com.example.barberIO.security.JwtUtil;
 import com.example.barberIO.services.AgendamentoService;
+import com.example.barberIO.utils.BarberiOUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,12 +37,12 @@ public class AgendamentoController {
     @Autowired
     private FuncionarioRepository funcionarioRepository;
 
+    @Autowired
+    private BarberiOUtils barberiOUtils;
+
     @GetMapping("/admin/agendamentos")
     public ResponseEntity<List<ResponseAgendamentoRecordDto>> listarAgendamentos(HttpServletRequest req) {
-        String authHeader = req.getHeader("Authorization");
-        String token = authHeader.substring(7);
-        String usuarioLogado = jwtUtil.extractUsername(token);
-        EmpresaModel empresaLogada = funcionarioRepository.findByEmail(usuarioLogado).get().getEmpresa();
+        EmpresaModel empresaLogada = barberiOUtils.validarEmpresaLogada(req);
 
         return agendamentoService.listarAgendamentosMinificado(empresaLogada.getId());
         //return ResponseEntity.status(HttpStatus.OK).body(agendamentoService.listarAgendamentosMinificado(empresaLogada.getId()));

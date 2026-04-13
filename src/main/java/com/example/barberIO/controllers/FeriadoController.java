@@ -8,6 +8,7 @@ import com.example.barberIO.security.JwtUtil;
 import com.example.barberIO.services.EmpresaService;
 import com.example.barberIO.services.FeriadoService;
 import com.example.barberIO.services.FuncionarioService;
+import com.example.barberIO.utils.BarberiOUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,9 @@ public class FeriadoController {
     @Autowired
     private FuncionarioRepository funcionarioRepository;
 
+    @Autowired
+    private BarberiOUtils barberiOUtils;
+
     @GetMapping
     public ResponseEntity<List<FeriadoModel>> listarTodos() {
         return feriadoService.listarFeriados();
@@ -45,10 +49,8 @@ public class FeriadoController {
             @PathVariable Long configEmpresaId,
             HttpServletRequest req
     ) {
-        String authHeader = req.getHeader("Authorization");
-        String token = authHeader.substring(7);
-        String usuarioLogado = jwtUtil.extractUsername(token);
-        EmpresaModel empresaLogada = funcionarioRepository.findByEmail(usuarioLogado).get().getEmpresa();
+
+        EmpresaModel empresaLogada = barberiOUtils.validarEmpresaLogada(req);
         return feriadoService.cadastrarFeriado(dto, configEmpresaId,empresaLogada);
     }
 

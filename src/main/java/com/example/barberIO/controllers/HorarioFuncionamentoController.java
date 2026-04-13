@@ -6,6 +6,7 @@ import com.example.barberIO.models.HorarioFuncionamentoModel;
 import com.example.barberIO.repositories.FuncionarioRepository;
 import com.example.barberIO.security.JwtUtil;
 import com.example.barberIO.services.HorarioFuncionamentoService;
+import com.example.barberIO.utils.BarberiOUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,9 @@ public class HorarioFuncionamentoController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
+    private BarberiOUtils barberiOUtils;
+
     @GetMapping("/horarioFuncionamento")
     public ResponseEntity<List<HorarioFuncionamentoModel>> listarHorarios(){
         return horarioFuncionamentoService.listarHorariosFunc();
@@ -43,11 +47,8 @@ public class HorarioFuncionamentoController {
             @PathVariable(name = "empresa_id") Long empresa_id,
             HttpServletRequest req
         ){
-        String authHeader = req.getHeader("Authorization");
-        String token = authHeader.substring(7);
-        String usuarioLogado = jwtUtil.extractUsername(token);
 
-        EmpresaModel empresaLogada = funcionarioRepository.findByEmail(usuarioLogado).get().getEmpresa();
+        EmpresaModel empresaLogada = barberiOUtils.validarEmpresaLogada(req);
         return horarioFuncionamentoService.cadastrarHorario(horarioFuncionamentoRecordDto,config_empresa_id,empresaLogada);
     }
 
@@ -57,12 +58,7 @@ public class HorarioFuncionamentoController {
             @PathVariable(name = "config_empresa_id")Long config_empresa_id,
             HttpServletRequest req
             ){
-
-        String authHeader = req.getHeader("Authorization");
-        String token = authHeader.substring(7);
-        String usuarioLogado = jwtUtil.extractUsername(token);
-
-        EmpresaModel empresaLogada = funcionarioRepository.findByEmail(usuarioLogado).get().getEmpresa();
+        EmpresaModel empresaLogada = barberiOUtils.validarEmpresaLogada(req);
         return horarioFuncionamentoService.cadastrarVariosHorarios(horarioFuncionamentoRecordDto,config_empresa_id,empresaLogada);
     }
 

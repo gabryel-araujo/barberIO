@@ -10,6 +10,7 @@ import com.example.barberIO.repositories.FuncionarioRepository;
 import com.example.barberIO.security.JwtUtil;
 import com.example.barberIO.services.ClienteService;
 import com.example.barberIO.services.EmpresaService;
+import com.example.barberIO.utils.BarberiOUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
@@ -39,6 +40,10 @@ public class ClienteController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
+    private BarberiOUtils barberiOUtils;
+
+
     @GetMapping("public/clientes/{empresa_id}")
     public ResponseEntity<List<ClienteModel>> getAllClients(@PathVariable Long empresa_id ) {
 
@@ -47,10 +52,7 @@ public class ClienteController {
 
     @GetMapping("/clientes")
     public ResponseEntity<List<ClienteModel>> getAllClientsByEmpresa(HttpServletRequest req) {
-        String authHeader = req.getHeader("Authorization");
-        String token = authHeader.substring(7);
-        String usuarioLogado = jwtUtil.extractUsername(token);
-        EmpresaModel empresaLogada = funcionarioRepository.findByEmail(usuarioLogado).get().getEmpresa();
+        EmpresaModel empresaLogada = barberiOUtils.validarEmpresaLogada(req);
 
         return ResponseEntity.status(HttpStatus.OK).body(clienteRepository.findAllByEmpresaId(empresaLogada.getId()));
     }
@@ -83,11 +85,7 @@ public class ClienteController {
         if (clienteO.isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Cliente já cadastrado");
         }
-
-        String authHeader = req.getHeader("Authorization");
-        String token = authHeader.substring(7);
-        String usuarioLogado = jwtUtil.extractUsername(token);
-        EmpresaModel empresaLogada = funcionarioRepository.findByEmail(usuarioLogado).get().getEmpresa();
+        EmpresaModel empresaLogada = barberiOUtils.validarEmpresaLogada(req);
 
         ClienteModel clienteModel = new ClienteModel();
 
