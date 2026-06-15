@@ -146,7 +146,7 @@ export const Step4 = () => {
       handleSendEmail();
 
       if (response.status === 201) {
-        toast.success("Agendamento realizado com sucesso!");
+        // toast.success("Agendamento realizado com sucesso!");
         //IMPLEMENTAÇÃO WHATSAPP PARA ENVIO APÓS O AGENDAMENTO
         // axios.post(`${baseCrm}/api/sendText`, {
         //   chatId: `5583${state.telefone.slice(3)}@c.us`,
@@ -161,7 +161,11 @@ export const Step4 = () => {
         // });
 
         setIsLoading(true);
-        push(`/home?ref=${empresaId.current}`);
+
+        toast.success("Agendamento realizado com sucesso!");
+        setTimeout(() => {
+          push(`/home?ref=${empresaId.current}`);
+        }, 1000);
       }
       setOpenModalRevisao(!openModalRevisao);
     } catch (error) {

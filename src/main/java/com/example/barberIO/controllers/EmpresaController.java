@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import com.example.barberIO.repositories.FuncionarioRepository;
 import com.example.barberIO.security.JwtUtil;
+import com.example.barberIO.utils.BarberiOUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,6 +41,9 @@ public class EmpresaController {
 	@Autowired
 	private FuncionarioRepository funcionarioRepository;
 
+	@Autowired
+	private BarberiOUtils barberiOUtils;
+
 	@GetMapping("/empresas")
 	public ResponseEntity<List<EmpresaModel>> listarEmpresas() {
 		return ResponseEntity.status(HttpStatus.OK).body(empresaRepository.findAll());
@@ -52,11 +56,7 @@ public class EmpresaController {
 
 	@GetMapping("/empresa")
 	public ResponseEntity<EmpresaModel> listarEmpresaAuth(HttpServletRequest req){
-		String authHeader = req.getHeader("Authorization");
-		String token = authHeader.substring(7);
-		String usuarioLogado = jwtUtil.extractUsername(token);
-		EmpresaModel empresaLogada = funcionarioRepository.findByEmail(usuarioLogado).get().getEmpresa();
-
+		EmpresaModel empresaLogada = barberiOUtils.validarEmpresaLogada(req);
 		return empresaService.listarEmpresaPorId(empresaLogada.getId());
 	}
 	

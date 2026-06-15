@@ -14,6 +14,7 @@ import com.example.barberIO.repositories.EmpresaRepository;
 import com.example.barberIO.repositories.FuncionarioRepository;
 import com.example.barberIO.repositories.ServiceRepository;
 import com.example.barberIO.security.JwtUtil;
+import com.example.barberIO.utils.BarberiOUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
@@ -52,12 +53,13 @@ public class FuncionarioController {
 	@Autowired
 	private AgendamentoRepository agendamentoRepository;
 
+	@Autowired
+	private BarberiOUtils barberiOUtils;
+
 	@GetMapping("/funcionarios")
 	public ResponseEntity<List<FuncionarioModel>> getAll( HttpServletRequest req) {
-		String authHeader = req.getHeader("Authorization");
-		String token = authHeader.substring(7);
-		String usuarioLogado = jwtUtil.extractUsername(token);
-		EmpresaModel empresaLogada = funcionarioRepository.findByEmail(usuarioLogado).get().getEmpresa();
+
+		EmpresaModel empresaLogada = barberiOUtils.validarEmpresaLogada(req);
 
 		return ResponseEntity.status(HttpStatus.OK).body(funcionarioRepository.findAllByEmpresaId(empresaLogada.getId()));
 	}
@@ -101,10 +103,8 @@ public class FuncionarioController {
 			if (funcionario.isPresent()) {
 				throw new RecursoDuplicadoException("Já existe um usuário cadastrado com o e-mail informado");
 			}
-			String authHeader = req.getHeader("Authorization");
-			String token = authHeader.substring(7);
-			String usuarioLogado = jwtUtil.extractUsername(token);
-			EmpresaModel empresaLogada = funcionarioRepository.findByEmail(usuarioLogado).get().getEmpresa();
+
+			EmpresaModel empresaLogada = barberiOUtils.validarEmpresaLogada(req);
 
 			FuncionarioModel funcionarioModel = new FuncionarioModel();
 			LocalDateTime now = LocalDateTime.now();

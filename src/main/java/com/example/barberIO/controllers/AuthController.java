@@ -4,6 +4,8 @@ import com.example.barberIO.details.FuncionarioDetails;
 import com.example.barberIO.models.FuncionarioModel;
 import com.example.barberIO.repositories.FuncionarioRepository;
 import com.example.barberIO.security.JwtUtil;
+import com.example.barberIO.security.TokenBlacklistService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,10 +32,12 @@ public class AuthController {
     FuncionarioRepository funcionarioRepository; // Injeção do repositório
     @Autowired
     PasswordEncoder passwordEncoder;
+    private final TokenBlacklistService blacklistService;
 
-    public AuthController(AuthenticationManager authManager, JwtUtil jwtUtil) {
+    public AuthController(AuthenticationManager authManager, JwtUtil jwtUtil, TokenBlacklistService blacklistService) {
         this.authManager = authManager;
         this.jwtUtil = jwtUtil;
+        this.blacklistService = blacklistService;
     }
 
     @PostMapping("/login")
@@ -47,6 +51,25 @@ public class AuthController {
 
         String token = jwtUtil.generateToken(funcionario);
         return ResponseEntity.ok(new AuthResponse(token));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest req) {
+        String authHeader = req.getHeader("Authorization");
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.badRequest().body("Token ausente");
+        }
+
+        String token = authHeader.substring(7);
+
+        return jwtUtil.validateAndExtractClaims(token)
+                .map(claims ->{
+                    long exp = claims.getExpiration().getTime() - System.currentTimeMillis();
+                    blacklistService.revogarToken(token,exp);
+                    return ResponseEntity.ok("Logout realizado com sucesso");
+                }).orElse(ResponseEntity.badRequest().body("Token inválido"));
+
     }
 
     @PostMapping("/register")
