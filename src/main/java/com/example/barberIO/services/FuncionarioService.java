@@ -1,5 +1,8 @@
 package com.example.barberIO.services;
 
+import com.example.barberIO.exceptions.RecursoDuplicadoException;
+import com.example.barberIO.exceptions.RecursoNaoEncontradoException;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -9,6 +12,8 @@ import com.example.barberIO.models.FuncionarioModel;
 import com.example.barberIO.repositories.FuncionarioRepository;
 
 import com.example.barberIO.details.FuncionarioDetails;
+
+import java.util.Optional;
 
 @Service
 public class FuncionarioService implements UserDetailsService{
@@ -24,10 +29,6 @@ public class FuncionarioService implements UserDetailsService{
 		FuncionarioModel funcionario = funcionarioRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Funcionário não encontrado"));
         return new FuncionarioDetails(funcionario);
-	}
-
-	public FuncionarioModel cadastrarFuncionario(FuncionarioModel funcionarioDto) {
-
 	}
 
 }
