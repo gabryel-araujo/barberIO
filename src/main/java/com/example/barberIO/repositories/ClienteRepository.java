@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface ClienteRepository extends JpaRepository<ClienteModel, Long> {
+public interface ClienteRepository extends EmpresaAwareRepository<ClienteModel, Long> {
 
     Optional<ClienteModel> findByTelefone(String telefone);
     List<ClienteModel> findAllByEmpresaId(Long empresa_id);
