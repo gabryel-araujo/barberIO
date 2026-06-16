@@ -11,7 +11,7 @@ import Cookies from "js-cookie";
 
 export const AtualizarEmpresa = async (
   id: number,
-  empresa: z.infer<typeof empresaSchema>
+  empresa: z.infer<typeof empresaSchema>,
 ) => {
   const response = await axios.put(`${baseUrl}/empresas/${id}`, empresa, {
     headers: {
@@ -23,7 +23,7 @@ export const AtualizarEmpresa = async (
 
 export const AtualizaEndereco = async (
   id: number,
-  endereco: z.infer<typeof enderecoSchema>
+  endereco: z.infer<typeof enderecoSchema>,
 ) => {
   const response = await axios.put(`${baseUrl}/enderecos/${id}`, endereco, {
     headers: {
@@ -36,7 +36,7 @@ export const AtualizaEndereco = async (
 export const AtualizarConfigEmpresa = async (
   config_id: number,
   empresa_id: number,
-  config_empresa: z.infer<typeof configEmpresaSchema>
+  config_empresa: z.infer<typeof configEmpresaSchema>,
 ) => {
   const response = await axios.put(
     `${baseUrl}/configEmpresa/?config_id=${config_id}&empresa_id=${empresa_id}`,
@@ -45,14 +45,14 @@ export const AtualizarConfigEmpresa = async (
       headers: {
         Authorization: `Bearer ${Cookies.get("authToken")}`,
       },
-    }
+    },
   );
   return response.data;
 };
 
 export const CriarFeriado = async (
   config_id: number,
-  feriados: z.infer<typeof formSchemaFeriado>
+  feriados: z.infer<typeof formSchemaFeriado>,
 ) => {
   const response = await axios.post(
     `${baseUrl}/feriados/${config_id}`,
@@ -61,14 +61,14 @@ export const CriarFeriado = async (
       headers: {
         Authorization: `Bearer ${Cookies.get("authToken")}`,
       },
-    }
+    },
   );
   return response.data;
 };
 
 export const EditarFeriado = async (
   id: number,
-  feriados: z.infer<typeof formSchemaFeriado>
+  feriados: z.infer<typeof formSchemaFeriado>,
 ) => {
   const response = await axios.put(`${baseUrl}/feriados/${id}`, feriados, {
     headers: {
@@ -89,7 +89,7 @@ export const DeletarFeriado = async (id: number) => {
 
 export const editarHorarioFuncionamento = async (
   config_id: number,
-  horarioSemana: z.infer<typeof formSchemaFeriado>[]
+  horarioSemana: z.infer<typeof formSchemaFeriado>[],
 ) => {
   const response = await axios.put(
     `${baseUrl}/horarioFuncionamento/semana/${config_id}`,
@@ -98,7 +98,7 @@ export const editarHorarioFuncionamento = async (
       headers: {
         Authorization: `Bearer ${Cookies.get("authToken")}`,
       },
-    }
+    },
   );
   return response.data;
 };
