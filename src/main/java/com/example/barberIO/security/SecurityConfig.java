@@ -40,7 +40,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth.requestMatchers("/agendamentos/**","/public/**","/empresas/**","/error/**").permitAll()
+            .authorizeHttpRequests(auth -> auth.requestMatchers("/agendamentos/**","/public/**","/empresas/**","/error/**","/swagger-ui/**","/v3/api-docs/**").permitAll()
                     // Endpoints específicos
                     //.requestMatchers(HttpMethod.GET,"/agendamentos/**").permitAll()
                     .requestMatchers("/admin/**").hasAnyRole("GESTOR","DEV")
