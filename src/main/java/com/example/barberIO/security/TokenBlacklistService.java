@@ -1,23 +1,29 @@
 package com.example.barberIO.security;
 
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class TokenBlacklistService {
-    private final StringRedisTemplate stringRedisTemplate;
-
-    public TokenBlacklistService(StringRedisTemplate stringRedisTemplate) {
-        this.stringRedisTemplate = stringRedisTemplate;
-    }
+    private final Map<String, Long> blacklist = new ConcurrentHashMap<>();
 
     public void revogarToken(String token, long exp) {
-        stringRedisTemplate.opsForValue().set("blacklist:" + token, "revogado", exp, TimeUnit.MILLISECONDS);
+        if (exp > 0) {
+            blacklist.put(token, System.currentTimeMillis() + exp);
+        }
     }
 
     public boolean isTokenRevogado(String token) {
-        return stringRedisTemplate.hasKey("blacklist:" + token);
+        Long expiration = blacklist.get(token);
+        if (expiration == null) {
+            return false;
+        }
+        if (System.currentTimeMillis() > expiration) {
+            blacklist.remove(token);
+            return false;
+        }
+        return true;
     }
 }
