@@ -15,7 +15,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "servico")
 @Data
-public class ServiceModel implements Serializable {
+public class ServiceModel implements EmpresaAware, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

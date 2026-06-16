@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface ServiceRepository extends JpaRepository<ServiceModel, Long> {
+public interface ServiceRepository extends EmpresaAwareRepository<ServiceModel, Long> {
 
     List<ServiceModel> findAllByEmpresaId(Long empresaId);
 
